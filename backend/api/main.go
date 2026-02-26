@@ -13,10 +13,9 @@ import (
 )
 
 func main() {
-
 	cfg, err := config.Load()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to load .env: %v\n", err)
+		fmt.Fprintf(os.Stderr, "env error: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -37,12 +36,12 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 
 		response := map[string]string{
-			"status": "All Good",
+			"status": "All Gooda",
 		}
 
 		json.NewEncoder(w).Encode(response)
 	})
 
-	log.Println("Server running on :8080")
-	http.ListenAndServe(":8080", r)
+	log.Println("Server running on :" + cfg.Port)
+	http.ListenAndServe(":"+cfg.Port, r)
 }

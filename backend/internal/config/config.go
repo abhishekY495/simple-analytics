@@ -8,7 +8,7 @@ import (
 )
 
 type Config struct {
-	port        string
+	Port        string
 	DatabaseUrl string
 }
 
@@ -28,7 +28,7 @@ func Load() (Config, error) {
 	}
 
 	return Config{
-		port:        port,
+		Port:        port,
 		DatabaseUrl: databaseUrl,
 	}, nil
 }
@@ -36,7 +36,7 @@ func Load() (Config, error) {
 func extractEnv(key string) (string, error) {
 	val := os.Getenv(key)
 	if val == "" {
-		return "", fmt.Errorf("environment variable %s not set", key)
+		return "", fmt.Errorf("environment variable %s not found", key)
 	}
 	return val, nil
 }

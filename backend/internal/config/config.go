@@ -8,27 +8,27 @@ import (
 )
 
 type Config struct {
-	ServerPort  string
+	port        string
 	DatabaseUrl string
 }
 
-func LoadConfig() (Config, error) {
+func Load() (Config, error) {
 	err := godotenv.Load()
 	if err != nil {
-		return Config{}, fmt.Errorf("Failed to load .env")
+		return Config{}, fmt.Errorf("error loading .env file: %w", err)
 	}
 
 	databaseUrl, err := extractEnv("DATABASE_URL")
 	if err != nil {
 		return Config{}, err
 	}
-	serverPort, err := extractEnv("SERVER_PORT")
+	port, err := extractEnv("PORT")
 	if err != nil {
 		return Config{}, err
 	}
 
 	return Config{
-		ServerPort:  serverPort,
+		port:        port,
 		DatabaseUrl: databaseUrl,
 	}, nil
 }
@@ -36,7 +36,7 @@ func LoadConfig() (Config, error) {
 func extractEnv(key string) (string, error) {
 	val := os.Getenv(key)
 	if val == "" {
-		return "", fmt.Errorf("requested env not found")
+		return "", fmt.Errorf("environment variable %s not set", key)
 	}
 	return val, nil
 }

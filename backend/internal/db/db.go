@@ -14,7 +14,7 @@ func Connect(cfg config.Config) (*pgxpool.Pool, error) {
 	// Connect to the database
 	pool, err := pgxpool.New(ctx, cfg.DatabaseUrl)
 	if err != nil {
-		log.Fatalf("Unable to connect to database: %v\n", err)
+		log.Fatalf("Unable to connect to database: %v", err)
 	}
 
 	log.Println("Connection established")

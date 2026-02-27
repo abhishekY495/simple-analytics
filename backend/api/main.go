@@ -25,10 +25,10 @@ func main() {
 	router := server.NewRouter()
 	addr := fmt.Sprintf(":%s", cfg.Port)
 
-	log.Printf("Starting server on http://localhost%s\n", addr)
+	log.Printf("Starting server on %s", addr)
 
 	err = http.ListenAndServe(addr, router)
 	if err != nil {
-		log.Fatalf("Error starting server: %v\n", err)
+		log.Fatalf("Error starting server: %v", err)
 	}
 }

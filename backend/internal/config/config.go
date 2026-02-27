@@ -13,10 +13,8 @@ type Config struct {
 }
 
 func Load() (Config, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return Config{}, fmt.Errorf("error loading .env file: %w", err)
-	}
+	// Try loading .env locally, ignored in production
+	_ = godotenv.Load()
 
 	databaseUrl, err := extractEnv("DATABASE_URL")
 	if err != nil {

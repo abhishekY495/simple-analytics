@@ -20,6 +20,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error connecting to database: %v", err)
 	}
+	db.SyncSchema(pool)
 	defer pool.Close()
 
 	router := server.NewRouter()

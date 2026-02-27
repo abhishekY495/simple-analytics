@@ -1,47 +1,34 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
-	"github.com/abhishekY495/simple-analytics/backend/db"
 	"github.com/abhishekY495/simple-analytics/backend/internal/config"
-	"github.com/go-chi/chi/v5"
+	"github.com/abhishekY495/simple-analytics/backend/internal/db"
+	"github.com/abhishekY495/simple-analytics/backend/internal/server"
 )
 
 func main() {
 	cfg, err := config.Load()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "env error: %v\n", err)
-		os.Exit(1)
+		log.Fatalf("env error: %v", err)
 	}
 
 	pool, err := db.Connect(cfg)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error connecting to database: %v\n", err)
-		os.Exit(1)
+		log.Fatalf("Error connecting to database: %v", err)
 	}
 	defer pool.Close()
 
-	r := chi.NewRouter()
+	router := server.NewRouter()
+	addr := fmt.Sprintf(":%s", cfg.Port)
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello World"))
-	})
+	log.Printf("Starting server on http://localhost%s\n", addr)
 
-	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-
-		response := map[string]string{
-			"status": "All Gooda",
-		}
-
-		json.NewEncoder(w).Encode(response)
-	})
-
-	log.Println("Server running on :" + cfg.Port)
-	http.ListenAndServe(":"+cfg.Port, r)
+	err = http.ListenAndServe(addr, router)
+	if err != nil {
+		log.Fatalf("Error starting server: %v\n", err)
+	}
 }

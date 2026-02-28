@@ -4,13 +4,18 @@ import (
 	"net/http"
 
 	"github.com/abhishekY495/simple-analytics/backend/internal/handlers"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func NewRouter() *http.ServeMux {
+func NewRouter(pool *pgxpool.Pool) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", handlers.Root)
 	mux.HandleFunc("/health", handlers.Health)
+
+	// Auth routes
+	mux.HandleFunc("/signup", handlers.Signup(pool))
+	mux.HandleFunc("/login", handlers.Login(pool))
 
 	return mux
 }

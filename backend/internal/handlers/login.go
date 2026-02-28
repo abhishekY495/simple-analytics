@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/abhishekY495/simple-analytics/backend/internal/helpers"
-	"github.com/abhishekY495/simple-analytics/backend/internal/models"
+	"github.com/abhishekY495/simple-analytics/backend/internal/repository"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -16,43 +18,57 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
+type LoginResponse struct {
+	Id        uuid.UUID `json:"id"`
+	FullName  string    `json:"full_name"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 func Login(pool *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
-			helpers.SendError(w, http.StatusMethodNotAllowed, "Method not allowed")
+			helpers.ApiError(w, http.StatusMethodNotAllowed, "Method not allowed")
 			return
 		}
 
 		var req LoginRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			helpers.SendError(w, 200, "Invalid request body")
+			helpers.ApiError(w, 200, "Invalid request body")
 			return
 		}
 
 		req.Email = strings.TrimSpace(req.Email)
 
 		if req.Email == "" || req.Password == "" {
-			helpers.SendError(w, 200, "email and password are required")
+			helpers.ApiError(w, 200, "email and password are required")
+			return
+		}
+		if !helpers.ValidateEmail(req.Email) {
+			helpers.ApiError(w, 200, "Invalid email")
 			return
 		}
 
-		var user models.User
-		err := pool.QueryRow(
-			context.Background(),
-			`SELECT * FROM users WHERE email = $1`,
-			req.Email,
-		).Scan(&user.Id, &user.FullName, &user.Email, &user.Password, &user.CreatedAt, &user.UpdatedAt)
+		repo := repository.New(pool)
+		user, err := repo.GetUserByEmail(context.Background(), req.Email)
 		if err != nil {
-			helpers.SendError(w, 200, "Invalid email or password")
+			helpers.ApiError(w, 200, "Invalid email or password")
 			return
 		}
 
 		if !helpers.VerifyPassword(req.Password, user.Password) {
-			helpers.SendError(w, 200, "Invalid email or password")
+			helpers.ApiError(w, 200, "Invalid email or password")
 			return
 		}
 
-		user.Password = ""
-		helpers.SendSuccess(w, http.StatusOK, "Login successful", user)
+		res := LoginResponse{
+			Id:        user.ID,
+			FullName:  user.FullName,
+			Email:     user.Email,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
+		}
+		helpers.ApiSuccess(w, http.StatusOK, "Login successful", res)
 	}
 }

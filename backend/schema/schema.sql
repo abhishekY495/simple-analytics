@@ -5,6 +5,6 @@ CREATE TABLE IF NOT EXISTS users (
   "full_name" text NOT NULL,
   "email" text NOT NULL UNIQUE,
   "password" text NOT NULL,
-  "created_at" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  "updated_at" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL
+  "created_at" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

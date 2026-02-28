@@ -5,53 +5,51 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"time"
 
+	"github.com/abhishekY495/simple-analytics/backend/internal/config"
 	"github.com/abhishekY495/simple-analytics/backend/internal/helpers"
 	"github.com/abhishekY495/simple-analytics/backend/internal/repository"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type SignupRequest struct {
-	FullName string `json:"full_name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+type SignupResponse struct {
+	Id       uuid.UUID `json:"id"`
+	FullName string    `json:"full_name"`
+	Email    string    `json:"email"`
+	Token    string    `json:"token"`
 }
 
-func Signup(pool *pgxpool.Pool) http.HandlerFunc {
+func Signup(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Validate request method
 		if r.Method != http.MethodPost {
 			helpers.ApiError(w, http.StatusMethodNotAllowed, "Method not allowed")
 			return
 		}
 
-		var req SignupRequest
+		// Validate request body
+		var req helpers.SignupRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			helpers.ApiError(w, 200, "Invalid request body")
 			return
 		}
 
-		req.FullName = strings.TrimSpace(req.FullName)
-		req.Email = strings.TrimSpace(req.Email)
-
-		if req.FullName == "" || req.Email == "" || req.Password == "" {
-			helpers.ApiError(w, 200, "full_name, email, and password are required")
-			return
-		}
-		if !helpers.ValidateEmail(req.Email) {
-			helpers.ApiError(w, 200, "Invalid email")
-			return
-		}
-		if len(req.Password) < 6 {
-			helpers.ApiError(w, 200, "password must be at least 6 characters")
+		// Validate request body fields
+		if err := helpers.ValidateSignupRequest(req); err != nil {
+			helpers.ApiError(w, 200, err.Error())
 			return
 		}
 
+		// Hash password
 		hashedPassword, err := helpers.HashPassword(req.Password)
 		if err != nil {
 			helpers.ApiError(w, http.StatusInternalServerError, "Internal server error")
 			return
 		}
 
+		// Create user
 		repo := repository.New(pool)
 		user, err := repo.CreateUser(context.Background(), repository.CreateUserParams{
 			FullName: req.FullName,
@@ -66,6 +64,21 @@ func Signup(pool *pgxpool.Pool) http.HandlerFunc {
 			helpers.ApiError(w, http.StatusInternalServerError, "Internal server error")
 			return
 		}
-		helpers.ApiSuccess(w, http.StatusCreated, "User created successfully", user)
+
+		// Generate JWT token
+		token, err := helpers.GenerateJwtToken(user.ID.String(), user.Email, cfg.JwtSecret, time.Hour*24)
+		if err != nil {
+			helpers.ApiError(w, http.StatusInternalServerError, "Internal server error")
+			return
+		}
+
+		// Return response
+		res := SignupResponse{
+			Id:       user.ID,
+			FullName: user.FullName,
+			Email:    user.Email,
+			Token:    token,
+		}
+		helpers.ApiSuccess(w, http.StatusCreated, "User created successfully", res)
 	}
 }

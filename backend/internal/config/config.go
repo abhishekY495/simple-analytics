@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Port        string
 	DatabaseUrl string
+	JwtSecret   string
 }
 
 func Load() (Config, error) {
@@ -24,10 +25,15 @@ func Load() (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
+	jwtSecret, err := extractEnv("JWT_SECRET")
+	if err != nil {
+		return Config{}, err
+	}
 
 	return Config{
 		Port:        port,
 		DatabaseUrl: databaseUrl,
+		JwtSecret:   jwtSecret,
 	}, nil
 }
 

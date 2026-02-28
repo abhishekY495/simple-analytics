@@ -23,7 +23,7 @@ func main() {
 	db.SyncSchema(pool)
 	defer pool.Close()
 
-	router := server.NewRouter(pool)
+	router := server.NewRouter(pool, cfg)
 	addr := fmt.Sprintf(":%s", cfg.Port)
 
 	log.Printf("Starting server on %s", addr)

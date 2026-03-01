@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -11,6 +12,7 @@ type Config struct {
 	Port        string
 	DatabaseUrl string
 	JwtSecret   string
+	IsDev       bool
 }
 
 func Load() (Config, error) {
@@ -29,11 +31,20 @@ func Load() (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
+	isDev, err := extractEnv("IS_DEV")
+	if err != nil {
+		return Config{}, err
+	}
+	isDevBool, err := strconv.ParseBool(isDev)
+	if err != nil {
+		return Config{}, err
+	}
 
 	return Config{
 		Port:        port,
 		DatabaseUrl: databaseUrl,
 		JwtSecret:   jwtSecret,
+		IsDev:       isDevBool,
 	}, nil
 }
 

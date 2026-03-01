@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"strings"
@@ -10,15 +9,16 @@ import (
 	"github.com/abhishekY495/simple-analytics/backend/internal/config"
 	"github.com/abhishekY495/simple-analytics/backend/internal/helpers"
 	"github.com/abhishekY495/simple-analytics/backend/internal/repository"
+	"github.com/abhishekY495/simple-analytics/backend/utils"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type SignupResponse struct {
-	Id       uuid.UUID `json:"id"`
-	FullName string    `json:"full_name"`
-	Email    string    `json:"email"`
-	Token    string    `json:"token"`
+	Id          uuid.UUID `json:"id"`
+	FullName    string    `json:"full_name"`
+	Email       string    `json:"email"`
+	AccessToken string    `json:"access_token"`
 }
 
 func Signup(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
@@ -45,13 +45,14 @@ func Signup(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		// Hash password
 		hashedPassword, err := helpers.HashPassword(req.Password)
 		if err != nil {
-			helpers.ApiError(w, http.StatusInternalServerError, "Internal server error")
+			errorMessage := "Internal server error: " + err.Error()
+			helpers.ApiError(w, http.StatusInternalServerError, errorMessage)
 			return
 		}
 
 		// Create user
 		repo := repository.New(pool)
-		user, err := repo.CreateUser(context.Background(), repository.CreateUserParams{
+		user, err := repo.CreateUser(r.Context(), repository.CreateUserParams{
 			FullName: req.FullName,
 			Email:    req.Email,
 			Password: hashedPassword,
@@ -61,23 +62,48 @@ func Signup(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 				helpers.ApiError(w, 200, "Email already in use")
 				return
 			}
-			helpers.ApiError(w, http.StatusInternalServerError, "Internal server error")
+			errorMessage := "Internal server error: " + err.Error()
+			helpers.ApiError(w, http.StatusInternalServerError, errorMessage)
 			return
 		}
 
 		// Generate JWT token
-		token, err := helpers.GenerateJwtToken(user.ID.String(), user.Email, cfg.JwtSecret, time.Hour*24)
+		accessToken, refreshToken, hashedRefreshToken, err := helpers.GenerateJwtToken(user.ID.String(), user.Email, cfg.JwtSecret)
 		if err != nil {
-			helpers.ApiError(w, http.StatusInternalServerError, "Internal server error")
+			errorMessage := "Internal server error: " + err.Error()
+			helpers.ApiError(w, http.StatusInternalServerError, errorMessage)
 			return
 		}
 
+		// Hashed Refresh token stored in DB
+		_, err = repo.CreateSession(r.Context(), repository.CreateSessionParams{
+			UserID:           user.ID,
+			RefreshTokenHash: hashedRefreshToken,
+			ExpiresAt:        time.Now().Add(utils.RefreshTokenExpiresIn),
+		})
+		if err != nil {
+			errorMessage := "Internal server error: " + err.Error()
+			helpers.ApiError(w, http.StatusInternalServerError, errorMessage)
+			return
+		}
+
+		// Set refresh token as HttpOnly cookie
+		http.SetCookie(w, &http.Cookie{
+			Name:     "refresh_token",
+			Value:    refreshToken,
+			HttpOnly: true,
+			Secure:   !cfg.IsDev,
+			SameSite: http.SameSiteStrictMode,
+			Path:     "/auth/refresh",
+			MaxAge:   int(utils.RefreshTokenExpiresIn.Seconds()),
+		})
+
 		// Return response
 		res := SignupResponse{
-			Id:       user.ID,
-			FullName: user.FullName,
-			Email:    user.Email,
-			Token:    token,
+			Id:          user.ID,
+			FullName:    user.FullName,
+			Email:       user.Email,
+			AccessToken: accessToken,
 		}
 		helpers.ApiSuccess(w, http.StatusCreated, "User created successfully", res)
 	}

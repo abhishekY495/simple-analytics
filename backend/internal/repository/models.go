@@ -18,3 +18,11 @@ type User struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+type UserSession struct {
+	ID               uuid.UUID
+	UserID           uuid.UUID
+	RefreshTokenHash string
+	ExpiresAt        time.Time
+	CreatedAt        time.Time
+}

@@ -13,7 +13,7 @@ type SignupRequest struct {
 
 func ValidateSignupRequest(req SignupRequest) error {
 	req.FullName = strings.TrimSpace(req.FullName)
-	req.Email = strings.TrimSpace(req.Email)
+	req.Email = strings.ToLower(strings.TrimSpace(req.Email))
 
 	if req.FullName == "" || req.Email == "" || req.Password == "" {
 		return errors.New("full_name, email, and password are required")
@@ -35,7 +35,7 @@ type LoginRequest struct {
 }
 
 func ValidateLoginRequest(req LoginRequest) error {
-	req.Email = strings.TrimSpace(req.Email)
+	req.Email = strings.ToLower(strings.TrimSpace(req.Email))
 
 	if req.Email == "" || req.Password == "" {
 		return errors.New("email and password are required")

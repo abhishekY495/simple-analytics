@@ -17,8 +17,8 @@ func NewRouter(pool *pgxpool.Pool, cfg config.Config) *http.ServeMux {
 	// Auth routes
 	mux.HandleFunc("/auth/signup", handlers.Signup(pool, cfg))
 	mux.HandleFunc("/auth/login", handlers.Login(pool, cfg))
-	// mux.HandleFunc("/auth/logout", handlers.Logout(pool, cfg))
-	// mux.HandleFunc("/auth/refresh-token", handlers.RefreshToken(pool, cfg))
+	mux.HandleFunc("/auth/logout", handlers.Logout(pool, cfg))
+	mux.HandleFunc("/auth/refresh-token", handlers.RefreshToken(pool, cfg))
 
 	return mux
 }

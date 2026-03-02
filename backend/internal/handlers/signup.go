@@ -94,7 +94,7 @@ func Signup(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 			HttpOnly: true,
 			Secure:   !cfg.IsDev,
 			SameSite: http.SameSiteStrictMode,
-			Path:     "/auth/refresh",
+			Path:     "/auth/refresh-token",
 			MaxAge:   int(utils.RefreshTokenExpiresIn.Seconds()),
 		})
 

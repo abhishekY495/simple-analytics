@@ -9,7 +9,6 @@ import (
 	"github.com/abhishekY495/simple-analytics/backend/internal/config"
 	"github.com/abhishekY495/simple-analytics/backend/internal/helpers"
 	"github.com/abhishekY495/simple-analytics/backend/internal/repository"
-	"github.com/abhishekY495/simple-analytics/backend/utils"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -62,36 +61,13 @@ func RefreshToken(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 			return
 		}
 
-		// Generate new JWT token
-		accessToken, refreshToken, hashedRefreshToken, err := helpers.GenerateJwtToken(user.ID.String(), user.Email, cfg.JwtSecret)
+		// Generate new access token only — session and refresh token cookie are unchanged
+		accessToken, _, _, err := helpers.GenerateJwtToken(user.ID.String(), user.Email, cfg.JwtSecret)
 		if err != nil {
 			errorMessage := "Internal server error: " + err.Error()
 			helpers.ApiError(w, http.StatusInternalServerError, errorMessage)
 			return
 		}
-
-		// Create new session
-		_, err = userRepo.CreateSession(r.Context(), repository.CreateSessionParams{
-			UserID:           user.ID,
-			RefreshTokenHash: hashedRefreshToken,
-			ExpiresAt:        time.Now().Add(utils.RefreshTokenExpiresIn),
-		})
-		if err != nil {
-			errorMessage := "Internal server error: " + err.Error()
-			helpers.ApiError(w, http.StatusInternalServerError, errorMessage)
-			return
-		}
-
-		// Set new refresh token as HttpOnly cookie
-		http.SetCookie(w, &http.Cookie{
-			Name:     "refresh_token",
-			Value:    refreshToken,
-			HttpOnly: true,
-			Secure:   !cfg.IsDev,
-			SameSite: http.SameSiteStrictMode,
-			Path:     "/auth/refresh-token",
-			MaxAge:   int(utils.RefreshTokenExpiresIn.Seconds()),
-		})
 
 		// Return new access token
 		res := RefreshTokenResponse{

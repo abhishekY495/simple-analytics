@@ -1,3 +1,11 @@
+"use client";
+
+import { ProtectedRoute } from "@/components/protected-route";
+
 export default function Account() {
-  return <div>Account</div>;
+  return (
+    <ProtectedRoute>
+      <div>Account</div>
+    </ProtectedRoute>
+  );
 }

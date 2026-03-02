@@ -1,1 +1,1 @@
-export const API_URL = process.env.IS_DEV === "true" ? "http://localhost:8080/" : "https://simple-analytics-kz3z.onrender.com/";
+export const API_URL = process.env.NEXT_PUBLIC_IS_DEV === "true" ? "http://localhost:8080/" : process.env.BACKEND_URL || "";

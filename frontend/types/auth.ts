@@ -15,3 +15,16 @@ export type LoginResponse = ApiResponse<{
 export type RefreshTokenResponse = ApiResponse<{
     access_token: string;
 }>;
+
+export type SignupRequest = {
+    full_name: string;
+    email: string;
+    password: string;
+};
+
+export type SignupResponse = ApiResponse<{
+    id: string;
+    full_name: string;
+    email: string;
+    access_token: string;
+}>;

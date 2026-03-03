@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/authStore";
 import { Navbar } from "@/components/navbar";
 import { loginUser } from "@/services/authService";
+import { validateEmail } from "@/utils/validateEmail";
 
 export default function Login() {
   const router = useRouter();
@@ -28,8 +29,23 @@ export default function Login() {
     setError("");
     setLoading(true);
 
+    if (!validateEmail(emailValue)) {
+      setError("Invalid email address");
+      setLoading(false);
+      return;
+    }
+
+    if (passwordValue.length < 6) {
+      setError("Password must be at least 6 characters");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const data = await loginUser({ email: emailValue, password: passwordValue });
+      const data = await loginUser({
+        email: emailValue,
+        password: passwordValue,
+      });
 
       if (data.status === "error" || !data.data) {
         setError(data.status_message);
@@ -56,7 +72,7 @@ export default function Login() {
           <div className="flex flex-col gap-1">
             <h1 className="text-2xl font-semibold -mb-1">Welcome</h1>
             <p className="text-sm text-muted-foreground">
-              Enter your credentials to sign in
+              Enter your credentials to log in
             </p>
           </div>
 
@@ -94,13 +110,16 @@ export default function Login() {
             {error && <p className="text-sm text-destructive">{error}</p>}
 
             <Button type="submit" disabled={loading}>
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? "Logging in..." : "Log in"}
             </Button>
           </form>
 
           <p className="text-sm text-center text-muted-foreground">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-primary underline underline-offset-4">
+            <Link
+              href="/signup"
+              className="text-primary underline underline-offset-4"
+            >
               Sign up
             </Link>
           </p>

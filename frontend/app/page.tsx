@@ -6,10 +6,10 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col items-center gap-10 mt-20">
+      <div className="flex flex-col items-center gap-8 mt-12">
         <h1 className="text-6xl text-center font-bold leading-16 tracking-[-0.03em]">The modern analytics platform <br /> for effortless insights</h1>
         <p className="text-neutral-500 text-center dark:text-neutral-400">
-          Simple Analytics makes it easy to collect, analyze, and understand your website data — so you can focus on <b>growth</b>
+          Simple Analytics makes it easy to collect and understand your website data — so you can focus on <b>growth</b>
         </p>
         <div className="flex items-center gap-4">
           <Link href="/login">

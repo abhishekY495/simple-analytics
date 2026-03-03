@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -10,11 +10,18 @@ import { loginUser } from "@/services/authService";
 
 export default function Login() {
   const router = useRouter();
+  const accessToken = useAuthStore((s) => s.accessToken);
   const setAuth = useAuthStore((s) => s.setAuth);
   const [emailValue, setEmailValue] = useState("");
   const [passwordValue, setPasswordValue] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (accessToken) {
+      router.replace("/account");
+    }
+  }, [accessToken, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

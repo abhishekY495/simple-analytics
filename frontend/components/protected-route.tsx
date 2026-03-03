@@ -18,8 +18,8 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (isRestoring) {
     return (
-      <div className="flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin" />
+      <div className="flex items-center justify-center mt-20">
+        <Loader2 className="w-10 h-10 animate-spin text-neutral-400" />
       </div>
     );
   }

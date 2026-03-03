@@ -11,3 +11,7 @@ export type LoginResponse = ApiResponse<{
     email: string;
     access_token: string;
 }>;
+
+export type RefreshTokenResponse = ApiResponse<{
+    access_token: string;
+}>;

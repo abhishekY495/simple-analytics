@@ -10,7 +10,7 @@ interface AuthState {
   accessToken: string | null;
   user: User | null;
   isRestoring: boolean;
-  setAuth: (accessToken: string, user: User) => void;
+  setAuth: (accessToken: string | null, user: User | null) => void;
   clearAuth: () => void;
   setIsRestoring: (value: boolean) => void;
 }

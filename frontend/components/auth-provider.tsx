@@ -2,15 +2,7 @@
 
 import { useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
-
-function decodeJwt(token: string) {
-  try {
-    const payload = token.split(".")[1];
-    return JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
-  } catch {
-    return null;
-  }
-}
+import { decodeJwt } from "@/utils/decodeJwt";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const setAuth = useAuthStore((s) => s.setAuth);
@@ -24,9 +16,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const data = await res.json();
           if (data.status === "success") {
             const accessToken = data.data.access_token;
-            const claims = decodeJwt(accessToken);
-            if (claims) {
-              setAuth(accessToken, { id: claims.id, email: claims.email });
+            const decodedAccessToken = decodeJwt(accessToken);
+            if (decodedAccessToken) {
+              setAuth(accessToken, { id: decodedAccessToken.id, email: decodedAccessToken.email });
             }
           }
         }

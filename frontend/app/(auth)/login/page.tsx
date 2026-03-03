@@ -29,7 +29,7 @@ export default function Login() {
     setLoading(false);
 
     if (data.status !== "success") {
-      setError(data.statusMessage);
+      setError(data.status_message);
       return;
     }
 

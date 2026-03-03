@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
 
   if (!refreshToken) {
     return NextResponse.json(
-      { status: "error", statusMessage: "No refresh token" },
+      { status: "error", status_message: "No refresh token" },
       { status: 401 }
     );
   }

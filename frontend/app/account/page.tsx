@@ -1,11 +1,5 @@
-"use client";
-
-import { ProtectedRoute } from "@/components/protected-route";
+import { redirect } from "next/navigation";
 
 export default function Account() {
-  return (
-    <ProtectedRoute>
-      <div>Account</div>
-    </ProtectedRoute>
-  );
+  redirect("/account/websites");
 }

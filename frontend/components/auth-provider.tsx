@@ -23,7 +23,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { access_token } = data.data;
         const decodedAccessToken = decodeJwt(access_token);
         if (decodedAccessToken) {
-          setAuth(access_token, { id: decodedAccessToken.id, email: decodedAccessToken.email });
+          setAuth(access_token, {
+            id: decodedAccessToken.id,
+            email: decodedAccessToken.email,
+          });
         }
       } catch (error) {
         console.error("Error restoring session:", error);

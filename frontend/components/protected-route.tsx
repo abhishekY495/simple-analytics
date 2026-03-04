@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
-import { Loader2 } from "lucide-react";
+import { Spinner } from "./ui/spinner";
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -18,8 +18,8 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (isRestoring) {
     return (
-      <div className="flex items-center justify-center mt-20">
-        <Loader2 className="w-10 h-10 animate-spin text-neutral-400" />
+      <div className="text-muted-foreground flex justify-center mt-20">
+        <Spinner className="size-10" />
       </div>
     );
   }

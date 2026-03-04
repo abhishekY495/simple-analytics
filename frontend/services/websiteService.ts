@@ -1,6 +1,8 @@
 import {
   AddWebsiteRequest,
   AddWebsiteResponse,
+  GetWebsiteByIdRequest,
+  GetWebsiteByIdResponse,
   GetWebsitesRequest,
   GetWebsitesResponse,
 } from "@/types/website";
@@ -23,6 +25,19 @@ export async function getWebsites(
   req: GetWebsitesRequest,
 ): Promise<GetWebsitesResponse> {
   const res = await fetch(`/api/websites`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${req.accessToken}`,
+    },
+  });
+  return res.json();
+}
+
+export async function getWebsiteById(
+  req: GetWebsiteByIdRequest,
+): Promise<GetWebsiteByIdResponse> {
+  const res = await fetch(`/api/websites/${req.id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

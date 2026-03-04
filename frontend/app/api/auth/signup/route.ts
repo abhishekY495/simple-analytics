@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json<SignupResponse>(
       { status: "error", status_message: "Failed to reach the server" },
-      { status: 503 }
+      { status: 503 },
     );
   }
 }

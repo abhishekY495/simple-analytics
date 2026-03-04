@@ -26,6 +26,7 @@ func NewRouter(pool *pgxpool.Pool, cfg config.Config) *http.ServeMux {
 	mux.Handle("POST /websites", auth(handlers.AddWebsite(pool, cfg)))
 	mux.Handle("GET /websites", auth(handlers.GetWebsites(pool, cfg)))
 	mux.Handle("DELETE /websites/{id}", auth(handlers.DeleteWebsite(pool, cfg)))
+	mux.Handle("GET /websites/{id}", auth(handlers.GetWebsiteByID(pool, cfg)))
 
 	return mux
 }

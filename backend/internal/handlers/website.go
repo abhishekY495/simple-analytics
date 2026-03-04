@@ -104,7 +104,55 @@ func GetWebsites(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 	}
 }
 
-// Delete Website Handler
+// Get Website By ID Handler
+func GetWebsiteByID(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Validate request method
+		if r.Method != http.MethodGet {
+			helpers.ApiError(w, http.StatusMethodNotAllowed, "Method not allowed")
+			return
+		}
+
+		// Get website ID from path
+		websiteID, err := uuid.Parse(r.PathValue("id"))
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid website ID")
+			return
+		}
+
+		// Get user from context
+		userID, ok := r.Context().Value(middleware.ContextUserID).(string)
+		if !ok {
+			helpers.ApiError(w, 200, "Unauthorized")
+			return
+		}
+
+		repo := repository.New(pool)
+
+		// Verify the website exists and belongs to the user
+		website, err := repo.GetWebsiteByID(r.Context(), websiteID)
+		if err != nil {
+			helpers.ApiError(w, 200, "Website not found")
+			return
+		}
+		if website.UserID.String() != userID {
+			helpers.ApiError(w, http.StatusForbidden, "Forbidden")
+			return
+		}
+
+		res := helpers.GetWebsiteByIDResponse{
+			ID:        website.ID,
+			Name:      website.Name,
+			Domain:    website.Domain,
+			CreatedAt: website.CreatedAt,
+		}
+
+		// Return response
+		helpers.ApiSuccess(w, http.StatusOK, "Website fetched successfully", res)
+	}
+}
+
+// Delete Website By ID Handler
 func DeleteWebsite(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Validate request method

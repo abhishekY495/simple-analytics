@@ -41,3 +41,10 @@ type GetWebsitesResponse struct {
 	Domain    string    `json:"domain"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type GetWebsiteByIDResponse struct {
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Domain    string    `json:"domain"`
+	CreatedAt time.Time `json:"created_at"`
+}

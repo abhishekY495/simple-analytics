@@ -6,6 +6,7 @@ import {
 import { API_URL } from "@/utils/constants";
 import { NextRequest, NextResponse } from "next/server";
 
+// Add Website Route
 export async function POST(req: NextRequest) {
   try {
     const body: AddWebsiteRequest = await req.json();
@@ -35,6 +36,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// Get Websites Route
 export async function GET(req: NextRequest) {
   try {
     const accessToken = req.headers.get("Authorization")?.split(" ")[1];

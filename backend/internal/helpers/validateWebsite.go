@@ -1,0 +1,43 @@
+package helpers
+
+import (
+	"errors"
+	"strings"
+	"time"
+
+	"github.com/google/uuid"
+)
+
+type AddWebsiteRequest struct {
+	Name   string `json:"name"`
+	Domain string `json:"domain"`
+}
+
+type AddWebsiteResponse struct {
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Domain    string    `json:"domain"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+func ValidateAddWebsiteRequest(req AddWebsiteRequest) error {
+	req.Name = strings.TrimSpace(req.Name)
+	req.Domain = strings.TrimSpace(req.Domain)
+
+	if !ValidateDomain(req.Domain) {
+		return errors.New("invalid domain")
+	}
+
+	if req.Name == "" || req.Domain == "" {
+		return errors.New("name and domain are required")
+	}
+
+	return nil
+}
+
+type GetWebsitesResponse struct {
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Domain    string    `json:"domain"`
+	CreatedAt time.Time `json:"created_at"`
+}

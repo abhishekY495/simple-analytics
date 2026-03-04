@@ -3,12 +3,23 @@ package helpers
 import (
 	"errors"
 	"strings"
+
+	"github.com/google/uuid"
 )
+
+// Signup Request and Response
 
 type SignupRequest struct {
 	FullName string `json:"full_name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type SignupResponse struct {
+	Id          uuid.UUID `json:"id"`
+	FullName    string    `json:"full_name"`
+	Email       string    `json:"email"`
+	AccessToken string    `json:"access_token"`
 }
 
 func ValidateSignupRequest(req SignupRequest) error {
@@ -27,11 +38,18 @@ func ValidateSignupRequest(req SignupRequest) error {
 	return nil
 }
 
-//
+// Login Request and Response
 
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type LoginResponse struct {
+	Id          uuid.UUID `json:"id"`
+	FullName    string    `json:"full_name"`
+	Email       string    `json:"email"`
+	AccessToken string    `json:"access_token"`
 }
 
 func ValidateLoginRequest(req LoginRequest) error {
@@ -44,4 +62,9 @@ func ValidateLoginRequest(req LoginRequest) error {
 		return errors.New("invalid email")
 	}
 	return nil
+}
+
+// Refresh Token Response
+type RefreshTokenResponse struct {
+	AccessToken string `json:"access_token"`
 }

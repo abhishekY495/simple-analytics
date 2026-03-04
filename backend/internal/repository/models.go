@@ -26,3 +26,12 @@ type UserSession struct {
 	ExpiresAt        time.Time
 	CreatedAt        time.Time
 }
+
+type Website struct {
+	ID        uuid.UUID
+	UserID    uuid.UUID
+	Name      string
+	Domain    string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}

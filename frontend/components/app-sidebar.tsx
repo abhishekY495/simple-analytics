@@ -61,7 +61,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="flex items-center justify-center">
-        <ThemeToggle />
+        <ThemeToggle className="w-full" />
       </SidebarFooter>
     </Sidebar>
   );

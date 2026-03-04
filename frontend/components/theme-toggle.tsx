@@ -5,13 +5,13 @@ import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 
-export function ThemeToggle() {
+export function ThemeToggle({ className = "" }: { className?: string }) {
   const { theme, setTheme } = useTheme();
 
   return (
     <Button
       variant="outline"
-      className="w-fit rounded px-6 cursor-pointer"
+      className={`rounded px-6 cursor-pointer ${className}`}
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >
       <div className="flex items-center gap-2 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90">

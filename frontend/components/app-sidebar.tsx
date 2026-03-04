@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { GlobeIcon, Settings2Icon } from "lucide-react";
+import { GlobeIcon, LogOutIcon, Settings2Icon } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import { ThemeToggle } from "./theme-toggle";
+import { Button } from "./ui/button";
 
 const navItems = [
   { href: "/account/websites", label: "Websites", icon: GlobeIcon },
@@ -60,8 +61,12 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="flex items-center justify-center">
+      <SidebarFooter className="flex items-center justify-center group-data-[collapsible=icon]:hidden">
         <ThemeToggle className="w-full" />
+        <Button className="w-full rounded cursor-pointer bg-red-400 text-white hover:bg-red-500">
+          <LogOutIcon />
+          <span>Logout</span>
+        </Button>
       </SidebarFooter>
     </Sidebar>
   );

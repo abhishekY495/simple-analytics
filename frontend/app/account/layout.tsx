@@ -1,6 +1,11 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { ProtectedRoute } from "@/components/protected-route";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import Image from "next/image";
 
 export default function AccountLayout({
   children,
@@ -11,7 +16,22 @@ export default function AccountLayout({
     <ProtectedRoute>
       <SidebarProvider>
         <AppSidebar />
-        <SidebarInset>{children}</SidebarInset>
+        <SidebarInset>
+          <header className="relative flex items-center px-4 py-2 md:hidden border-b">
+            <SidebarTrigger className="cursor-pointer" />
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="flex items-center gap-2">
+                <Image src="/app-icon.png" alt="logo" width={20} height={20} />
+                <p className="font-semibold text-sm truncate">
+                  Simple Analytics
+                </p>
+              </div>
+            </div>
+          </header>
+          <div className="md:p-8 p-5 px-6 max-w-5xl mx-auto w-full">
+            {children}
+          </div>
+        </SidebarInset>
       </SidebarProvider>
     </ProtectedRoute>
   );

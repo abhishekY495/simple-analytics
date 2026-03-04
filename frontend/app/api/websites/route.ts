@@ -1,4 +1,8 @@
-import { AddWebsiteRequest, AddWebsiteResponse } from "@/types/website";
+import {
+  AddWebsiteRequest,
+  AddWebsiteResponse,
+  GetWebsitesResponse,
+} from "@/types/website";
 import { API_URL } from "@/utils/constants";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -25,6 +29,38 @@ export async function POST(req: NextRequest) {
     return res;
   } catch {
     return NextResponse.json<AddWebsiteResponse>(
+      { status: "error", status_message: "Failed to reach the server" },
+      { status: 503 },
+    );
+  }
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    const accessToken = req.headers.get("Authorization")?.split(" ")[1];
+
+    if (!accessToken) {
+      return NextResponse.json<GetWebsitesResponse>(
+        { status: "error", status_message: "Unauthorized" },
+        { status: 401 },
+      );
+    }
+
+    const backendRes = await fetch(`${API_URL}/websites`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const data = await backendRes.json();
+
+    const res = NextResponse.json(data, { status: backendRes.status });
+
+    return res;
+  } catch {
+    return NextResponse.json<GetWebsitesResponse>(
       { status: "error", status_message: "Failed to reach the server" },
       { status: 503 },
     );

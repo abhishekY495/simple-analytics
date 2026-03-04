@@ -1,154 +1,101 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { AddWebsiteDialog } from "@/components/add-website-dialog";
+import { Spinner } from "@/components/ui/spinner";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { addWebsite } from "@/services/websiteService";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { getWebsites } from "@/services/websiteService";
 import { useAuthStore } from "@/store/authStore";
-import { validateDomain } from "@/utils/validateDomain";
-import { useMutation } from "@tanstack/react-query";
+import { ICON_BASE_URL } from "@/utils/constants";
+import { useQuery } from "@tanstack/react-query";
+import { ExternalLinkIcon } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
 
 export default function Websites() {
-  const [open, setOpen] = useState(false);
-  const [nameValue, setNameValue] = useState("");
-  const [domainValue, setDomainValue] = useState("");
-  const [validationError, setValidationError] = useState("");
   const accessToken = useAuthStore((s) => s.accessToken);
 
-  const { mutate: submitAddWebsite, isPending } = useMutation({
-    mutationFn: () =>
-      addWebsite({
-        name: nameValue,
-        domain: domainValue,
-        accessToken: accessToken!,
-      }),
-    onSuccess: (data) => {
-      if (data.status === "error" || !data.data) {
-        setValidationError(data.status_message);
-        return;
-      }
-      setOpen(false);
-      toast.success("Website added successfully");
-      setNameValue("");
-      setDomainValue("");
-      setValidationError("");
-    },
-    onError: () => {
-      setValidationError("An error occurred while adding the website");
-    },
+  const { data: websites, isLoading } = useQuery({
+    queryKey: ["websites"],
+    queryFn: () => getWebsites({ accessToken: accessToken! }),
   });
 
   if (!accessToken) {
     return redirect("/");
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setValidationError("");
-
-    if (nameValue.trim().length < 1) {
-      setValidationError("Name is required");
-      return;
-    }
-
-    if (
-      domainValue.startsWith("-") ||
-      domainValue.endsWith("-") ||
-      domainValue.startsWith("http") ||
-      domainValue.startsWith("https") ||
-      domainValue.startsWith("www")
-    ) {
-      setValidationError("Invalid domain. Do not include http/https/www");
-      return;
-    }
-
-    if (!validateDomain(domainValue)) {
-      setValidationError("Invalid domain. Must be a valid domain");
-      return;
-    }
-
-    submitAddWebsite();
-  };
-
   return (
     <>
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Websites</h1>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button className="text-md rounded px-5 cursor-pointer bg-sky-500 hover:bg-sky-600 text-white">
-              +&nbsp;&nbsp;Add website
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-sm rounded">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold">
-                Add Website
-              </DialogTitle>
-            </DialogHeader>
+      <div className="flex justify-between items-end border-b pb-4">
+        <h1 className="text-2xl font-bold -mb-1">Websites</h1>
+        <AddWebsiteDialog />
+      </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="name" className="text-sm font-medium">
-                  Name
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  placeholder="My website"
-                  value={nameValue}
-                  onChange={(e) => setNameValue(e.target.value)}
-                  required
-                  className="border rounded px-3 h-9 text-sm bg-background outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="domain" className="text-sm font-medium">
-                  Domain
-                </label>
-                <input
-                  id="domain"
-                  type="text"
-                  placeholder="mywebsite.com"
-                  value={domainValue}
-                  onChange={(e) => setDomainValue(e.target.value)}
-                  required
-                  className="border rounded px-3 h-9 text-sm bg-background outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                />
-              </div>
-
-              {validationError && (
-                <p className="text-sm text-destructive">{validationError}</p>
-              )}
-
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline" className="rounded cursor-pointer">
-                    Cancel
-                  </Button>
-                </DialogClose>
-                <Button
-                  disabled={isPending}
-                  type="submit"
-                  className="rounded cursor-pointer px-5 bg-sky-500 hover:bg-sky-600 text-white"
-                >
-                  {isPending ? "Adding..." : "Add"}
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+      <div className="mt-12">
+        {isLoading ? (
+          <div className="text-muted-foreground flex justify-center">
+            <Spinner className="size-6" />
+          </div>
+        ) : websites?.data && websites.data.length > 0 ? (
+          <div className="border rounded overflow-hidden p-5 px-8 mt-10">
+            <Table>
+              <TableHeader>
+                <TableRow className="">
+                  <TableHead className="w-1/2 font-semibold px-4">
+                    Name
+                  </TableHead>
+                  <TableHead className="w-1/2 font-semibold">Domain</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {websites.data.map((website) => (
+                  <TableRow key={website.id} className="cursor-pointer">
+                    <TableCell className="py-3.5 px-4">
+                      <Link
+                        href={"/account/websites/" + website.id}
+                        className="flex items-center gap-3"
+                      >
+                        <Image
+                          src={`${ICON_BASE_URL}/${website.domain}/icon`}
+                          alt={website.name}
+                          width={22}
+                          height={22}
+                          className="rounded object-cover size-5 aspect-square"
+                          priority
+                          sizes="22px 22px"
+                        />
+                        <span className="text-muted-foreground font-medium">
+                          {website.name}
+                        </span>
+                      </Link>
+                    </TableCell>
+                    <TableCell className="text-blue-500 underline decoration-blue-500 underline-offset-3 hover:decoration-1">
+                      <Link
+                        href={"https://" + website.domain}
+                        className="flex items-center gap-1"
+                        target="_blank"
+                      >
+                        {website.domain}
+                        <ExternalLinkIcon size={12} />
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-center mt-10">
+            No websites added yet
+          </p>
+        )}
       </div>
     </>
   );

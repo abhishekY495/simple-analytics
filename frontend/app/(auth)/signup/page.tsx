@@ -5,6 +5,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signupUser } from "@/services/authService";
+import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { validateEmail } from "@/utils/validateEmail";
@@ -17,8 +18,7 @@ export default function Signup() {
   const [fullNameValue, setFullNameValue] = useState("");
   const [emailValue, setEmailValue] = useState("");
   const [passwordValue, setPasswordValue] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [validationError, setValidationError] = useState("");
 
   useEffect(() => {
     if (accessToken) {
@@ -26,45 +26,42 @@ export default function Signup() {
     }
   }, [accessToken, router]);
 
-  async function handleSubmit(e: React.FormEvent) {
+  const { mutate: signup, isPending } = useMutation({
+    mutationFn: () =>
+      signupUser({
+        full_name: fullNameValue,
+        email: emailValue,
+        password: passwordValue,
+      }),
+    onSuccess: (data) => {
+      if (data.status === "error" || !data.data) {
+        setValidationError(data.status_message);
+        return;
+      }
+      const { access_token, id, full_name, email } = data.data;
+      setAuth(access_token, { id, full_name, email });
+      router.push("/account");
+    },
+    onError: () => {
+      setValidationError("An error occurred while signing up");
+    },
+  });
+
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
-    setLoading(true);
+    setValidationError("");
 
     if (!validateEmail(emailValue)) {
-      setError("Invalid email address");
-      setLoading(false);
+      setValidationError("Invalid email address");
       return;
     }
 
     if (passwordValue.length < 6) {
-      setError("Password must be at least 6 characters");
-      setLoading(false);
+      setValidationError("Password must be at least 6 characters");
       return;
     }
 
-    try {
-      const data = await signupUser({
-        full_name: fullNameValue,
-        email: emailValue,
-        password: passwordValue,
-      });
-
-      if (data.status === "error" || !data.data) {
-        setError(data.status_message);
-        return;
-      }
-
-      const { access_token, id, full_name, email } = data.data;
-      setAuth(access_token, { id, full_name, email });
-
-      router.push("/account");
-    } catch (error) {
-      console.error(error);
-      setError("An error occurred while signing up");
-    } finally {
-      setLoading(false);
-    }
+    signup();
   }
 
   return (
@@ -128,10 +125,16 @@ export default function Signup() {
                 />
               </div>
 
-              {error && <p className="text-sm text-destructive">{error}</p>}
+              {validationError && (
+                <p className="text-sm text-destructive">{validationError}</p>
+              )}
 
-              <Button type="submit" disabled={loading}>
-                {loading ? "Signing up..." : "Sign up"}
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="rounded cursor-pointer"
+              >
+                {isPending ? "Signing up..." : "Sign up"}
               </Button>
             </form>
 

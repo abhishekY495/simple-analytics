@@ -13,57 +13,78 @@ import {
 import { addWebsite } from "@/services/websiteService";
 import { useAuthStore } from "@/store/authStore";
 import { validateDomain } from "@/utils/validateDomain";
+import { useMutation } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function Websites() {
+  const [open, setOpen] = useState(false);
   const [nameValue, setNameValue] = useState("");
   const [domainValue, setDomainValue] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [validationError, setValidationError] = useState("");
   const accessToken = useAuthStore((s) => s.accessToken);
+
+  const { mutate: submitAddWebsite, isPending } = useMutation({
+    mutationFn: () =>
+      addWebsite({
+        name: nameValue,
+        domain: domainValue,
+        accessToken: accessToken!,
+      }),
+    onSuccess: (data) => {
+      if (data.status === "error" || !data.data) {
+        setValidationError(data.status_message);
+        return;
+      }
+      setOpen(false);
+      toast.success("Website added successfully");
+      setNameValue("");
+      setDomainValue("");
+      setValidationError("");
+    },
+    onError: () => {
+      setValidationError("An error occurred while adding the website");
+    },
+  });
 
   if (!accessToken) {
     return redirect("/");
   }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log("handleSubmit called");
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
+    setValidationError("");
 
-    if (!validateDomain(domainValue)) {
-      setError("Invalid domain");
-      setLoading(false);
+    if (nameValue.trim().length < 1) {
+      setValidationError("Name is required");
       return;
     }
 
-    try {
-      const data = await addWebsite({
-        name: nameValue,
-        domain: domainValue,
-        accessToken: accessToken,
-      });
-      if (data.status === "error" || !data.data) {
-        setError(data.status_message);
-        return;
-      }
-      console.log(data);
-    } catch (error) {
-      console.error(error);
-      setError("An error occurred while adding the website");
-    } finally {
-      setLoading(false);
+    if (
+      domainValue.startsWith("-") ||
+      domainValue.endsWith("-") ||
+      domainValue.startsWith("http") ||
+      domainValue.startsWith("https") ||
+      domainValue.startsWith("www")
+    ) {
+      setValidationError("Invalid domain. Do not include http/https/www");
+      return;
     }
-    setLoading(false);
+
+    if (!validateDomain(domainValue)) {
+      setValidationError("Invalid domain. Must be a valid domain");
+      return;
+    }
+
+    submitAddWebsite();
   };
 
   return (
     <>
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Websites</h1>
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button className="text-md rounded px-5 cursor-pointer bg-sky-500 hover:bg-sky-600 text-white">
               +&nbsp;&nbsp;Add website
@@ -107,7 +128,9 @@ export default function Websites() {
                 />
               </div>
 
-              {error && <p className="text-sm text-destructive">{error}</p>}
+              {validationError && (
+                <p className="text-sm text-destructive">{validationError}</p>
+              )}
 
               <DialogFooter>
                 <DialogClose asChild>
@@ -116,11 +139,11 @@ export default function Websites() {
                   </Button>
                 </DialogClose>
                 <Button
-                  disabled={loading}
+                  disabled={isPending}
                   type="submit"
                   className="rounded cursor-pointer px-5 bg-sky-500 hover:bg-sky-600 text-white"
                 >
-                  {loading ? "Adding..." : "Add"}
+                  {isPending ? "Adding..." : "Add"}
                 </Button>
               </DialogFooter>
             </form>

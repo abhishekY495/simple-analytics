@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/authStore";
 import { Navbar } from "@/components/navbar";
@@ -16,8 +17,7 @@ export default function Login() {
   const setAuth = useAuthStore((s) => s.setAuth);
   const [emailValue, setEmailValue] = useState("");
   const [passwordValue, setPasswordValue] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [validationError, setValidationError] = useState("");
 
   useEffect(() => {
     if (accessToken) {
@@ -25,44 +25,37 @@ export default function Login() {
     }
   }, [accessToken, router]);
 
-  async function handleSubmit(e: React.FormEvent) {
+  const { mutate: login, isPending } = useMutation({
+    mutationFn: () => loginUser({ email: emailValue, password: passwordValue }),
+    onSuccess: (data) => {
+      if (data.status === "error" || !data.data) {
+        setValidationError(data.status_message);
+        return;
+      }
+      const { access_token, id, full_name, email } = data.data;
+      setAuth(access_token, { id, full_name, email });
+      router.push("/account");
+    },
+    onError: () => {
+      setValidationError("An error occurred while logging in");
+    },
+  });
+
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
-    setLoading(true);
+    setValidationError("");
 
     if (!validateEmail(emailValue)) {
-      setError("Invalid email address");
-      setLoading(false);
+      setValidationError("Invalid email address");
       return;
     }
 
     if (passwordValue.length < 6) {
-      setError("Password must be at least 6 characters");
-      setLoading(false);
+      setValidationError("Password must be at least 6 characters");
       return;
     }
 
-    try {
-      const data = await loginUser({
-        email: emailValue,
-        password: passwordValue,
-      });
-
-      if (data.status === "error" || !data.data) {
-        setError(data.status_message);
-        return;
-      }
-
-      const { access_token, id, full_name, email } = data.data;
-      setAuth(access_token, { id, full_name, email });
-
-      router.push("/account");
-    } catch (error) {
-      console.error(error);
-      setError("An error occurred while logging in");
-    } finally {
-      setLoading(false);
-    }
+    login();
   }
 
   return (
@@ -109,10 +102,16 @@ export default function Login() {
                 />
               </div>
 
-              {error && <p className="text-sm text-destructive">{error}</p>}
+              {validationError && (
+                <p className="text-sm text-destructive">{validationError}</p>
+              )}
 
-              <Button type="submit" disabled={loading}>
-                {loading ? "Logging in..." : "Log in"}
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="rounded cursor-pointer"
+              >
+                {isPending ? "Logging in..." : "Log in"}
               </Button>
             </form>
 

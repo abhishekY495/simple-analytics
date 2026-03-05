@@ -16,7 +16,6 @@ export function AccountDetails() {
   const [nameValue, setNameValue] = useState(user.full_name);
 
   const handleCopyId = () => {
-    if (!user?.id) return;
     navigator.clipboard.writeText(user.id);
     toast.success("Account ID copied to clipboard");
   };

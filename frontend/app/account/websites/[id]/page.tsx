@@ -11,7 +11,7 @@ import { redirect } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { EditIcon } from "lucide-react";
-import { EditWebsiteDialog } from "@/components/edit-website-dialog";
+import { EditWebsiteDialog } from "@/components/website/edit-website-dialog";
 
 export default function WebsitePage() {
   const { id } = useParams<{ id: string }>();

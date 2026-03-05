@@ -1,6 +1,6 @@
 "use client";
 
-import { AddWebsiteDialog } from "@/components/add-website-dialog";
+import { AddWebsiteDialog } from "@/components/website/add-website-dialog";
 import { Spinner } from "@/components/ui/spinner";
 import {
   Table,

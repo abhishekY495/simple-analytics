@@ -44,7 +44,7 @@ export default function Websites() {
             <Spinner className="size-6" />
           </div>
         ) : websites?.data && websites.data.length > 0 ? (
-          <div className="border rounded overflow-hidden p-5 px-8 mt-10">
+          <div className="border rounded overflow-hidden p-5 px-8 mt-10 bg-neutral-50/20 dark:bg-neutral-900">
             <Table>
               <TableHeader>
                 <TableRow className="">
@@ -67,9 +67,8 @@ export default function Websites() {
                           alt={website.name}
                           width={22}
                           height={22}
-                          className="rounded object-cover size-5 aspect-square"
+                          className="rounded object-cover aspect-square"
                           priority
-                          sizes="22px 22px"
                         />
                         <span className="text-muted-foreground font-medium">
                           {website.name}

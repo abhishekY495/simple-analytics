@@ -10,7 +10,7 @@ import { useParams, useRouter } from "next/navigation";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Edit2Icon, EditIcon, PencilIcon } from "lucide-react";
+import { EditIcon } from "lucide-react";
 
 export default function WebsitePage() {
   const { id } = useParams<{ id: string }>();

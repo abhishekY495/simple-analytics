@@ -116,3 +116,18 @@ func (q *Queries) GetWebsitesByUserID(ctx context.Context, userID uuid.UUID) ([]
 	}
 	return items, nil
 }
+
+const updateWebsiteByID = `-- name: UpdateWebsiteByID :exec
+UPDATE websites SET name = $1, domain = $2 WHERE id = $3
+`
+
+type UpdateWebsiteByIDParams struct {
+	Name   string
+	Domain string
+	ID     uuid.UUID
+}
+
+func (q *Queries) UpdateWebsiteByID(ctx context.Context, arg UpdateWebsiteByIDParams) error {
+	_, err := q.db.Exec(ctx, updateWebsiteByID, arg.Name, arg.Domain, arg.ID)
+	return err
+}

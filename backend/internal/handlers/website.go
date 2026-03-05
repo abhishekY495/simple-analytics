@@ -199,3 +199,68 @@ func DeleteWebsite(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		helpers.ApiSuccess(w, http.StatusOK, "Website deleted successfully", nil)
 	}
 }
+
+// Update Website By ID Handler
+func UpdateWebsite(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Validate request method
+		if r.Method != http.MethodPut {
+			helpers.ApiError(w, http.StatusMethodNotAllowed, "Method not allowed")
+			return
+		}
+
+		// Validate request body
+		var req helpers.UpdateWebsiteRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			helpers.ApiError(w, 200, "Invalid request body")
+			return
+		}
+
+		// Validate request body fields
+		if err := helpers.ValidateUpdateWebsiteRequest(req); err != nil {
+			helpers.ApiError(w, 200, err.Error())
+			return
+		}
+
+		// Get website ID from path
+		websiteID, err := uuid.Parse(r.PathValue("id"))
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid website ID")
+			return
+		}
+
+		// Get user from context
+		userID, ok := r.Context().Value(middleware.ContextUserID).(string)
+		if !ok {
+			helpers.ApiError(w, 200, "Unauthorized")
+			return
+		}
+
+		repo := repository.New(pool)
+
+		// Verify the website exists and belongs to the user
+		website, err := repo.GetWebsiteByID(r.Context(), websiteID)
+		if err != nil {
+			helpers.ApiError(w, 200, "Website not found")
+			return
+		}
+		if website.UserID.String() != userID {
+			helpers.ApiError(w, http.StatusForbidden, "Forbidden")
+			return
+		}
+
+		// Update website
+		err = repo.UpdateWebsiteByID(r.Context(), repository.UpdateWebsiteByIDParams{
+			ID:     websiteID,
+			Name:   req.Name,
+			Domain: req.Domain,
+		})
+		if err != nil {
+			helpers.ApiError(w, 200, "Failed to update website")
+			return
+		}
+
+		// Return response
+		helpers.ApiSuccess(w, http.StatusOK, "Website updated successfully", nil)
+	}
+}

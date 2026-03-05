@@ -11,3 +11,6 @@ SELECT id, user_id, name, domain, created_at FROM websites WHERE id = $1;
 
 -- name: DeleteWebsiteByID :exec
 DELETE FROM websites WHERE id = $1;
+
+-- name: UpdateWebsiteByID :exec
+UPDATE websites SET name = $1, domain = $2 WHERE id = $3;

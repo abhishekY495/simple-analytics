@@ -5,6 +5,8 @@ import {
   GetWebsiteByIdResponse,
   GetWebsitesRequest,
   GetWebsitesResponse,
+  UpdateWebsiteRequest,
+  UpdateWebsiteResponse,
 } from "@/types/website";
 
 export async function addWebsite(
@@ -43,6 +45,20 @@ export async function getWebsiteById(
       "Content-Type": "application/json",
       Authorization: `Bearer ${req.accessToken}`,
     },
+  });
+  return res.json();
+}
+
+export async function updateWebsite(
+  req: UpdateWebsiteRequest,
+): Promise<UpdateWebsiteResponse> {
+  const res = await fetch(`/api/websites/${req.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${req.accessToken}`,
+    },
+    body: JSON.stringify({ name: req.name, domain: req.domain }),
   });
   return res.json();
 }

@@ -36,3 +36,17 @@ export type GetWebsiteByIdResponse = ApiResponse<{
   domain: string;
   created_at: string;
 }>;
+
+// Update Website
+export type UpdateWebsiteRequest = {
+  id: string;
+  name: string;
+  domain: string;
+  accessToken: string;
+};
+export type UpdateWebsiteResponse = ApiResponse<{
+  id: string;
+  name: string;
+  domain: string;
+  created_at: string;
+}>;

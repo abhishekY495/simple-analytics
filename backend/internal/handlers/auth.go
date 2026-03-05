@@ -62,7 +62,7 @@ func Signup(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		}
 
 		// Generate JWT token
-		accessToken, refreshToken, hashedRefreshToken, err := helpers.GenerateJwtToken(user.ID.String(), user.Email, cfg.JwtSecret)
+		accessToken, refreshToken, hashedRefreshToken, err := helpers.GenerateJwtToken(user.ID.String(), user.FullName, user.Email, cfg.JwtSecret)
 		if err != nil {
 			errorMessage := "Internal server error: " + err.Error()
 			helpers.ApiError(w, http.StatusInternalServerError, errorMessage)
@@ -139,7 +139,7 @@ func Login(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		}
 
 		// Generate JWT token
-		accessToken, refreshToken, hashedRefreshToken, err := helpers.GenerateJwtToken(user.ID.String(), user.Email, cfg.JwtSecret)
+		accessToken, refreshToken, hashedRefreshToken, err := helpers.GenerateJwtToken(user.ID.String(), user.FullName, user.Email, cfg.JwtSecret)
 		if err != nil {
 			errorMessage := "Internal server error: " + err.Error()
 			helpers.ApiError(w, http.StatusInternalServerError, errorMessage)
@@ -225,7 +225,7 @@ func RefreshToken(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		}
 
 		// Generate new access token only — session and refresh token cookie are unchanged
-		accessToken, _, _, err := helpers.GenerateJwtToken(user.ID.String(), user.Email, cfg.JwtSecret)
+		accessToken, _, _, err := helpers.GenerateJwtToken(user.ID.String(), user.FullName, user.Email, cfg.JwtSecret)
 		if err != nil {
 			errorMessage := "Internal server error: " + err.Error()
 			helpers.ApiError(w, http.StatusInternalServerError, errorMessage)

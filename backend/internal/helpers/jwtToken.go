@@ -12,16 +12,18 @@ import (
 )
 
 type JwtClaims struct {
-	Id    string
-	Email string
+	Id       string
+	FullName string
+	Email    string
 }
 
-func GenerateJwtToken(id string, email string, secret string) (string, string, string, error) {
+func GenerateJwtToken(id string, fullName string, email string, secret string) (string, string, string, error) {
 	// Access Token
 	claims := jwt.MapClaims{
-		"id":    id,
-		"email": email,
-		"exp":   time.Now().Add(utils.AccessTokenExpiresIn).Unix(),
+		"id":        id,
+		"full_name": fullName,
+		"email":     email,
+		"exp":       time.Now().Add(utils.AccessTokenExpiresIn).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	accessToken, err := token.SignedString([]byte(secret))
@@ -65,10 +67,14 @@ func ValidateJwtToken(tokenString string, secret string) (*JwtClaims, error) {
 	if !ok {
 		return nil, jwt.ErrSignatureInvalid
 	}
+	fullName, ok := claims["full_name"].(string)
+	if !ok {
+		return nil, jwt.ErrSignatureInvalid
+	}
 	email, ok := claims["email"].(string)
 	if !ok {
 		return nil, jwt.ErrSignatureInvalid
 	}
 
-	return &JwtClaims{Id: id, Email: email}, nil
+	return &JwtClaims{Id: id, FullName: fullName, Email: email}, nil
 }

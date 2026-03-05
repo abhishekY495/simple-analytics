@@ -1,6 +1,8 @@
 import {
   AddWebsiteRequest,
   AddWebsiteResponse,
+  DeleteWebsiteRequest,
+  DeleteWebsiteResponse,
   GetWebsiteByIdRequest,
   GetWebsiteByIdResponse,
   GetWebsitesRequest,
@@ -59,6 +61,19 @@ export async function updateWebsite(
       Authorization: `Bearer ${req.accessToken}`,
     },
     body: JSON.stringify({ name: req.name, domain: req.domain }),
+  });
+  return res.json();
+}
+
+export async function deleteWebsite(
+  req: DeleteWebsiteRequest,
+): Promise<DeleteWebsiteResponse> {
+  const res = await fetch(`/api/websites/${req.id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${req.accessToken}`,
+    },
   });
   return res.json();
 }

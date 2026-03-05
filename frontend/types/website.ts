@@ -37,6 +37,13 @@ export type GetWebsiteByIdResponse = ApiResponse<{
   created_at: string;
 }>;
 
+// Delete Website
+export type DeleteWebsiteRequest = {
+  id: string;
+  accessToken: string;
+};
+export type DeleteWebsiteResponse = ApiResponse<null>;
+
 // Update Website
 export type UpdateWebsiteRequest = {
   id: string;

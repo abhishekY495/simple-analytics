@@ -1,4 +1,8 @@
-import { GetWebsiteByIdResponse, UpdateWebsiteResponse } from "@/types/website";
+import {
+  DeleteWebsiteResponse,
+  GetWebsiteByIdResponse,
+  UpdateWebsiteResponse,
+} from "@/types/website";
 import { API_URL } from "@/utils/constants";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -79,6 +83,45 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json(data, { status: backendRes.status });
   } catch {
     return NextResponse.json<UpdateWebsiteResponse>(
+      { status: "error", status_message: "Failed to reach the server" },
+      { status: 503 },
+    );
+  }
+}
+
+// Delete Website Route
+export async function DELETE(req: NextRequest) {
+  try {
+    const accessToken = req.headers.get("Authorization")?.split(" ")[1];
+    const id = req.nextUrl.pathname.split("/").pop();
+
+    if (!id) {
+      return NextResponse.json<DeleteWebsiteResponse>(
+        { status: "error", status_message: "Invalid website id" },
+        { status: 400 },
+      );
+    }
+
+    if (!accessToken) {
+      return NextResponse.json<DeleteWebsiteResponse>(
+        { status: "error", status_message: "Unauthorized" },
+        { status: 401 },
+      );
+    }
+
+    const backendRes = await fetch(`${API_URL}/websites/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const data = await backendRes.json();
+
+    return NextResponse.json(data, { status: backendRes.status });
+  } catch {
+    return NextResponse.json<DeleteWebsiteResponse>(
       { status: "error", status_message: "Failed to reach the server" },
       { status: 503 },
     );

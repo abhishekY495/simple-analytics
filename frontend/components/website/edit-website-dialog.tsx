@@ -58,7 +58,7 @@ export function EditWebsiteDialog({
 
           {/* Delete website */}
           <div className="p-4 px-6 rounded border">
-            <DeleteWebsite />
+            <DeleteWebsite websiteId={website.id} onEditOpenChange={onOpenChange} />
           </div>
         </div>
       </DialogContent>

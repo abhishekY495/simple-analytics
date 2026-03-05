@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { getWebsites } from "@/services/websiteService";
 import { useAuthStore } from "@/store/authStore";
-import { ICON_BASE_URL } from "@/utils/constants";
+import { getWebsiteIcon } from "@/utils/getWebsiteIcon";
 import { useQuery } from "@tanstack/react-query";
 import { ExternalLinkIcon } from "lucide-react";
 import Image from "next/image";
@@ -63,7 +63,7 @@ export default function Websites() {
                         className="flex items-center gap-3 py-3"
                       >
                         <Image
-                          src={`${ICON_BASE_URL}/${website.domain}/icon`}
+                          src={getWebsiteIcon(website.domain)}
                           alt={website.name}
                           width={22}
                           height={22}

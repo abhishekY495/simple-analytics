@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { getWebsiteById } from "@/services/websiteService";
 import { useAuthStore } from "@/store/authStore";
-import { ICON_BASE_URL } from "@/utils/constants";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { redirect } from "next/navigation";
@@ -12,6 +11,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { EditIcon } from "lucide-react";
 import { EditWebsiteDialog } from "@/components/website/edit-website-dialog";
+import { getWebsiteIcon } from "@/utils/getWebsiteIcon";
 
 export default function WebsitePage() {
   const { id } = useParams<{ id: string }>();
@@ -47,7 +47,7 @@ export default function WebsitePage() {
           <div className="flex justify-between items-end border-b pb-4">
             <div className="flex items-center gap-2">
               <Image
-                src={`${ICON_BASE_URL}/${websiteData?.domain}/icon`}
+                src={getWebsiteIcon(websiteData?.domain ?? "")}
                 alt={websiteData?.name ?? "Website"}
                 width={22}
                 height={22}

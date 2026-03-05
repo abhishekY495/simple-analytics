@@ -4,11 +4,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ICON_BASE_URL } from "@/utils/constants";
 import Image from "next/image";
 import { TrackingCode } from "../tracking-code";
 import { DeleteWebsite } from "./delete-website";
 import { EditWebsiteForm } from "./edit-website-form";
+import { getWebsiteIcon } from "@/utils/getWebsiteIcon";
 
 type EditWebsiteDialogProps = {
   open: boolean;
@@ -34,7 +34,7 @@ export function EditWebsiteDialog({
         <DialogHeader className="border-b pb-4">
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
             <Image
-              src={`${ICON_BASE_URL}/${website.domain}/icon`}
+              src={getWebsiteIcon(website.domain)}
               alt={website.name}
               width={22}
               height={22}
@@ -58,7 +58,10 @@ export function EditWebsiteDialog({
 
           {/* Delete website */}
           <div className="p-4 px-6 rounded border">
-            <DeleteWebsite websiteId={website.id} onEditOpenChange={onOpenChange} />
+            <DeleteWebsite
+              websiteId={website.id}
+              onEditOpenChange={onOpenChange}
+            />
           </div>
         </div>
       </DialogContent>

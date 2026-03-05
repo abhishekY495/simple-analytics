@@ -9,6 +9,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { redirect } from "next/navigation";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Edit2Icon, EditIcon, PencilIcon } from "lucide-react";
 
 export default function WebsitePage() {
   const { id } = useParams<{ id: string }>();
@@ -33,24 +35,33 @@ export default function WebsitePage() {
   }
 
   return (
-    <div className="mt-2">
+    <>
       {isLoading ? (
         <div className="text-muted-foreground flex justify-center mt-12">
           <Spinner className="size-6" />
         </div>
       ) : (
-        <div className="flex items-center gap-2 border-b pb-4">
-          <Image
-            src={`${ICON_BASE_URL}/${websiteData?.domain}/icon`}
-            alt={websiteData?.name ?? "Website"}
-            width={22}
-            height={22}
-            className="rounded object-cover aspect-square mt-1"
-            priority
-          />
-          <h1 className="text-2xl font-bold -mb-1">{websiteData?.name}</h1>
+        <div className="flex justify-between items-end border-b pb-4">
+          <div className="flex items-center gap-2">
+            <Image
+              src={`${ICON_BASE_URL}/${websiteData?.domain}/icon`}
+              alt={websiteData?.name ?? "Website"}
+              width={22}
+              height={22}
+              className="rounded object-cover aspect-square"
+              priority
+            />
+            <h1 className="text-2xl font-bold">{websiteData?.name}</h1>
+          </div>
+          <Button
+            variant="default"
+            className="rounded cursor-pointer flex items-center gap-2 w-26"
+          >
+            <EditIcon size={18} />
+            Edit
+          </Button>
         </div>
       )}
-    </div>
+    </>
   );
 }

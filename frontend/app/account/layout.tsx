@@ -28,7 +28,7 @@ export default function AccountLayout({
               </div>
             </div>
           </header>
-          <div className="md:p-8 p-5 px-6 max-w-5xl mx-auto w-full">
+          <div className="md:p-8 p-5 px-6 max-w-7xl mx-auto w-full">
             {children}
           </div>
         </SidebarInset>

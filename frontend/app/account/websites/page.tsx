@@ -34,7 +34,7 @@ export default function Websites() {
   return (
     <>
       <div className="flex justify-between items-end border-b pb-4">
-        <h1 className="text-2xl font-bold -mb-1">Websites</h1>
+        <h1 className="text-2xl font-bold">Websites</h1>
         <AddWebsiteDialog />
       </div>
 
@@ -57,10 +57,10 @@ export default function Websites() {
               <TableBody>
                 {websites.data.map((website) => (
                   <TableRow key={website.id} className="cursor-pointer">
-                    <TableCell className="py-3.5 px-4">
+                    <TableCell className="px-4 py-0">
                       <Link
                         href={"/account/websites/" + website.id}
-                        className="flex items-center gap-3"
+                        className="flex items-center gap-3 py-3"
                       >
                         <Image
                           src={`${ICON_BASE_URL}/${website.domain}/icon`}

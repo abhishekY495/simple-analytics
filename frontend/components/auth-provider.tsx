@@ -25,6 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (decodedAccessToken) {
           setAuth(access_token, {
             id: decodedAccessToken.id,
+            full_name: decodedAccessToken.full_name,
             email: decodedAccessToken.email,
           });
         }

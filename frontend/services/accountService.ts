@@ -3,6 +3,8 @@ import {
   ChangeEmailResponse,
   ChangePasswordRequest,
   ChangePasswordResponse,
+  DeleteAccountRequest,
+  DeleteAccountResponse,
   UpdateFullNameRequest,
   UpdateFullNameResponse,
 } from "@/types/account";
@@ -50,6 +52,21 @@ export async function changeEmail(
       Authorization: `Bearer ${req.accessToken}`,
     },
     body: JSON.stringify({ email: req.email }),
+  });
+
+  return res.json();
+}
+
+export async function deleteAccount(
+  req: DeleteAccountRequest,
+): Promise<DeleteAccountResponse> {
+  const res = await fetch(`/api/account`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${req.accessToken}`,
+    },
+    body: JSON.stringify({ delete: req.delete }),
   });
 
   return res.json();

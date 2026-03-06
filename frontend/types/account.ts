@@ -21,3 +21,10 @@ export type ChangeEmailRequest = {
 };
 
 export type ChangeEmailResponse = ApiResponse<null>;
+
+export type DeleteAccountRequest = {
+  delete: string;
+  accessToken: string;
+};
+
+export type DeleteAccountResponse = ApiResponse<null>;

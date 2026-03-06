@@ -4,10 +4,12 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { ChangePasswordDialog } from "./change-password-dialog";
 import { ChangeEmailDialog } from "./change-email-dialog";
+import { DeleteAccountDialog } from "./delete-account-dialog";
 
 export function AccountOptions() {
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const [changeEmailOpen, setChangeEmailOpen] = useState(false);
+  const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-6">
@@ -54,7 +56,11 @@ export function AccountOptions() {
             undone.
           </p>
         </div>
-        <Button variant="destructive" className="rounded cursor-pointer px-6">
+        <Button
+          variant="destructive"
+          className="rounded cursor-pointer px-6"
+          onClick={() => setDeleteAccountOpen(true)}
+        >
           Delete
         </Button>
       </div>
@@ -66,6 +72,10 @@ export function AccountOptions() {
       <ChangeEmailDialog
         open={changeEmailOpen}
         onOpenChange={setChangeEmailOpen}
+      />
+      <DeleteAccountDialog
+        open={deleteAccountOpen}
+        onOpenChange={setDeleteAccountOpen}
       />
     </div>
   );

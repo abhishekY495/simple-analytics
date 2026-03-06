@@ -52,8 +52,7 @@ export function ChangeEmailDialog({
     onOpenChange(false);
   }
 
-  function handleSave(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function handleSave() {
     if (!email) {
       setError("Email address is required");
       return;
@@ -78,7 +77,10 @@ export function ChangeEmailDialog({
         </DialogHeader>
 
         <form
-          onSubmit={(e) => handleSave(e)}
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSave();
+          }}
           className="flex flex-col gap-4 mt-1"
         >
           <div className="flex flex-col gap-1.5 mt-1">
@@ -90,7 +92,7 @@ export function ChangeEmailDialog({
               disabled={isPending}
               className="rounded"
               required
-              onKeyDown={(e) => e.key === "Enter" && handleSave(e)}
+              onKeyDown={(e) => e.key === "Enter" && handleSave()}
             />
           </div>
 
@@ -98,6 +100,7 @@ export function ChangeEmailDialog({
 
           <div className="flex justify-end gap-2 mt-2">
             <Button
+              type="button"
               variant="outline"
               className="rounded cursor-pointer"
               onClick={handleClose}

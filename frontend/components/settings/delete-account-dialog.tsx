@@ -52,8 +52,7 @@ export function DeleteAccountDialog({
     onOpenChange(false);
   }
 
-  function handleDelete(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function handleDelete() {
     if (deleteValue !== "DELETE") {
       setError("Please type DELETE to confirm");
       return;
@@ -79,7 +78,10 @@ export function DeleteAccountDialog({
         </p>
 
         <form
-          onSubmit={(e) => handleDelete(e)}
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleDelete();
+          }}
           className="flex flex-col gap-4 mt-1"
         >
           <div className="flex flex-col gap-1.5 mt-1">
@@ -91,7 +93,7 @@ export function DeleteAccountDialog({
               disabled={isPending}
               className="rounded"
               required
-              onKeyDown={(e) => e.key === "Enter" && handleDelete(e)}
+              onKeyDown={(e) => e.key === "Enter" && handleDelete()}
             />
           </div>
 
@@ -99,6 +101,7 @@ export function DeleteAccountDialog({
 
           <div className="flex justify-end gap-2 mt-2">
             <Button
+              type="button"
               variant="outline"
               className="rounded cursor-pointer"
               onClick={handleClose}
@@ -109,8 +112,8 @@ export function DeleteAccountDialog({
             <Button
               variant="destructive"
               className="rounded cursor-pointer"
-              onClick={(e) => handleDelete(e)}
               type="submit"
+              onClick={() => handleDelete()}
               disabled={isPending || deleteValue !== "DELETE"}
             >
               {isPending ? "Deleting..." : "Delete"}

@@ -56,8 +56,7 @@ export function ChangePasswordDialog({
     onOpenChange(false);
   }
 
-  function handleSave(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function handleSave() {
     if (!currentPassword || !newPassword || !confirmPassword) {
       setError("All fields are required");
       return;
@@ -86,7 +85,10 @@ export function ChangePasswordDialog({
         </DialogHeader>
 
         <form
-          onSubmit={(e) => handleSave(e)}
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSave();
+          }}
           className="flex flex-col gap-4 mt-1"
         >
           <div className="flex flex-col gap-1.5">
@@ -98,7 +100,7 @@ export function ChangePasswordDialog({
               disabled={isPending}
               className="rounded"
               required
-              onKeyDown={(e) => e.key === "Enter" && handleSave(e)}
+              onKeyDown={(e) => e.key === "Enter" && handleSave()}
             />
           </div>
 
@@ -111,7 +113,7 @@ export function ChangePasswordDialog({
               disabled={isPending}
               className="rounded"
               required
-              onKeyDown={(e) => e.key === "Enter" && handleSave(e)}
+              onKeyDown={(e) => e.key === "Enter" && handleSave()}
             />
           </div>
 
@@ -124,7 +126,7 @@ export function ChangePasswordDialog({
               disabled={isPending}
               className="rounded"
               required
-              onKeyDown={(e) => e.key === "Enter" && handleSave(e)}
+              onKeyDown={(e) => e.key === "Enter" && handleSave()}
             />
           </div>
 
@@ -132,6 +134,7 @@ export function ChangePasswordDialog({
 
           <div className="flex justify-end gap-2 mt-2">
             <Button
+              type="button"
               variant="outline"
               className="rounded cursor-pointer"
               onClick={handleClose}

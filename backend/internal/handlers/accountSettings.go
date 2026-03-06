@@ -160,8 +160,8 @@ func UpdateUserPassword(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc 
 		}
 
 		// Verify old password
-		if !helpers.VerifyPassword(req.OldPassword, user.Password) {
-			helpers.ApiError(w, 200, "Invalid old password")
+		if !helpers.VerifyPassword(req.CurrentPassword, user.Password) {
+			helpers.ApiError(w, 200, "Invalid current password")
 			return
 		}
 

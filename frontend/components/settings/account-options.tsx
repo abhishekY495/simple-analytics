@@ -1,6 +1,12 @@
+"use client";
+
+import { useState } from "react";
 import { Button } from "../ui/button";
+import { ChangePasswordDialog } from "./change-password-dialog";
 
 export function AccountOptions() {
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+
   return (
     <div className="flex flex-col gap-6">
       {/* Change password */}
@@ -14,6 +20,7 @@ export function AccountOptions() {
         <Button
           variant="secondary"
           className="rounded cursor-pointer px-6 border"
+          onClick={() => setChangePasswordOpen(true)}
         >
           Change Password
         </Button>
@@ -48,6 +55,11 @@ export function AccountOptions() {
           Delete
         </Button>
       </div>
+
+      <ChangePasswordDialog
+        open={changePasswordOpen}
+        onOpenChange={setChangePasswordOpen}
+      />
     </div>
   );
 }

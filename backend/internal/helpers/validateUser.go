@@ -41,16 +41,16 @@ func ValidateUpdateEmailRequest(req UpdateEmailRequest) error {
 
 // Update Password Request and Response
 type UpdatePasswordRequest struct {
-	OldPassword string `json:"old_password"`
-	NewPassword string `json:"new_password"`
+	CurrentPassword string `json:"current_password"`
+	NewPassword     string `json:"new_password"`
 }
 
 func ValidateUpdatePasswordRequest(req UpdatePasswordRequest) error {
-	req.OldPassword = strings.TrimSpace(req.OldPassword)
+	req.CurrentPassword = strings.TrimSpace(req.CurrentPassword)
 	req.NewPassword = strings.TrimSpace(req.NewPassword)
 
-	if req.OldPassword == "" || req.NewPassword == "" {
-		return errors.New("old_password and new_password are required")
+	if req.CurrentPassword == "" || req.NewPassword == "" {
+		return errors.New("current_password and new_password are required")
 	}
 
 	if len(req.NewPassword) < 6 {

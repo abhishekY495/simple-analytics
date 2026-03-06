@@ -6,3 +6,11 @@ export type UpdateFullNameRequest = {
 };
 
 export type UpdateFullNameResponse = ApiResponse<null>;
+
+export type ChangePasswordRequest = {
+  current_password: string;
+  new_password: string;
+  accessToken: string;
+};
+
+export type ChangePasswordResponse = ApiResponse<null>;

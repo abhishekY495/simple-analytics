@@ -1,4 +1,5 @@
 import { AccountDetails } from "@/components/settings/account-details";
+import { AccountOptions } from "@/components/settings/account-options";
 
 export default function Settings() {
   return (
@@ -10,6 +11,10 @@ export default function Settings() {
       <div className="mt-12">
         <div className="border rounded overflow-hidden p-5 px-8 mt-10 bg-neutral-50/20 dark:bg-neutral-900">
           <AccountDetails />
+        </div>
+
+        <div className="border rounded overflow-hidden p-6 px-8 mt-10 bg-neutral-50/20 dark:bg-neutral-900">
+          <AccountOptions />
         </div>
       </div>
     </div>

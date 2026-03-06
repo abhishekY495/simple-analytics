@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "getmetadata.abhisheky495.workers.dev",
+        hostname: "icons.duckduckgo.com",
       },
     ],
   },

@@ -12,6 +12,17 @@ import (
 	"github.com/google/uuid"
 )
 
+const checkEmailExists = `-- name: CheckEmailExists :one
+SELECT COUNT(*) FROM users WHERE email = $1
+`
+
+func (q *Queries) CheckEmailExists(ctx context.Context, email string) (int64, error) {
+	row := q.db.QueryRow(ctx, checkEmailExists, email)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (full_name, email, password) 
 VALUES ($1, $2, $3) 
@@ -43,6 +54,15 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateU
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const deleteUser = `-- name: DeleteUser :exec
+DELETE FROM users WHERE id = $1
+`
+
+func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteUser, id)
+	return err
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
@@ -79,4 +99,46 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const updateEmail = `-- name: UpdateEmail :exec
+UPDATE users SET email = $1 WHERE id = $2
+`
+
+type UpdateEmailParams struct {
+	Email string
+	ID    uuid.UUID
+}
+
+func (q *Queries) UpdateEmail(ctx context.Context, arg UpdateEmailParams) error {
+	_, err := q.db.Exec(ctx, updateEmail, arg.Email, arg.ID)
+	return err
+}
+
+const updateFullName = `-- name: UpdateFullName :exec
+UPDATE users SET full_name = $1 WHERE id = $2
+`
+
+type UpdateFullNameParams struct {
+	FullName string
+	ID       uuid.UUID
+}
+
+func (q *Queries) UpdateFullName(ctx context.Context, arg UpdateFullNameParams) error {
+	_, err := q.db.Exec(ctx, updateFullName, arg.FullName, arg.ID)
+	return err
+}
+
+const updatePassword = `-- name: UpdatePassword :exec
+UPDATE users SET password = $1 WHERE id = $2
+`
+
+type UpdatePasswordParams struct {
+	Password string
+	ID       uuid.UUID
+}
+
+func (q *Queries) UpdatePassword(ctx context.Context, arg UpdatePasswordParams) error {
+	_, err := q.db.Exec(ctx, updatePassword, arg.Password, arg.ID)
+	return err
 }

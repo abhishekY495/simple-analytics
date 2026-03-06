@@ -23,11 +23,19 @@ func NewRouter(pool *pgxpool.Pool, cfg config.Config) *http.ServeMux {
 	mux.HandleFunc("/auth/refresh-token", handlers.RefreshToken(pool, cfg))
 
 	// Protected routes
+
+	// Websites routes
 	mux.Handle("POST /websites", auth(handlers.AddWebsite(pool, cfg)))
 	mux.Handle("GET /websites", auth(handlers.GetWebsites(pool, cfg)))
-	mux.Handle("DELETE /websites/{id}", auth(handlers.DeleteWebsite(pool, cfg)))
 	mux.Handle("GET /websites/{id}", auth(handlers.GetWebsiteByID(pool, cfg)))
 	mux.Handle("PUT /websites/{id}", auth(handlers.UpdateWebsite(pool, cfg)))
+	mux.Handle("DELETE /websites/{id}", auth(handlers.DeleteWebsite(pool, cfg)))
+
+	// Account settings routes
+	mux.Handle("PUT /account/name", auth(handlers.UpdateUserFullName(pool, cfg)))
+	mux.Handle("PUT /account/email", auth(handlers.UpdateUserEmail(pool, cfg)))
+	mux.Handle("PUT /account/password", auth(handlers.UpdateUserPassword(pool, cfg)))
+	mux.Handle("DELETE /account", auth(handlers.DeleteUser(pool, cfg)))
 
 	return mux
 }

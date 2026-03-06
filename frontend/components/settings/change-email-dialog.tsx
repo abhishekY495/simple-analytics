@@ -25,6 +25,8 @@ export function ChangeEmailDialog({
   onOpenChange,
 }: ChangeEmailDialogProps) {
   const accessToken = useAuthStore((s) => s.accessToken);
+  const user = useAuthStore((s) => s.user);
+  const setAuth = useAuthStore((s) => s.setAuth);
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
 
@@ -39,6 +41,7 @@ export function ChangeEmailDialog({
         setError(data.status_message ?? "Failed to change email");
         return;
       }
+      setAuth(accessToken, { ...user!, email });
       toast.success("Email changed successfully");
       handleClose();
     },
@@ -92,7 +95,6 @@ export function ChangeEmailDialog({
               disabled={isPending}
               className="rounded"
               required
-              onKeyDown={(e) => e.key === "Enter" && handleSave()}
             />
           </div>
 

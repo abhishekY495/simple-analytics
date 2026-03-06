@@ -93,7 +93,6 @@ export function DeleteAccountDialog({
               disabled={isPending}
               className="rounded"
               required
-              onKeyDown={(e) => e.key === "Enter" && handleDelete()}
             />
           </div>
 

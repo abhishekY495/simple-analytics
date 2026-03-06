@@ -100,7 +100,6 @@ export function ChangePasswordDialog({
               disabled={isPending}
               className="rounded"
               required
-              onKeyDown={(e) => e.key === "Enter" && handleSave()}
             />
           </div>
 
@@ -113,7 +112,6 @@ export function ChangePasswordDialog({
               disabled={isPending}
               className="rounded"
               required
-              onKeyDown={(e) => e.key === "Enter" && handleSave()}
             />
           </div>
 
@@ -126,7 +124,6 @@ export function ChangePasswordDialog({
               disabled={isPending}
               className="rounded"
               required
-              onKeyDown={(e) => e.key === "Enter" && handleSave()}
             />
           </div>
 

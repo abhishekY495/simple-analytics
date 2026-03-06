@@ -28,3 +28,5 @@ export type SignupResponse = ApiResponse<{
   email: string;
   access_token: string;
 }>;
+
+export type LogoutResponse = ApiResponse<null>;

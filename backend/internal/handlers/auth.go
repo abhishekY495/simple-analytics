@@ -239,3 +239,47 @@ func RefreshToken(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		helpers.ApiSuccess(w, http.StatusOK, "New access token generated", res)
 	}
 }
+
+func Logout(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Validate request method
+		if r.Method != http.MethodPost {
+			helpers.ApiError(w, http.StatusMethodNotAllowed, "Method not allowed")
+			return
+		}
+
+		// Get refresh token from cookie
+		cookie, err := r.Cookie("refresh_token")
+		if err != nil {
+			errorMessage := "Internal server error: " + err.Error()
+			helpers.ApiError(w, http.StatusInternalServerError, errorMessage)
+			return
+		}
+
+		// Hash refresh token
+		hash := sha256.Sum256([]byte(cookie.Value))
+		hashedRefreshToken := hex.EncodeToString(hash[:])
+
+		// Delete refresh token from DB
+		repo := repository.New(pool)
+		err = repo.DeleteSessionByToken(r.Context(), hashedRefreshToken)
+		if err != nil {
+			errorMessage := "Internal server error: " + err.Error()
+			helpers.ApiError(w, http.StatusInternalServerError, errorMessage)
+			return
+		}
+
+		// Delete refresh token from cookie
+		http.SetCookie(w, &http.Cookie{
+			Name:     "refresh_token",
+			Value:    "",
+			HttpOnly: true,
+			Secure:   !cfg.IsDev,
+			SameSite: http.SameSiteStrictMode,
+			Path:     "/",
+			MaxAge:   0,
+		})
+		helpers.ApiSuccess(w, http.StatusOK, "Logout successful", nil)
+	}
+
+}

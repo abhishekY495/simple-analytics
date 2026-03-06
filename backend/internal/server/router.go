@@ -32,7 +32,7 @@ func NewRouter(pool *pgxpool.Pool, cfg config.Config) *http.ServeMux {
 	mux.Handle("DELETE /websites/{id}", auth(handlers.DeleteWebsite(pool, cfg)))
 
 	// Account settings routes
-	mux.Handle("PUT /account/name", auth(handlers.UpdateUserFullName(pool, cfg)))
+	mux.Handle("PUT /account/full-name", auth(handlers.UpdateUserFullName(pool, cfg)))
 	mux.Handle("PUT /account/email", auth(handlers.UpdateUserEmail(pool, cfg)))
 	mux.Handle("PUT /account/password", auth(handlers.UpdateUserPassword(pool, cfg)))
 	mux.Handle("DELETE /account", auth(handlers.DeleteUser(pool, cfg)))

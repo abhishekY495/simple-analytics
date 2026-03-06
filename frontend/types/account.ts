@@ -14,3 +14,10 @@ export type ChangePasswordRequest = {
 };
 
 export type ChangePasswordResponse = ApiResponse<null>;
+
+export type ChangeEmailRequest = {
+  email: string;
+  accessToken: string;
+};
+
+export type ChangeEmailResponse = ApiResponse<null>;

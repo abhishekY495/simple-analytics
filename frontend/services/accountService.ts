@@ -1,4 +1,6 @@
 import {
+  ChangeEmailRequest,
+  ChangeEmailResponse,
   ChangePasswordRequest,
   ChangePasswordResponse,
   UpdateFullNameRequest,
@@ -33,6 +35,21 @@ export async function changePassword(
       current_password: req.current_password,
       new_password: req.new_password,
     }),
+  });
+
+  return res.json();
+}
+
+export async function changeEmail(
+  req: ChangeEmailRequest,
+): Promise<ChangeEmailResponse> {
+  const res = await fetch(`/api/account/email`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${req.accessToken}`,
+    },
+    body: JSON.stringify({ email: req.email }),
   });
 
   return res.json();

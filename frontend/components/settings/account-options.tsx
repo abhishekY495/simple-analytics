@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { ChangePasswordDialog } from "./change-password-dialog";
+import { ChangeEmailDialog } from "./change-email-dialog";
 
 export function AccountOptions() {
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+  const [changeEmailOpen, setChangeEmailOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-6">
@@ -37,6 +39,7 @@ export function AccountOptions() {
         <Button
           variant="secondary"
           className="rounded cursor-pointer px-6 border"
+          onClick={() => setChangeEmailOpen(true)}
         >
           Change Email
         </Button>
@@ -59,6 +62,10 @@ export function AccountOptions() {
       <ChangePasswordDialog
         open={changePasswordOpen}
         onOpenChange={setChangePasswordOpen}
+      />
+      <ChangeEmailDialog
+        open={changeEmailOpen}
+        onOpenChange={setChangeEmailOpen}
       />
     </div>
   );

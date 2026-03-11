@@ -1,8 +1,9 @@
 import { AnalyticsPayload } from "@/types/analytics";
 import { logFunc } from "./helper";
 
+const isDev = false;
+
 (function () {
-  const isDev = !true;
   const API_URL = isDev
     ? "http://localhost:8080"
     : "https://simple-analytics-kz3z.onrender.com";
@@ -22,6 +23,7 @@ import { logFunc } from "./helper";
       user_agent: navigator.userAgent,
     };
 
+    console.log(API_URL);
     console.log(payload);
 
     fetch(`${API_URL}/analytics/${websiteId}`, {

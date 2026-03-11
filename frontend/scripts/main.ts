@@ -1,7 +1,7 @@
 import { AnalyticsPayload } from "@/types/analytics";
 import { logFunc } from "./helper";
 
-const isDev = false;
+const isDev = true;
 
 (function () {
   const API_URL = isDev
@@ -17,7 +17,6 @@ const isDev = false;
 
   function collect() {
     const payload: AnalyticsPayload = {
-      hostname: location.hostname,
       path: location.pathname,
       referrer: document.referrer || "unknown",
       user_agent: navigator.userAgent,

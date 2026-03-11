@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
 
 	"github.com/abhishekY495/simple-analytics/backend/internal/config"
 	"github.com/abhishekY495/simple-analytics/backend/internal/helpers"
@@ -59,52 +58,52 @@ func CollectAnalytics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		ip := helpers.GetIPFromRequest(r)
 		country := helpers.GetCountryFromIP(ip)
 
-		// Add visitor
-		visitor, err := repo.AddVisitor(r.Context(), repository.AddVisitorParams{
-			WebsiteID:   websiteID,
-			VisitorHash: visitorHash,
-			Country:     country,
-		})
-		if err != nil {
-			errorMessage := "Failed to add visitor: " + err.Error()
-			if strings.Contains(err.Error(), "unique") {
-				errorMessage = "Visitor already exists"
-			}
-			helpers.ApiError(w, http.StatusInternalServerError, errorMessage)
-			return
-		}
+		// // Add visitor
+		// visitor, err := repo.AddVisitor(r.Context(), repository.AddVisitorParams{
+		// 	WebsiteID:   websiteID,
+		// 	VisitorHash: visitorHash,
+		// 	Country:     country,
+		// })
+		// if err != nil {
+		// 	errorMessage := "Failed to add visitor: " + err.Error()
+		// 	if strings.Contains(err.Error(), "unique") {
+		// 		errorMessage = "Visitor already exists"
+		// 	}
+		// 	helpers.ApiError(w, http.StatusInternalServerError, errorMessage)
+		// 	return
+		// }
 
-		// Add visit
-		visit, err := repo.AddVisit(r.Context(), repository.AddVisitParams{
-			WebsiteID: websiteID,
-			VisitorID: visitor.ID,
-			Referrer:  req.Referrer,
-		})
-		if err != nil {
-			helpers.ApiError(w, 200, "Failed to add visit")
-			return
-		}
+		// // Add visit
+		// visit, err := repo.AddVisit(r.Context(), repository.AddVisitParams{
+		// 	WebsiteID: websiteID,
+		// 	VisitorID: visitor.ID,
+		// 	Referrer:  req.Referrer,
+		// })
+		// if err != nil {
+		// 	helpers.ApiError(w, 200, "Failed to add visit")
+		// 	return
+		// }
 
-		// Get browser and OS from user agent
-		browser, os, deviceType := helpers.GetDeviceInfo(req.UserAgent)
+		// // Get browser and OS from user agent
+		// browser, os, deviceType := helpers.GetDeviceInfo(req.UserAgent)
 
-		// Add pageview
-		_, err = repo.AddPageview(r.Context(), repository.AddPageviewParams{
-			WebsiteID:  websiteID,
-			VisitorID:  visitor.ID,
-			VisitID:    visit.ID,
-			Path:       req.Path,
-			Referrer:   req.Referrer,
-			Browser:    browser,
-			Os:         os,
-			DeviceType: deviceType,
-			Country:    country,
-		})
-		if err != nil {
-			errorMessage := "Failed to add pageview: " + err.Error()
-			helpers.ApiError(w, 200, errorMessage)
-			return
-		}
+		// // Add pageview
+		// _, err = repo.AddPageview(r.Context(), repository.AddPageviewParams{
+		// 	WebsiteID:  websiteID,
+		// 	VisitorID:  visitor.ID,
+		// 	VisitID:    visit.ID,
+		// 	Path:       req.Path,
+		// 	Referrer:   req.Referrer,
+		// 	Browser:    browser,
+		// 	Os:         os,
+		// 	DeviceType: deviceType,
+		// 	Country:    country,
+		// })
+		// if err != nil {
+		// 	errorMessage := "Failed to add pageview: " + err.Error()
+		// 	helpers.ApiError(w, 200, errorMessage)
+		// 	return
+		// }
 
 		// Return response
 		helpers.ApiSuccess(w, http.StatusOK, "Analytics collected successfully", map[string]string{

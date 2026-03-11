@@ -1,7 +1,7 @@
 import { AnalyticsPayload } from "@/types/analytics";
 import { logFunc } from "./helper";
 
-const isDev = true;
+const isDev = false;
 
 (function () {
   const API_URL = isDev

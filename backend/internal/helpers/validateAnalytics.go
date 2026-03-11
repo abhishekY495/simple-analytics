@@ -8,14 +8,12 @@ import (
 type CollectAnalyticsRequest struct {
 	Path      string `json:"path"`
 	Referrer  string `json:"referrer"`
-	Hostname  string `json:"hostname"`
 	UserAgent string `json:"user_agent"`
 }
 
 func ValidateCollectAnalyticsRequest(req CollectAnalyticsRequest) error {
 	req.Path = strings.TrimSpace(req.Path)
 	req.Referrer = strings.TrimSpace(req.Referrer)
-	req.Hostname = strings.TrimSpace(req.Hostname)
 	req.UserAgent = strings.TrimSpace(req.UserAgent)
 
 	if req.Path == "" {
@@ -23,9 +21,6 @@ func ValidateCollectAnalyticsRequest(req CollectAnalyticsRequest) error {
 	}
 	if req.Referrer == "" {
 		return errors.New("referrer is required")
-	}
-	if req.Hostname == "" {
-		return errors.New("hostname is required")
 	}
 	if req.UserAgent == "" {
 		return errors.New("user_agent is required")

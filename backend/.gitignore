@@ -33,3 +33,6 @@ go.work.sum
 
 /tmp
 .air.toml
+
+# GeoDB
+/GeoLite2-Country.mmdb

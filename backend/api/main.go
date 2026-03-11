@@ -7,6 +7,7 @@ import (
 
 	"github.com/abhishekY495/simple-analytics/backend/internal/config"
 	"github.com/abhishekY495/simple-analytics/backend/internal/db"
+	"github.com/abhishekY495/simple-analytics/backend/internal/helpers"
 	"github.com/abhishekY495/simple-analytics/backend/internal/server"
 )
 
@@ -22,6 +23,9 @@ func main() {
 	}
 	db.SyncSchema(pool)
 	defer pool.Close()
+
+	helpers.InitGeoDB("./GeoLite2-Country.mmdb")
+	helpers.InitUaParser()
 
 	router := server.NewRouter(pool, cfg)
 	addr := fmt.Sprintf(":%s", cfg.Port)

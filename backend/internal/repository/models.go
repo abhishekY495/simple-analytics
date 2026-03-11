@@ -10,6 +10,20 @@ import (
 	"github.com/google/uuid"
 )
 
+type Pageview struct {
+	ID         uuid.UUID
+	WebsiteID  uuid.UUID
+	VisitorID  uuid.UUID
+	VisitID    uuid.UUID
+	Path       string
+	Referrer   string
+	Browser    string
+	Os         string
+	DeviceType string
+	Country    string
+	CreatedAt  time.Time
+}
+
 type User struct {
 	ID        uuid.UUID
 	FullName  string
@@ -25,6 +39,24 @@ type UserSession struct {
 	RefreshTokenHash string
 	ExpiresAt        time.Time
 	CreatedAt        time.Time
+}
+
+type Visit struct {
+	ID        uuid.UUID
+	WebsiteID uuid.UUID
+	VisitorID uuid.UUID
+	Referrer  string
+	StartedAt time.Time
+	EndedAt   time.Time
+}
+
+type Visitor struct {
+	ID          uuid.UUID
+	WebsiteID   uuid.UUID
+	VisitorHash string
+	Country     string
+	FirstSeen   time.Time
+	LastSeen    time.Time
 }
 
 type Website struct {

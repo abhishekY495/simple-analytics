@@ -37,5 +37,19 @@ func NewRouter(pool *pgxpool.Pool, cfg config.Config) *http.ServeMux {
 	mux.Handle("PUT /account/password", auth(handlers.UpdateUserPassword(pool, cfg)))
 	mux.Handle("DELETE /account", auth(handlers.DeleteUser(pool, cfg)))
 
+	// Analytics routes
+	// CORS only for analytics collection endpoint
+	mux.Handle("OPTIONS /analytics/{id}", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.WriteHeader(http.StatusNoContent)
+	}))
+
+	mux.Handle("POST /analytics/{id}", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		handlers.CollectAnalytics(pool, cfg).ServeHTTP(w, r)
+	}))
+
 	return mux
 }

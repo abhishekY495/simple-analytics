@@ -59,10 +59,9 @@ CREATE TABLE IF NOT EXISTS visits (
   "id"               UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
   "website_id"       UUID        NOT NULL REFERENCES websites(id) ON DELETE CASCADE,
   "visitor_id"       UUID        NOT NULL REFERENCES visitors(id) ON DELETE CASCADE,
-  "referrer"         TEXT,
+  "referrer"         TEXT        NOT NULL,
   "started_at"       TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "last_activity_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "ended_at"         TIMESTAMPTZ
+  "ended_at"         TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 
@@ -75,7 +74,7 @@ CREATE TABLE IF NOT EXISTS pageviews (
   "visitor_id"  UUID        NOT NULL REFERENCES visitors(id) ON DELETE CASCADE,
   "visit_id"    UUID        NOT NULL REFERENCES visits(id) ON DELETE CASCADE,
   "path"        TEXT        NOT NULL,
-  "referrer"    TEXT,
+  "referrer"    TEXT        NOT NULL,
   "browser"     TEXT        NOT NULL,
   "os"          TEXT        NOT NULL,
   "device_type" TEXT        NOT NULL,

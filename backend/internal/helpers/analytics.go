@@ -3,8 +3,12 @@ package helpers
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"net"
+	"net/http"
 	"net/netip"
+	"strings"
 
+	"github.com/abhishekY495/simple-analytics/backend/utils"
 	"github.com/google/uuid"
 )
 
@@ -46,4 +50,51 @@ func GetDeviceInfo(userAgent string) (string, string, string) {
 
 	return browser, os, deviceType
 
+}
+
+func GetIPFromRequest(r *http.Request) string {
+	// Check known headers in order
+	for _, header := range utils.IP_ADDRESS_HEADERS {
+		value := strings.TrimSpace(r.Header.Get(header))
+		if value == "" {
+			continue
+		}
+
+		var candidate string
+
+		// Forwarded headers can contain multiple IPs: take the first
+		if strings.EqualFold(header, "x-forwarded-for") ||
+			strings.EqualFold(header, "forwarded") ||
+			strings.EqualFold(header, "x-forwarded") {
+			parts := strings.SplitSeq(value, ",")
+			for part := range parts {
+				ip := strings.TrimSpace(part)
+				if ip != "" {
+					candidate = ip
+					break
+				}
+			}
+		} else {
+			candidate = value
+		}
+
+		if candidate == "" {
+			continue
+		}
+
+		// Only accept if it parses as a valid IP
+		if _, err := netip.ParseAddr(candidate); err == nil {
+			return candidate
+		}
+	}
+
+	// Fallback to RemoteAddr if it's a valid IP:port
+	if host, _, err := net.SplitHostPort(r.RemoteAddr); err == nil && host != "" {
+		if _, err := netip.ParseAddr(host); err == nil {
+			return host
+		}
+	}
+
+	// If nothing valid found, explicitly return "unknown"
+	return "unknown"
 }

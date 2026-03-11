@@ -2,9 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"net"
 	"net/http"
-	"strings"
 
 	"github.com/abhishekY495/simple-analytics/backend/internal/config"
 	"github.com/abhishekY495/simple-analytics/backend/internal/helpers"
@@ -56,13 +54,8 @@ func CollectAnalytics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 			return
 		}
 
-		// Get IP from request
-		xff := r.Header.Get("X-Forwarded-For")
-		ip := strings.TrimSpace(strings.Split(xff, ",")[0])
-		if ip == "" {
-			host, _, _ := net.SplitHostPort(r.RemoteAddr)
-			ip = host
-		}
+		// Get IP from request (using helper and constants)
+		ip := helpers.GetIPFromRequest(r)
 
 		// Get country from IP
 		country := helpers.GetCountryFromIP(ip)

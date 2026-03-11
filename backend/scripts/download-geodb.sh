@@ -16,7 +16,7 @@ tar -xzf GeoLite2-Country.tar.gz
 echo "GeoDB extracted"
 
 # Move GeoDB to the correct location
-mv GeoLite2-Country_*/GeoLite2-Country.mmdb ../GeoLite2-Country.mmdb
+mv GeoLite2-Country_*/GeoLite2-Country.mmdb ./GeoLite2-Country.mmdb
 echo "GeoDB moved to the correct location"
 
 # Clean up

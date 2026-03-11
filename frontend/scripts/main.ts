@@ -17,9 +17,9 @@ const isDev = false;
 
   function collect() {
     const payload: AnalyticsPayload = {
+      hostname: location.hostname,
       path: location.pathname,
       referrer: document.referrer || "unknown",
-      hostname: location.hostname,
       user_agent: navigator.userAgent,
     };
 

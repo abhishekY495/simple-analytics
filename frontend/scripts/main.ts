@@ -1,12 +1,9 @@
-import { AnalyticsPayload } from "@/types/analytics";
-import { logFunc } from "./helper";
+import { sendAnalytics } from "./send-analytics";
 
-const isDev = false;
+// const API_URL = "http://localhost:8080";
+const API_URL = "https://simple-analytics-kz3z.onrender.com";
 
-(function () {
-  const API_URL = isDev
-    ? "http://localhost:8080"
-    : "https://simple-analytics-kz3z.onrender.com";
+(async function () {
   const script = document.currentScript as HTMLScriptElement;
   const websiteId = script?.getAttribute("data-website-id");
 
@@ -15,23 +12,5 @@ const isDev = false;
     return;
   }
 
-  function collect() {
-    const payload: AnalyticsPayload = {
-      path: location.pathname,
-      referrer: document.referrer || "unknown",
-      user_agent: navigator.userAgent,
-    };
-
-    console.log(API_URL);
-    console.log(payload);
-
-    fetch(`${API_URL}/analytics/${websiteId}`, {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  logFunc();
-  collect();
+  await sendAnalytics(API_URL, websiteId);
 })();

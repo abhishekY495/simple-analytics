@@ -25,13 +25,10 @@ export async function sendAnalytics(API_URL: string, websiteId: string) {
   });
   const data: AnalyticsResponse = await response.json();
   if (data.status === "error") {
-    console.error(data.status_message);
     return;
   }
 
-  const newVisitId = data.data?.visit_id || null;
-  payload.visit_id = newVisitId;
-
+  const newVisitId = data.data?.visit_id;
   if (newVisitId) {
     setSessionVisitId(newVisitId);
   }

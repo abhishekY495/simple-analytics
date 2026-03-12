@@ -1,6 +1,8 @@
+import { HEARTBEAT_INTERVAL } from "./constants";
+import { getSessionVisitId } from "./helpers";
 import { sendAnalytics } from "./send-analytics";
+import { sendHeartbeat } from "./send-heartbeat";
 
-// const API_URL = "http://localhost:8080";
 const API_URL = "https://simple-analytics-kz3z.onrender.com";
 
 (async function () {
@@ -8,9 +10,28 @@ const API_URL = "https://simple-analytics-kz3z.onrender.com";
   const websiteId = script?.getAttribute("data-website-id");
 
   if (!websiteId) {
-    console.error("Website ID is required");
     return;
   }
 
   await sendAnalytics(API_URL, websiteId);
+
+  const sessionVisitId = getSessionVisitId();
+  if (!sessionVisitId) {
+    return;
+  }
+
+  let heartbeatIntervalId = setInterval(() => {
+    sendHeartbeat(API_URL, sessionVisitId);
+  }, HEARTBEAT_INTERVAL);
+
+  window.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+      sendHeartbeat(API_URL, sessionVisitId);
+      clearInterval(heartbeatIntervalId);
+    } else {
+      heartbeatIntervalId = setInterval(() => {
+        sendHeartbeat(API_URL, sessionVisitId);
+      }, HEARTBEAT_INTERVAL);
+    }
+  });
 })();

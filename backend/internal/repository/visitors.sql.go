@@ -61,3 +61,12 @@ func (q *Queries) GetVisitorByHash(ctx context.Context, arg GetVisitorByHashPara
 	)
 	return i, err
 }
+
+const updateVisitorLastSeen = `-- name: UpdateVisitorLastSeen :exec
+UPDATE visitors SET last_seen = CURRENT_TIMESTAMP WHERE id = $1
+`
+
+func (q *Queries) UpdateVisitorLastSeen(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, updateVisitorLastSeen, id)
+	return err
+}

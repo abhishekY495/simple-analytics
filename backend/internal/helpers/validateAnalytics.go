@@ -33,3 +33,16 @@ func ValidateCollectAnalyticsRequest(req CollectAnalyticsRequest) error {
 	}
 	return nil
 }
+
+type HeartbeatRequest struct {
+	VisitID string `json:"visit_id"`
+}
+
+func ValidateHeartbeatRequest(req HeartbeatRequest) error {
+	req.VisitID = strings.TrimSpace(req.VisitID)
+
+	if req.VisitID == "" {
+		return errors.New("visit_id is required")
+	}
+	return nil
+}

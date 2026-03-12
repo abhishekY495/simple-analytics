@@ -7,3 +7,6 @@ RETURNING id, website_id, visitor_hash, country, first_seen, last_seen;
 SELECT id, website_id, visitor_hash, country, first_seen, last_seen
 FROM visitors
 WHERE website_id = $1 AND visitor_hash = $2;
+
+-- name: UpdateVisitorLastSeen :exec
+UPDATE visitors SET last_seen = CURRENT_TIMESTAMP WHERE id = $1;

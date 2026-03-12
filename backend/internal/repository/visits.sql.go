@@ -36,3 +36,31 @@ func (q *Queries) AddVisit(ctx context.Context, arg AddVisitParams) (Visit, erro
 	)
 	return i, err
 }
+
+const getVisitByID = `-- name: GetVisitByID :one
+SELECT id, website_id, visitor_id, referrer, started_at, ended_at
+FROM visits WHERE id = $1
+`
+
+func (q *Queries) GetVisitByID(ctx context.Context, id uuid.UUID) (Visit, error) {
+	row := q.db.QueryRow(ctx, getVisitByID, id)
+	var i Visit
+	err := row.Scan(
+		&i.ID,
+		&i.WebsiteID,
+		&i.VisitorID,
+		&i.Referrer,
+		&i.StartedAt,
+		&i.EndedAt,
+	)
+	return i, err
+}
+
+const updateVisitEndedAt = `-- name: UpdateVisitEndedAt :exec
+UPDATE visits SET ended_at = CURRENT_TIMESTAMP WHERE id = $1
+`
+
+func (q *Queries) UpdateVisitEndedAt(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, updateVisitEndedAt, id)
+	return err
+}

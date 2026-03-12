@@ -134,3 +134,58 @@ func CollectAnalytics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		helpers.ApiSuccess(w, http.StatusOK, "Analytics collected successfully", res)
 	}
 }
+
+func Heartbeat(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Validate request method
+		if r.Method != http.MethodPost {
+			helpers.ApiError(w, http.StatusMethodNotAllowed, "Method not allowed")
+			return
+		}
+
+		// Validate request body
+		var req helpers.HeartbeatRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			helpers.ApiError(w, 200, "Invalid request body")
+			return
+		}
+
+		// Validate request body fields
+		if err := helpers.ValidateHeartbeatRequest(req); err != nil {
+			helpers.ApiError(w, 200, err.Error())
+			return
+		}
+
+		// Parse visit ID
+		visitID, err := uuid.Parse(strings.TrimSpace(req.VisitID))
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid visit ID")
+			return
+		}
+
+		repo := repository.New(pool)
+
+		// Get visit to find visitor_id
+		visit, err := repo.GetVisitByID(r.Context(), visitID)
+		if err != nil {
+			helpers.ApiError(w, 200, "Visit not found")
+			return
+		}
+
+		// Update visit ended_at
+		err = repo.UpdateVisitEndedAt(r.Context(), visitID)
+		if err != nil {
+			helpers.ApiError(w, 200, "Failed to update visit: "+err.Error())
+			return
+		}
+
+		// Update visitor last_seen
+		err = repo.UpdateVisitorLastSeen(r.Context(), visit.VisitorID)
+		if err != nil {
+			helpers.ApiError(w, 200, "Failed to update visitor: "+err.Error())
+			return
+		}
+
+		helpers.ApiSuccess(w, http.StatusOK, "Heartbeat received", nil)
+	}
+}

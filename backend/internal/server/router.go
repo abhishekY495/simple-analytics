@@ -51,5 +51,10 @@ func NewRouter(pool *pgxpool.Pool, cfg config.Config) *http.ServeMux {
 		handlers.CollectAnalytics(pool, cfg).ServeHTTP(w, r)
 	}))
 
+	mux.Handle("POST /analytics/heartbeat", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		handlers.Heartbeat(pool, cfg).ServeHTTP(w, r)
+	}))
+
 	return mux
 }

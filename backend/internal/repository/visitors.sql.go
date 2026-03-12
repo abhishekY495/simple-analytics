@@ -36,3 +36,28 @@ func (q *Queries) AddVisitor(ctx context.Context, arg AddVisitorParams) (Visitor
 	)
 	return i, err
 }
+
+const getVisitorByHash = `-- name: GetVisitorByHash :one
+SELECT id, website_id, visitor_hash, country, first_seen, last_seen
+FROM visitors
+WHERE website_id = $1 AND visitor_hash = $2
+`
+
+type GetVisitorByHashParams struct {
+	WebsiteID   uuid.UUID
+	VisitorHash string
+}
+
+func (q *Queries) GetVisitorByHash(ctx context.Context, arg GetVisitorByHashParams) (Visitor, error) {
+	row := q.db.QueryRow(ctx, getVisitorByHash, arg.WebsiteID, arg.VisitorHash)
+	var i Visitor
+	err := row.Scan(
+		&i.ID,
+		&i.WebsiteID,
+		&i.VisitorHash,
+		&i.Country,
+		&i.FirstSeen,
+		&i.LastSeen,
+	)
+	return i, err
+}

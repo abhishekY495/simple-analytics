@@ -54,7 +54,7 @@ func NewRouter(pool *pgxpool.Pool, cfg config.Config) *http.ServeMux {
 		handlers.Heartbeat(pool, cfg).ServeHTTP(w, r)
 	}))
 	//
-	// Get analytics for dashboard
+	// Get analytics data
 	mux.Handle("GET /analytics/{id}/metrics", auth(handlers.GetMetrics(pool, cfg)))
 	mux.Handle("GET /analytics/{id}/chart", auth(handlers.GetChartData(pool, cfg)))
 

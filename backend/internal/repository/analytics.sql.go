@@ -175,7 +175,7 @@ SELECT
      0
    )
    FROM visits v
-   WHERE v.website_id = $1 AND v.started_at >= $2 AND v.started_at < $3) AS avg_duration_seconds,
+   WHERE v.website_id = $1 AND v.started_at >= $2 AND v.started_at < $3) AS avg_visit_duration_seconds,
   -- previous period (for % change comparison)
   (SELECT COUNT(DISTINCT visitor_id)::bigint
    FROM pageviews pv
@@ -191,7 +191,7 @@ SELECT
      0
    )
    FROM visits v
-   WHERE v.website_id = $1 AND v.started_at >= $4 AND v.started_at < $5) AS prev_avg_duration_seconds
+   WHERE v.website_id = $1 AND v.started_at >= $4 AND v.started_at < $5) AS prev_avg_visit_duration_seconds
 `
 
 type GetMetricsParams struct {
@@ -203,14 +203,14 @@ type GetMetricsParams struct {
 }
 
 type GetMetricsRow struct {
-	Visitors               int64
-	Visits                 int64
-	Views                  int64
-	AvgDurationSeconds     interface{}
-	PrevVisitors           int64
-	PrevVisits             int64
-	PrevViews              int64
-	PrevAvgDurationSeconds interface{}
+	Visitors                    int64
+	Visits                      int64
+	Views                       int64
+	AvgVisitDurationSeconds     interface{}
+	PrevVisitors                int64
+	PrevVisits                  int64
+	PrevViews                   int64
+	PrevAvgVisitDurationSeconds interface{}
 }
 
 // Returns stats for a date range plus the previous period of equal length for comparison.
@@ -233,11 +233,11 @@ func (q *Queries) GetMetrics(ctx context.Context, arg GetMetricsParams) (GetMetr
 		&i.Visitors,
 		&i.Visits,
 		&i.Views,
-		&i.AvgDurationSeconds,
+		&i.AvgVisitDurationSeconds,
 		&i.PrevVisitors,
 		&i.PrevVisits,
 		&i.PrevViews,
-		&i.PrevAvgDurationSeconds,
+		&i.PrevAvgVisitDurationSeconds,
 	)
 	return i, err
 }

@@ -21,7 +21,7 @@ SELECT
      0
    )
    FROM visits v
-   WHERE v.website_id = $1 AND v.started_at >= $2 AND v.started_at < $3) AS avg_duration_seconds,
+   WHERE v.website_id = $1 AND v.started_at >= $2 AND v.started_at < $3) AS avg_visit_duration_seconds,
   -- previous period (for % change comparison)
   (SELECT COUNT(DISTINCT visitor_id)::bigint
    FROM pageviews pv
@@ -37,7 +37,7 @@ SELECT
      0
    )
    FROM visits v
-   WHERE v.website_id = $1 AND v.started_at >= $4 AND v.started_at < $5) AS prev_avg_duration_seconds;
+   WHERE v.website_id = $1 AND v.started_at >= $4 AND v.started_at < $5) AS prev_avg_visit_duration_seconds;
 
 -- name: GetChartDataByHour :many
 -- Returns hourly buckets of visitors and views, including empty buckets (0).

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/abhishekY495/simple-analytics/backend/internal/config"
 	"github.com/abhishekY495/simple-analytics/backend/internal/helpers"
@@ -200,16 +201,34 @@ func GetMetrics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 			return
 		}
 
-		// Validate request body
-		var req helpers.GetMetricsRequest
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			helpers.ApiError(w, 200, "Invalid request body")
+		startDateStr := r.URL.Query().Get("start_date")
+		endDateStr := r.URL.Query().Get("end_date")
+
+		// Validate request body fields
+		if err := helpers.ValidateGetMetricsRequest(startDateStr, endDateStr); err != nil {
+			helpers.ApiError(w, 200, err.Error())
 			return
 		}
 
-		// Validate request body fields
-		if err := helpers.ValidateGetMetricsRequest(req); err != nil {
+		// Parse start and end dates
+		startDate, err := time.Parse(time.RFC3339Nano, startDateStr)
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid start_date format, expected ISO")
+			return
+		}
+		endDate, err := time.Parse(time.RFC3339Nano, endDateStr)
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid end_date format, expected ISO")
+			return
+		}
+
+		// Validate date range
+		if err := helpers.ValidateGetMetricsDateRange(startDate, endDate); err != nil {
 			helpers.ApiError(w, 200, err.Error())
+			return
+		}
+		if startDate.After(endDate) {
+			helpers.ApiError(w, 200, "Invalid date range")
 			return
 		}
 
@@ -241,21 +260,32 @@ func GetMetrics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		}
 
 		// Get analytics for dashboard
-		duration := req.EndDate.Sub(req.StartDate)
+		duration := endDate.Sub(startDate)
 		analytics, err := repo.GetMetrics(r.Context(), repository.GetMetricsParams{
 			WebsiteID:   websiteID,
-			CreatedAt:   req.StartDate,
-			CreatedAt_2: req.EndDate,
-			CreatedAt_3: req.StartDate.Add(-duration),
-			CreatedAt_4: req.StartDate,
+			CreatedAt:   startDate,
+			CreatedAt_2: endDate,
+			CreatedAt_3: startDate.Add(-duration),
+			CreatedAt_4: startDate,
 		})
 		if err != nil {
 			helpers.ApiError(w, 200, "Failed to get analytics: "+err.Error())
 			return
 		}
 
+		res := helpers.GetMetricsResponse{
+			Visitors:                    analytics.Visitors,
+			Visits:                      analytics.Visits,
+			Views:                       analytics.Views,
+			AvgVisitDurationSeconds:     analytics.AvgVisitDurationSeconds,
+			PrevVisitors:                analytics.PrevVisitors,
+			PrevVisits:                  analytics.PrevVisits,
+			PrevViews:                   analytics.PrevViews,
+			PrevAvgVisitDurationSeconds: analytics.PrevAvgVisitDurationSeconds,
+		}
+
 		// Return response
-		helpers.ApiSuccess(w, http.StatusOK, "Analytics fetched successfully", analytics)
+		helpers.ApiSuccess(w, http.StatusOK, "Analytics fetched successfully", res)
 	}
 }
 

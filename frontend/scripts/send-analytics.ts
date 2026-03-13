@@ -1,3 +1,4 @@
+import { getDomain } from "@/utils/getDomain";
 import { getSessionVisitId, setSessionVisitId } from "./helpers";
 import { AnalyticsPayload, AnalyticsResponse } from "./types";
 
@@ -14,7 +15,7 @@ export async function sendAnalytics(API_URL: string, websiteId: string) {
   const payload: AnalyticsPayload = {
     visit_id: sessionVisitId,
     path: location.pathname,
-    referrer: referrer,
+    referrer: getDomain(referrer),
     user_agent: navigator.userAgent,
   };
 

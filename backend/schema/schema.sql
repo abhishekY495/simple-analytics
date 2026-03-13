@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS visits (
   "started_at"       TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "ended_at"         TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+CREATE INDEX IF NOT EXISTS idx_visits_website_started ON visits (website_id, started_at);
 
 
 
@@ -83,3 +84,4 @@ CREATE TABLE IF NOT EXISTS pageviews (
 );
 --
 CREATE INDEX IF NOT EXISTS idx_pageviews_website_created ON pageviews(website_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_pageviews_website_created_visitor_id ON pageviews (website_id, created_at, visitor_id);

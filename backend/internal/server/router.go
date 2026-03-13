@@ -24,18 +24,18 @@ func NewRouter(pool *pgxpool.Pool, cfg config.Config) *http.ServeMux {
 
 	// Protected routes
 
+	// Account settings routes
+	mux.Handle("PUT /account/full-name", auth(handlers.UpdateUserFullName(pool, cfg)))
+	mux.Handle("PUT /account/email", auth(handlers.UpdateUserEmail(pool, cfg)))
+	mux.Handle("PUT /account/password", auth(handlers.UpdateUserPassword(pool, cfg)))
+	mux.Handle("DELETE /account", auth(handlers.DeleteUser(pool, cfg)))
+
 	// Websites routes
 	mux.Handle("POST /websites", auth(handlers.AddWebsite(pool, cfg)))
 	mux.Handle("GET /websites", auth(handlers.GetWebsites(pool, cfg)))
 	mux.Handle("GET /websites/{id}", auth(handlers.GetWebsiteByID(pool, cfg)))
 	mux.Handle("PUT /websites/{id}", auth(handlers.UpdateWebsite(pool, cfg)))
 	mux.Handle("DELETE /websites/{id}", auth(handlers.DeleteWebsite(pool, cfg)))
-
-	// Account settings routes
-	mux.Handle("PUT /account/full-name", auth(handlers.UpdateUserFullName(pool, cfg)))
-	mux.Handle("PUT /account/email", auth(handlers.UpdateUserEmail(pool, cfg)))
-	mux.Handle("PUT /account/password", auth(handlers.UpdateUserPassword(pool, cfg)))
-	mux.Handle("DELETE /account", auth(handlers.DeleteUser(pool, cfg)))
 
 	// Analytics routes
 	// CORS only for analytics collection endpoint
@@ -45,16 +45,18 @@ func NewRouter(pool *pgxpool.Pool, cfg config.Config) *http.ServeMux {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		w.WriteHeader(http.StatusNoContent)
 	}))
-
 	mux.Handle("POST /analytics/{id}", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		handlers.CollectAnalytics(pool, cfg).ServeHTTP(w, r)
 	}))
-
 	mux.Handle("POST /analytics/heartbeat", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		handlers.Heartbeat(pool, cfg).ServeHTTP(w, r)
 	}))
+	//
+	// Get analytics for dashboard
+	mux.Handle("GET /analytics/{id}/metrics", auth(handlers.GetMetrics(pool, cfg)))
+	mux.Handle("GET /analytics/{id}/chart", auth(handlers.GetChartData(pool, cfg)))
 
 	return mux
 }

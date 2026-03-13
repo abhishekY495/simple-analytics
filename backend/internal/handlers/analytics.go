@@ -2,11 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/abhishekY495/simple-analytics/backend/internal/config"
 	"github.com/abhishekY495/simple-analytics/backend/internal/helpers"
+	"github.com/abhishekY495/simple-analytics/backend/internal/middleware"
 	"github.com/abhishekY495/simple-analytics/backend/internal/repository"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -187,5 +189,162 @@ func Heartbeat(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		}
 
 		helpers.ApiSuccess(w, http.StatusOK, "Heartbeat received", nil)
+	}
+}
+
+func GetMetrics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Validate request method
+		if r.Method != http.MethodGet {
+			helpers.ApiError(w, http.StatusMethodNotAllowed, "Method not allowed")
+			return
+		}
+
+		// Validate request body
+		var req helpers.GetMetricsRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			helpers.ApiError(w, 200, "Invalid request body")
+			return
+		}
+
+		// Validate request body fields
+		if err := helpers.ValidateGetMetricsRequest(req); err != nil {
+			helpers.ApiError(w, 200, err.Error())
+			return
+		}
+
+		// Get website ID from path
+		websiteID, err := uuid.Parse(r.PathValue("id"))
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid website ID")
+			return
+		}
+
+		// Get user from context
+		userID, ok := r.Context().Value(middleware.ContextUserID).(string)
+		if !ok {
+			helpers.ApiError(w, 200, "Unauthorized")
+			return
+		}
+
+		repo := repository.New(pool)
+
+		// Verify the website exists and belongs to the user
+		website, err := repo.GetWebsiteByID(r.Context(), websiteID)
+		if err != nil {
+			helpers.ApiError(w, 200, "Website not found")
+			return
+		}
+		if website.UserID.String() != userID {
+			helpers.ApiError(w, http.StatusForbidden, "Forbidden")
+			return
+		}
+
+		// Get analytics for dashboard
+		duration := req.EndDate.Sub(req.StartDate)
+		analytics, err := repo.GetMetrics(r.Context(), repository.GetMetricsParams{
+			WebsiteID:   websiteID,
+			CreatedAt:   req.StartDate,
+			CreatedAt_2: req.EndDate,
+			CreatedAt_3: req.StartDate.Add(-duration),
+			CreatedAt_4: req.StartDate,
+		})
+		if err != nil {
+			helpers.ApiError(w, 200, "Failed to get analytics: "+err.Error())
+			return
+		}
+
+		// Return response
+		helpers.ApiSuccess(w, http.StatusOK, "Analytics fetched successfully", analytics)
+	}
+}
+
+func GetChartData(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Validate request method
+		if r.Method != http.MethodGet {
+			helpers.ApiError(w, http.StatusMethodNotAllowed, "Method not allowed")
+			return
+		}
+
+		// Validate request body
+		var req helpers.GetChartDataRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			helpers.ApiError(w, 200, "Invalid request body")
+			return
+		}
+
+		// Validate request body fields
+		if err := helpers.ValidateGetChartDataRequest(req); err != nil {
+			helpers.ApiError(w, 200, err.Error())
+			return
+		}
+
+		// Get website ID from path
+		websiteID, err := uuid.Parse(r.PathValue("id"))
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid website ID")
+			return
+		}
+
+		// Get user from context
+		userID, ok := r.Context().Value(middleware.ContextUserID).(string)
+		if !ok {
+			helpers.ApiError(w, 200, "Unauthorized")
+			return
+		}
+
+		repo := repository.New(pool)
+		var chartData any
+
+		// Verify the website exists and belongs to the user
+		website, err := repo.GetWebsiteByID(r.Context(), websiteID)
+		if err != nil {
+			helpers.ApiError(w, 200, "Website not found")
+			return
+		}
+		if website.UserID.String() != userID {
+			helpers.ApiError(w, http.StatusForbidden, "Forbidden")
+			return
+		}
+
+		bucketSize := helpers.GetBucketSize(req.StartDate, req.EndDate)
+		fmt.Println(bucketSize)
+		if bucketSize == "hour" {
+			chartData, err = repo.GetChartDataByHour(r.Context(), repository.GetChartDataByHourParams{
+				WebsiteID: websiteID,
+				Column2:   req.StartDate,
+				Column3:   req.EndDate,
+			})
+			if err != nil {
+				helpers.ApiError(w, 200, "Failed to get dashboard chart data: "+err.Error())
+				return
+			}
+		}
+		if bucketSize == "day" {
+			chartData, err = repo.GetChartDataByDay(r.Context(), repository.GetChartDataByDayParams{
+				WebsiteID: websiteID,
+				Column2:   req.StartDate,
+				Column3:   req.EndDate,
+			})
+			if err != nil {
+				helpers.ApiError(w, 200, "Failed to get dashboard chart data: "+err.Error())
+				return
+			}
+		}
+		if bucketSize == "month" {
+			chartData, err = repo.GetChartDataByMonth(r.Context(), repository.GetChartDataByMonthParams{
+				WebsiteID: websiteID,
+				Column2:   req.StartDate,
+				Column3:   req.EndDate,
+			})
+			if err != nil {
+				helpers.ApiError(w, 200, "Failed to get dashboard chart data: "+err.Error())
+				return
+			}
+		}
+
+		// Return response
+		helpers.ApiSuccess(w, http.StatusOK, "Dashboard chart data fetched successfully", chartData)
 	}
 }

@@ -3,6 +3,7 @@ package helpers
 import (
 	"errors"
 	"strings"
+	"time"
 )
 
 type CollectAnalyticsRequest struct {
@@ -43,6 +44,36 @@ func ValidateHeartbeatRequest(req HeartbeatRequest) error {
 
 	if req.VisitID == "" {
 		return errors.New("visit_id is required")
+	}
+	return nil
+}
+
+type GetMetricsRequest struct {
+	StartDate time.Time `json:"start_date"`
+	EndDate   time.Time `json:"end_date"`
+}
+
+func ValidateGetMetricsRequest(req GetMetricsRequest) error {
+	if req.StartDate.IsZero() {
+		return errors.New("start_date is required")
+	}
+	if req.EndDate.IsZero() {
+		return errors.New("end_date is required")
+	}
+	return nil
+}
+
+type GetChartDataRequest struct {
+	StartDate time.Time `json:"start_date"`
+	EndDate   time.Time `json:"end_date"`
+}
+
+func ValidateGetChartDataRequest(req GetChartDataRequest) error {
+	if req.StartDate.IsZero() {
+		return errors.New("start_date is required")
+	}
+	if req.EndDate.IsZero() {
+		return errors.New("end_date is required")
 	}
 	return nil
 }

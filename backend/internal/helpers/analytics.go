@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/netip"
 	"strings"
+	"time"
 
 	"github.com/abhishekY495/simple-analytics/backend/utils"
 	"github.com/google/uuid"
@@ -97,4 +98,16 @@ func GetIPFromRequest(r *http.Request) string {
 
 	// If nothing valid found, explicitly return "unknown"
 	return "unknown"
+}
+
+func GetBucketSize(start, end time.Time) string {
+	diff := end.Sub(start)
+	switch {
+	case diff <= 48*time.Hour:
+		return "hour" // last 24h, or custom <= 2 days
+	case diff <= 90*24*time.Hour:
+		return "day" // last 7/30/90 days, this week, this month
+	default:
+		return "month" // this year
+	}
 }

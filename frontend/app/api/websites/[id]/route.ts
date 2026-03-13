@@ -7,10 +7,13 @@ import { API_URL } from "@/utils/constants";
 import { NextRequest, NextResponse } from "next/server";
 
 // Get Website By ID Route
-export async function GET(req: NextRequest) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
     const accessToken = req.headers.get("Authorization")?.split(" ")[1];
-    const id = req.nextUrl.pathname.split("/").pop();
+    const { id } = await params;
 
     if (!id) {
       return NextResponse.json<GetWebsiteByIdResponse>(
@@ -48,10 +51,13 @@ export async function GET(req: NextRequest) {
 }
 
 // Update Website Route
-export async function PUT(req: NextRequest) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
     const accessToken = req.headers.get("Authorization")?.split(" ")[1];
-    const id = req.nextUrl.pathname.split("/").pop();
+    const { id } = await params;
 
     if (!id) {
       return NextResponse.json<UpdateWebsiteResponse>(
@@ -90,10 +96,13 @@ export async function PUT(req: NextRequest) {
 }
 
 // Delete Website Route
-export async function DELETE(req: NextRequest) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
     const accessToken = req.headers.get("Authorization")?.split(" ")[1];
-    const id = req.nextUrl.pathname.split("/").pop();
+    const { id } = await params;
 
     if (!id) {
       return NextResponse.json<DeleteWebsiteResponse>(

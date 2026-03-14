@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getMetrics } from "@/services/analytics-service";
-import { Spinner } from "../ui/spinner";
+import { Skeleton } from "../ui/skeleton";
 import { formatTime } from "@/utils/format-time";
 import { abbreviateNumber } from "@/utils/abbreviate-number";
 import { InfoIcon } from "lucide-react";
@@ -32,24 +32,35 @@ export default function Metrics({
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-full">
-        <Spinner className="size-6" />
+      <div className="grid grid-cols-4 gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="flex flex-col gap-0.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-4 px-8 pb-6 rounded"
+          >
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-9 w-24 mt-2" />
+            <Skeleton className="h-5 w-16 mt-2" />
+          </div>
+        ))}
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-full">
-        <p className="text-red-500">{error.message}</p>
+      <div className="flex justify-center items-center h-[138px] bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-4 px-8 pb-6 rounded">
+        <p className="text-red-500 text-center text-sm">
+          Failed to fetch metrics <br /> Reload the page
+        </p>
       </div>
     );
   }
 
   if (!metricsData) {
     return (
-      <div className="flex justify-center items-center h-full">
-        <p className="text-muted-foreground">No metrics data</p>
+      <div className="flex justify-center items-center h-[138px] bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-4 px-8 pb-6 rounded">
+        <p className="text-muted-foreground text-center">No metrics data</p>
       </div>
     );
   }

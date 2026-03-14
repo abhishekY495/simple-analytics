@@ -146,7 +146,7 @@ export default function WebsitePage() {
                 value={selectedRange}
                 onValueChange={(value) => setSelectedRange(value)}
               >
-                <SelectTrigger className="w-44 rounded text-[15px] font-medium">
+                <SelectTrigger className="w-44 rounded text-[15px] font-medium cursor-pointer">
                   <SelectValue
                     placeholder="Last 24 hours"
                     className="font-medium"
@@ -157,7 +157,7 @@ export default function WebsitePage() {
                     {DATE_FILTERS.map((filter) => (
                       <div key={filter.value}>
                         <SelectItem
-                          className="p-1.5 px-3 rounded text-[15px]"
+                          className="p-1.5 px-3 rounded text-[15px] cursor-pointer"
                           value={filter.value}
                         >
                           {filter.label}

@@ -20,11 +20,13 @@ export default function VisitorsViewsBarChart({
   startDate,
   endDate,
   accessToken,
+  selectedRange,
 }: {
   websiteId: string;
   startDate: string;
   endDate: string;
   accessToken: string;
+  selectedRange: string;
 }) {
   const {
     data: chartData,
@@ -35,11 +37,38 @@ export default function VisitorsViewsBarChart({
     queryFn: () => getChartData({ websiteId, startDate, endDate, accessToken }),
   });
 
+  console.log(selectedRange);
+
   const rows = chartData?.data ?? [];
 
   const rangeMs = new Date(endDate).getTime() - new Date(startDate).getTime();
   const rangeHours = rangeMs / (1000 * 60 * 60);
   const isHourly = rangeHours <= 48;
+
+  let barGap = -35;
+  switch (selectedRange) {
+    case "this week":
+      barGap = -110;
+      break;
+    case "this month":
+      barGap = -60;
+      break;
+    case "last 3 months":
+      barGap = -220;
+      break;
+    case "last 6 months":
+      barGap = -125;
+      break;
+    case "this year":
+      barGap = -220;
+      break;
+    case "all time":
+      barGap = -10;
+      break;
+    default:
+      barGap = -35;
+      break;
+  }
 
   const formattedData = rows.map((row) => ({
     date: isHourly
@@ -82,7 +111,7 @@ export default function VisitorsViewsBarChart({
           accessibilityLayer
           data={formattedData}
           barCategoryGap="10%"
-          barGap={-35}
+          barGap={barGap}
         >
           <CartesianGrid vertical={false} />
           <XAxis

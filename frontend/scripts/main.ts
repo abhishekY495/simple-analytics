@@ -20,7 +20,7 @@ const API_URL = "https://simple-analytics-kz3z.onrender.com";
     return;
   }
 
-  let heartbeatIntervalId = setInterval(() => {
+  const heartbeatIntervalId = setInterval(() => {
     sendHeartbeat(API_URL, sessionVisitId);
   }, HEARTBEAT_INTERVAL);
 
@@ -28,10 +28,6 @@ const API_URL = "https://simple-analytics-kz3z.onrender.com";
     if (document.visibilityState === "hidden") {
       sendHeartbeat(API_URL, sessionVisitId);
       clearInterval(heartbeatIntervalId);
-    } else {
-      heartbeatIntervalId = setInterval(() => {
-        sendHeartbeat(API_URL, sessionVisitId);
-      }, HEARTBEAT_INTERVAL);
     }
   });
 })();

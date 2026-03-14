@@ -49,6 +49,8 @@ SELECT
 FROM generate_series($2::timestamptz, $3::timestamptz - interval '1 hour', interval '1 hour') AS gs(period_start)
 LEFT JOIN pageviews p
   ON p.website_id = $1
+  AND p.created_at >= $2
+  AND p.created_at < $3
   AND p.created_at >= gs.period_start
   AND p.created_at < gs.period_start + interval '1 hour'
 GROUP BY gs.period_start
@@ -65,6 +67,8 @@ SELECT
 FROM generate_series($2::timestamptz, $3::timestamptz - interval '1 day', interval '1 day') AS gs(period_start)
 LEFT JOIN pageviews p
   ON p.website_id = $1
+  AND p.created_at >= $2
+  AND p.created_at < $3
   AND p.created_at >= gs.period_start
   AND p.created_at < gs.period_start + interval '1 day'
 GROUP BY gs.period_start
@@ -80,6 +84,8 @@ SELECT
 FROM generate_series($2::timestamptz, $3::timestamptz - interval '1 month', interval '1 month') AS gs(period_start)
 LEFT JOIN pageviews p
   ON p.website_id = $1
+  AND p.created_at >= $2
+  AND p.created_at < $3
   AND p.created_at >= gs.period_start
   AND p.created_at < gs.period_start + interval '1 month'
 GROUP BY gs.period_start

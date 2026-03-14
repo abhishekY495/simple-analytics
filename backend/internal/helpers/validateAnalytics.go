@@ -83,17 +83,34 @@ type GetMetricsResponse struct {
 }
 
 // Get Chart Data
-type GetChartDataRequest struct {
-	StartDate time.Time `json:"start_date"`
-	EndDate   time.Time `json:"end_date"`
+type ChartDataPoint struct {
+	PeriodStart any   `json:"period_start"`
+	Visitors    int64 `json:"visitors"`
+	Views       int64 `json:"views"`
 }
 
-func ValidateGetChartDataRequest(req GetChartDataRequest) error {
-	if req.StartDate.IsZero() {
+func ValidateGetChartDataRequest(startDate, endDate string) error {
+	startDate = strings.TrimSpace(startDate)
+	endDate = strings.TrimSpace(endDate)
+
+	if startDate == "" {
 		return errors.New("start_date is required")
 	}
-	if req.EndDate.IsZero() {
+	if endDate == "" {
 		return errors.New("end_date is required")
 	}
 	return nil
+}
+
+func ValidateGetChartDataDateRange(startDate, endDate time.Time) error {
+	if startDate.After(endDate) {
+		return errors.New("invalid date range")
+	}
+	return nil
+}
+
+type GetChartDataResponse struct {
+	Visitors int64    `json:"visitors"`
+	Views    []int64  `json:"views"`
+	Dates    []string `json:"dates"`
 }

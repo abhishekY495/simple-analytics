@@ -297,16 +297,34 @@ func GetChartData(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 			return
 		}
 
-		// Validate request body
-		var req helpers.GetChartDataRequest
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			helpers.ApiError(w, 200, "Invalid request body")
+		startDateStr := r.URL.Query().Get("start_date")
+		endDateStr := r.URL.Query().Get("end_date")
+
+		// Validate request body fields
+		if err := helpers.ValidateGetChartDataRequest(startDateStr, endDateStr); err != nil {
+			helpers.ApiError(w, 200, err.Error())
 			return
 		}
 
-		// Validate request body fields
-		if err := helpers.ValidateGetChartDataRequest(req); err != nil {
+		// Parse start and end dates
+		startDate, err := time.Parse(time.RFC3339Nano, startDateStr)
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid start_date format, expected ISO")
+			return
+		}
+		endDate, err := time.Parse(time.RFC3339Nano, endDateStr)
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid end_date format, expected ISO")
+			return
+		}
+
+		// Validate date range
+		if err := helpers.ValidateGetChartDataDateRange(startDate, endDate); err != nil {
 			helpers.ApiError(w, 200, err.Error())
+			return
+		}
+		if startDate.After(endDate) {
+			helpers.ApiError(w, 200, "Invalid date range")
 			return
 		}
 
@@ -325,7 +343,6 @@ func GetChartData(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		}
 
 		repo := repository.New(pool)
-		var chartData any
 
 		// Verify the website exists and belongs to the user
 		website, err := repo.GetWebsiteByID(r.Context(), websiteID)
@@ -338,40 +355,56 @@ func GetChartData(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 			return
 		}
 
-		bucketSize := helpers.GetBucketSize(req.StartDate, req.EndDate)
+		bucketSize := helpers.GetBucketSize(startDate, endDate)
 		fmt.Println(bucketSize)
+
+		var chartData []helpers.ChartDataPoint
+
 		if bucketSize == "hour" {
-			chartData, err = repo.GetChartDataByHour(r.Context(), repository.GetChartDataByHourParams{
+			rows, err := repo.GetChartDataByHour(r.Context(), repository.GetChartDataByHourParams{
 				WebsiteID: websiteID,
-				Column2:   req.StartDate,
-				Column3:   req.EndDate,
+				Column2:   startDate,
+				Column3:   endDate,
 			})
 			if err != nil {
 				helpers.ApiError(w, 200, "Failed to get dashboard chart data: "+err.Error())
 				return
+			}
+			for _, row := range rows {
+				chartData = append(chartData, helpers.ChartDataPoint{PeriodStart: row.PeriodStart, Visitors: row.Visitors, Views: row.Views})
 			}
 		}
 		if bucketSize == "day" {
-			chartData, err = repo.GetChartDataByDay(r.Context(), repository.GetChartDataByDayParams{
+			rows, err := repo.GetChartDataByDay(r.Context(), repository.GetChartDataByDayParams{
 				WebsiteID: websiteID,
-				Column2:   req.StartDate,
-				Column3:   req.EndDate,
+				Column2:   startDate,
+				Column3:   endDate,
 			})
 			if err != nil {
 				helpers.ApiError(w, 200, "Failed to get dashboard chart data: "+err.Error())
 				return
+			}
+			for _, row := range rows {
+				chartData = append(chartData, helpers.ChartDataPoint{PeriodStart: row.PeriodStart, Visitors: row.Visitors, Views: row.Views})
 			}
 		}
 		if bucketSize == "month" {
-			chartData, err = repo.GetChartDataByMonth(r.Context(), repository.GetChartDataByMonthParams{
+			rows, err := repo.GetChartDataByMonth(r.Context(), repository.GetChartDataByMonthParams{
 				WebsiteID: websiteID,
-				Column2:   req.StartDate,
-				Column3:   req.EndDate,
+				Column2:   startDate,
+				Column3:   endDate,
 			})
 			if err != nil {
 				helpers.ApiError(w, 200, "Failed to get dashboard chart data: "+err.Error())
 				return
 			}
+			for _, row := range rows {
+				chartData = append(chartData, helpers.ChartDataPoint{PeriodStart: row.PeriodStart, Visitors: row.Visitors, Views: row.Views})
+			}
+		}
+
+		if chartData == nil {
+			chartData = []helpers.ChartDataPoint{}
 		}
 
 		// Return response

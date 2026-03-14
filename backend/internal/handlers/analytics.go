@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -356,7 +355,6 @@ func GetChartData(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		}
 
 		bucketSize := helpers.GetBucketSize(startDate, endDate)
-		fmt.Println(bucketSize)
 
 		var chartData []helpers.ChartDataPoint
 

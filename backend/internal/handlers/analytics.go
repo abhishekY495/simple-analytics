@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -299,7 +300,6 @@ func GetChartData(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		startDateStr := r.URL.Query().Get("start_date")
 		endDateStr := r.URL.Query().Get("end_date")
 
-		// Validate request body fields
 		if err := helpers.ValidateGetChartDataRequest(startDateStr, endDateStr); err != nil {
 			helpers.ApiError(w, 200, err.Error())
 			return
@@ -407,5 +407,109 @@ func GetChartData(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 
 		// Return response
 		helpers.ApiSuccess(w, http.StatusOK, "Dashboard chart data fetched successfully", chartData)
+	}
+}
+
+func GetPageVisitors(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Validate request method
+		if r.Method != http.MethodGet {
+			helpers.ApiError(w, http.StatusMethodNotAllowed, "Method not allowed")
+			return
+		}
+
+		startDateStr := r.URL.Query().Get("start_date")
+		endDateStr := r.URL.Query().Get("end_date")
+		limitStr := r.URL.Query().Get("limit")
+
+		if err := helpers.ValidateGetPageVisitorsRequest(startDateStr, endDateStr, limitStr); err != nil {
+			helpers.ApiError(w, 200, err.Error())
+			return
+		}
+
+		// Parse start and end dates
+		startDate, err := time.Parse(time.RFC3339Nano, startDateStr)
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid start_date format, expected ISO")
+			return
+		}
+		endDate, err := time.Parse(time.RFC3339Nano, endDateStr)
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid end_date format, expected ISO")
+			return
+		}
+
+		// Validate date range
+		if err := helpers.ValidateGetPageVisitorsDateRange(startDate, endDate); err != nil {
+			helpers.ApiError(w, 200, err.Error())
+			return
+		}
+		if startDate.After(endDate) {
+			helpers.ApiError(w, 200, "Invalid date range")
+			return
+		}
+
+		// Get website ID from path
+		websiteID, err := uuid.Parse(r.PathValue("id"))
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid website ID")
+			return
+		}
+
+		// Parse limit
+		limitInt, err := strconv.Atoi(limitStr)
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid limit format, expected integer")
+			return
+		}
+
+		if limitInt <= 0 {
+			helpers.ApiError(w, 200, "Limit must be greater than 0")
+			return
+		}
+
+		// Get user from context
+		userID, ok := r.Context().Value(middleware.ContextUserID).(string)
+		if !ok {
+			helpers.ApiError(w, 200, "Unauthorized")
+			return
+		}
+
+		repo := repository.New(pool)
+
+		// Verify the website exists and belongs to the user
+		website, err := repo.GetWebsiteByID(r.Context(), websiteID)
+		if err != nil {
+			helpers.ApiError(w, 200, "Website not found")
+			return
+		}
+		if website.UserID.String() != userID {
+			helpers.ApiError(w, http.StatusForbidden, "Forbidden")
+			return
+		}
+
+		rows, err := repo.GetPageVisitors(r.Context(), repository.GetPageVisitorsParams{
+			WebsiteID:   websiteID,
+			CreatedAt:   startDate,
+			CreatedAt_2: endDate,
+			Limit:       int32(limitInt),
+		})
+
+		if err != nil {
+			helpers.ApiError(w, 200, "Failed to get page visitors: "+err.Error())
+			return
+		}
+
+		var pageVisitors []helpers.GetPageVisitorsRow
+		for _, row := range rows {
+			pageVisitors = append(pageVisitors, helpers.GetPageVisitorsRow{Path: row.Path, Visitors: row.Visitors})
+		}
+
+		res := helpers.GetPageVisitorsResponse{
+			PageVisitors: pageVisitors,
+		}
+
+		// Return response
+		helpers.ApiSuccess(w, http.StatusOK, "Page visitors fetched successfully", res)
 	}
 }

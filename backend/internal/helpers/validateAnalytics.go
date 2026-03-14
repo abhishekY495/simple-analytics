@@ -114,3 +114,37 @@ type GetChartDataResponse struct {
 	Views    []int64  `json:"views"`
 	Dates    []string `json:"dates"`
 }
+
+// Get Page Visitors
+func ValidateGetPageVisitorsRequest(startDate, endDate, limit string) error {
+	startDate = strings.TrimSpace(startDate)
+	endDate = strings.TrimSpace(endDate)
+	limit = strings.TrimSpace(limit)
+
+	if startDate == "" {
+		return errors.New("start_date is required")
+	}
+	if endDate == "" {
+		return errors.New("end_date is required")
+	}
+	if limit == "" {
+		return errors.New("limit is required")
+	}
+	return nil
+}
+
+func ValidateGetPageVisitorsDateRange(startDate, endDate time.Time) error {
+	if startDate.After(endDate) {
+		return errors.New("invalid date range")
+	}
+	return nil
+}
+
+type GetPageVisitorsRow struct {
+	Path     string `json:"path"`
+	Visitors int64  `json:"visitors"`
+}
+
+type GetPageVisitorsResponse struct {
+	PageVisitors []GetPageVisitorsRow `json:"page_visitors"`
+}

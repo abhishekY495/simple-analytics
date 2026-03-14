@@ -90,3 +90,21 @@ LEFT JOIN pageviews p
   AND p.created_at < gs.period_start + interval '1 month'
 GROUP BY gs.period_start
 ORDER BY gs.period_start ASC;
+
+
+-- name: GetPageVisitors :many
+-- Returns page visitors for a date range.
+-- $1 = website_id
+-- $2 = start_date
+-- $3 = end_date
+-- $4 = limit
+SELECT
+  path,
+  COUNT(DISTINCT visitor_id)::bigint AS visitors
+FROM pageviews
+WHERE website_id = $1 
+  AND created_at >= $2 
+  AND created_at < $3
+GROUP BY path
+ORDER BY visitors DESC
+LIMIT $4;

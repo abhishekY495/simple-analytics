@@ -85,3 +85,4 @@ CREATE TABLE IF NOT EXISTS pageviews (
 --
 CREATE INDEX IF NOT EXISTS idx_pageviews_website_created ON pageviews(website_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_pageviews_website_created_visitor_id ON pageviews (website_id, created_at, visitor_id);
+CREATE INDEX IF NOT EXISTS idx_pageviews_website_path_created ON pageviews (website_id, path, created_at);

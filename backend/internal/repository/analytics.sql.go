@@ -17,7 +17,7 @@ SELECT
   gs.period_start,
   COALESCE(COUNT(DISTINCT p.visitor_id), 0)::bigint AS visitors,
   COALESCE(COUNT(p.id), 0)::bigint AS views
-FROM generate_series($2::timestamptz, $3::timestamptz - interval '1 day', interval '1 day') AS gs(period_start)
+FROM generate_series(date_trunc('day', $2::timestamptz), date_trunc('day', $3::timestamptz), interval '1 day') AS gs(period_start)
 LEFT JOIN pageviews p
   ON p.website_id = $1
   AND p.created_at >= $2
@@ -69,7 +69,7 @@ SELECT
   gs.period_start,
   COALESCE(COUNT(DISTINCT p.visitor_id), 0)::bigint AS visitors,
   COALESCE(COUNT(p.id), 0)::bigint AS views
-FROM generate_series($2::timestamptz, $3::timestamptz - interval '1 hour', interval '1 hour') AS gs(period_start)
+FROM generate_series(date_trunc('hour', $2::timestamptz), date_trunc('hour', $3::timestamptz), interval '1 hour') AS gs(period_start)
 LEFT JOIN pageviews p
   ON p.website_id = $1
   AND p.created_at >= $2
@@ -119,7 +119,7 @@ SELECT
   gs.period_start,
   COALESCE(COUNT(DISTINCT p.visitor_id), 0)::bigint AS visitors,
   COALESCE(COUNT(p.id), 0)::bigint AS views
-FROM generate_series($2::timestamptz, $3::timestamptz - interval '1 month', interval '1 month') AS gs(period_start)
+FROM generate_series(date_trunc('month', $2::timestamptz), date_trunc('month', $3::timestamptz), interval '1 month') AS gs(period_start)
 LEFT JOIN pageviews p
   ON p.website_id = $1
   AND p.created_at >= $2

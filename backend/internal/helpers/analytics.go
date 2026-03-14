@@ -101,13 +101,25 @@ func GetIPFromRequest(r *http.Request) string {
 }
 
 func GetBucketSize(start, end time.Time) string {
-	diff := end.Sub(start)
-	switch {
-	case diff <= 48*time.Hour:
-		return "hour" // last 24h, or custom <= 2 days
-	case diff <= 90*24*time.Hour:
-		return "day" // last 7/30/90 days, this week, this month
-	default:
-		return "month" // this year
+	if end.Before(start) {
+		start, end = end, start
 	}
+
+	diff := end.Sub(start)
+
+	// If range is <= 48 hours → hourly buckets
+	if diff <= 48*time.Hour {
+		return "hour"
+	}
+
+	// Calculate calendar month difference
+	months := (end.Year()-start.Year())*12 + int(end.Month()-start.Month())
+
+	// If range spans 3 or more months → monthly buckets
+	if months >= 3 {
+		return "month"
+	}
+
+	// Otherwise use daily buckets
+	return "day"
 }

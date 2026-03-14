@@ -8,7 +8,7 @@ import Image from "next/image";
 import { TrackingCode } from "../tracking-code";
 import { DeleteWebsite } from "./delete-website";
 import { EditWebsiteForm } from "./edit-website-form";
-import { getWebsiteIcon } from "@/utils/getWebsiteIcon";
+import { getWebsiteIcon } from "@/utils/get-website-icon";
 
 type EditWebsiteDialogProps = {
   open: boolean;

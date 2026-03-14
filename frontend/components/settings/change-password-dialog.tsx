@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { changePassword } from "@/services/accountService";
-import { useAuthStore } from "@/store/authStore";
+import { changePassword } from "@/services/account-service";
+import { useAuthStore } from "@/store/auth-store";
 
 type ChangePasswordDialogProps = {
   open: boolean;

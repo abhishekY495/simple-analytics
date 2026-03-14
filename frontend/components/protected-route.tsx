@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/store/auth-store";
 import { Spinner } from "./ui/spinner";
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {

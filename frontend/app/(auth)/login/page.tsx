@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/store/auth-store";
 import { Navbar } from "@/components/navbar";
-import { loginUser } from "@/services/authService";
-import { validateEmail } from "@/utils/validateEmail";
+import { loginUser } from "@/services/auth-service";
+import { validateEmail } from "@/utils/validate-email";
 import { Footer } from "@/components/footer";
 
 export default function Login() {

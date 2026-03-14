@@ -1,7 +1,7 @@
 "use client";
 
-import { updateFullName } from "@/services/accountService";
-import { useAuthStore } from "@/store/authStore";
+import { updateFullName } from "@/services/account-service";
+import { useAuthStore } from "@/store/auth-store";
 import { useMutation } from "@tanstack/react-query";
 import { CopyIcon } from "lucide-react";
 import { useState } from "react";

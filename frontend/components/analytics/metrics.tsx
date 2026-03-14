@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { getMetrics } from "@/services/analytics";
+import { getMetrics } from "@/services/analytics-service";
 import { Spinner } from "../ui/spinner";
-import { formatTime } from "@/utils/formatTime";
-import { abbreviateNumber } from "@/utils/abbreviateNumber";
+import { formatTime } from "@/utils/format-time";
+import { abbreviateNumber } from "@/utils/abbreviate-number";
 import { InfoIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { ChangePercentage } from "./change-percentage";

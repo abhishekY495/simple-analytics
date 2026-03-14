@@ -1,4 +1,4 @@
-import { ApiResponse } from "@/types/apiResponse";
+import { ApiResponse } from "@/types/api-response";
 
 export type AnalyticsPayload = {
   visit_id: string | null;

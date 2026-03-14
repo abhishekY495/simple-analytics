@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { deleteAccount } from "@/services/accountService";
-import { useAuthStore } from "@/store/authStore";
+import { deleteAccount } from "@/services/account-service";
+import { useAuthStore } from "@/store/auth-store";
 import { useRouter } from "next/navigation";
 
 type DeleteAccountDialogProps = {

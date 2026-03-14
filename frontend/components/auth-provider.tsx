@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { useAuthStore } from "@/store/authStore";
-import { decodeJwt } from "@/utils/decodeJwt";
-import { refreshToken } from "@/services/authService";
+import { useAuthStore } from "@/store/auth-store";
+import { decodeJwt } from "@/utils/decode-jwt";
+import { refreshToken } from "@/services/auth-service";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const setAuth = useAuthStore((s) => s.setAuth);

@@ -10,9 +10,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { addWebsite } from "@/services/websiteService";
-import { useAuthStore } from "@/store/authStore";
-import { validateDomain } from "@/utils/validateDomain";
+import { addWebsite } from "@/services/website-service";
+import { useAuthStore } from "@/store/auth-store";
+import { validateDomain } from "@/utils/validate-domain";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";

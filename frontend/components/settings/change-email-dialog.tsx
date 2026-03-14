@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { changeEmail } from "@/services/accountService";
-import { useAuthStore } from "@/store/authStore";
-import { validateEmail } from "@/utils/validateEmail";
+import { changeEmail } from "@/services/account-service";
+import { useAuthStore } from "@/store/auth-store";
+import { validateEmail } from "@/utils/validate-email";
 
 type ChangeEmailDialogProps = {
   open: boolean;

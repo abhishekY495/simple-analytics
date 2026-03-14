@@ -11,8 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getWebsiteById } from "@/services/websiteService";
-import { useAuthStore } from "@/store/authStore";
+import { getWebsiteById } from "@/services/website-service";
+import { useAuthStore } from "@/store/auth-store";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { redirect } from "next/navigation";
@@ -20,7 +20,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { EditIcon } from "lucide-react";
 import { EditWebsiteDialog } from "@/components/website/edit-website-dialog";
-import { getWebsiteIcon } from "@/utils/getWebsiteIcon";
+import { getWebsiteIcon } from "@/utils/get-website-icon";
 import Metrics from "@/components/analytics/metrics";
 import { DATE_FILTERS } from "@/utils/constants";
 
@@ -155,16 +155,15 @@ export default function WebsitePage() {
                 <SelectContent position="popper">
                   <SelectGroup className="rounded">
                     {DATE_FILTERS.map((filter) => (
-                      <>
+                      <div key={filter.value}>
                         <SelectItem
-                          key={filter.value}
                           className="p-1.5 px-3 rounded text-[15px]"
                           value={filter.value}
                         >
                           {filter.label}
                         </SelectItem>
                         {filter.separator && <SelectSeparator />}
-                      </>
+                      </div>
                     ))}
                   </SelectGroup>
                 </SelectContent>

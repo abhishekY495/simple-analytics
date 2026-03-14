@@ -1,4 +1,4 @@
-import { ApiResponse } from "./apiResponse";
+import { ApiResponse } from "./api-response";
 
 // Get Metrics
 export type GetMetricsRequest = {

@@ -10,9 +10,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getWebsites } from "@/services/websiteService";
-import { useAuthStore } from "@/store/authStore";
-import { getWebsiteIcon } from "@/utils/getWebsiteIcon";
+import { getWebsites } from "@/services/website-service";
+import { useAuthStore } from "@/store/auth-store";
+import { getWebsiteIcon } from "@/utils/get-website-icon";
 import { useQuery } from "@tanstack/react-query";
 import { ExternalLinkIcon } from "lucide-react";
 import Image from "next/image";

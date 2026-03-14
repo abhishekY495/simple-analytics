@@ -1,14 +1,14 @@
 "use client";
 
 import { Navbar } from "@/components/navbar";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/store/auth-store";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { signupUser } from "@/services/authService";
+import { signupUser } from "@/services/auth-service";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { validateEmail } from "@/utils/validateEmail";
+import { validateEmail } from "@/utils/validate-email";
 import { Footer } from "@/components/footer";
 
 export default function Signup() {

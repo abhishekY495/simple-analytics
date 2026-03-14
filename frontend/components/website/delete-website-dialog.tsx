@@ -1,7 +1,7 @@
 "use client";
 
-import { deleteWebsite } from "@/services/websiteService";
-import { useAuthStore } from "@/store/authStore";
+import { deleteWebsite } from "@/services/website-service";
+import { useAuthStore } from "@/store/auth-store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -31,7 +31,8 @@ export function DeleteWebsiteDialog({
   const router = useRouter();
 
   const { mutate: submitDelete, isPending } = useMutation({
-    mutationFn: () => deleteWebsite({ id: websiteId, accessToken: accessToken! }),
+    mutationFn: () =>
+      deleteWebsite({ id: websiteId, accessToken: accessToken! }),
     onSuccess: (data) => {
       if (data.status === "error") {
         toast.error(data.status_message ?? "Failed to delete website");

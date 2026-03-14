@@ -1,4 +1,4 @@
-import { getTrackingCodeSnippet } from "@/utils/getTrackingCodeSnippet";
+import { getTrackingCodeSnippet } from "@/utils/get-tracking-code-snippet";
 import { CopyIcon } from "lucide-react";
 import { toast } from "sonner";
 

@@ -1,6 +1,6 @@
-import { updateWebsite } from "@/services/websiteService";
-import { useAuthStore } from "@/store/authStore";
-import { validateDomain } from "@/utils/validateDomain";
+import { updateWebsite } from "@/services/website-service";
+import { useAuthStore } from "@/store/auth-store";
+import { validateDomain } from "@/utils/validate-domain";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CopyIcon } from "lucide-react";
 import { useState } from "react";

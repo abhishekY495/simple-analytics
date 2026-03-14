@@ -1,4 +1,4 @@
-import { getDomain } from "@/utils/getDomain";
+import { getDomain } from "@/utils/get-domain";
 import { getSessionVisitId, setSessionVisitId } from "./helpers";
 import { AnalyticsPayload, AnalyticsResponse } from "./types";
 

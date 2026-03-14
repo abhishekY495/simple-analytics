@@ -21,7 +21,6 @@ export const DATE_FILTERS = [
     value: "this week",
     separator: false,
   },
-
   {
     label: "Last 7 days",
     value: "last 7 days",
@@ -40,11 +39,6 @@ export const DATE_FILTERS = [
   {
     label: "Last 6 months",
     value: "last 6 months",
-    separator: false,
-  },
-  {
-    label: "Last 12 months",
-    value: "last 12 months",
     separator: true,
   },
   {

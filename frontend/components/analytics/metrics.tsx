@@ -28,7 +28,6 @@ export default function Metrics({
   });
 
   const metricsData = metrics?.data;
-  console.log("metricsData", metricsData);
 
   if (isLoading) {
     return (

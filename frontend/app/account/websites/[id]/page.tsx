@@ -23,13 +23,14 @@ import { EditWebsiteDialog } from "@/components/website/edit-website-dialog";
 import { getWebsiteIcon } from "@/utils/get-website-icon";
 import Metrics from "@/components/analytics/metrics";
 import { DATE_FILTERS } from "@/utils/constants";
+import VisitorsViewsBarChart from "@/components/analytics/visitors-views-bar-chart";
 
 export default function WebsitePage() {
   const { id } = useParams<{ id: string }>();
   const accessToken = useAuthStore((s) => s.accessToken);
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
-  const [selectedRange, setSelectedRange] = useState("last 24 hours");
+  const [selectedRange, setSelectedRange] = useState("today");
 
   const { data: website, isLoading } = useQuery({
     queryKey: ["website", id],
@@ -41,10 +42,16 @@ export default function WebsitePage() {
   const { startDate, endDate } = useMemo(() => {
     const now = new Date();
     const start = new Date(now);
+    let end = new Date(now);
+
+    const startOfTomorrow = new Date(now);
+    startOfTomorrow.setHours(0, 0, 0, 0);
+    startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
 
     switch (selectedRange) {
       case "today": {
         start.setHours(0, 0, 0, 0);
+        end = startOfTomorrow;
         break;
       }
       case "last 24 hours": {
@@ -53,9 +60,10 @@ export default function WebsitePage() {
       }
       case "this week": {
         const day = start.getDay();
-        const diff = (day === 0 ? 6 : day - 1) * 24 * 60 * 60 * 1000;
+        const diff = day * 24 * 60 * 60 * 1000;
         start.setHours(0, 0, 0, 0);
         start.setTime(start.getTime() - diff);
+        end = startOfTomorrow;
         break;
       }
       case "last 7 days": {
@@ -65,6 +73,7 @@ export default function WebsitePage() {
       case "this month": {
         start.setDate(1);
         start.setHours(0, 0, 0, 0);
+        end = startOfTomorrow;
         break;
       }
       case "last 3 months": {
@@ -82,6 +91,7 @@ export default function WebsitePage() {
       case "this year": {
         start.setMonth(0, 1);
         start.setHours(0, 0, 0, 0);
+        end = startOfTomorrow;
         break;
       }
       case "all time": {
@@ -95,7 +105,7 @@ export default function WebsitePage() {
 
     return {
       startDate: start.toISOString(),
-      endDate: now.toISOString(),
+      endDate: end.toISOString(),
     };
   }, [selectedRange]);
 
@@ -171,6 +181,13 @@ export default function WebsitePage() {
             </div>
 
             <Metrics
+              websiteId={id}
+              startDate={startDate}
+              endDate={endDate}
+              accessToken={accessToken}
+            />
+
+            <VisitorsViewsBarChart
               websiteId={id}
               startDate={startDate}
               endDate={endDate}

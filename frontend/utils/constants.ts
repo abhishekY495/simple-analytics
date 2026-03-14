@@ -1,3 +1,5 @@
+import { ChartConfig } from "@/components/ui/chart";
+
 export const API_URL =
   process.env.NEXT_PUBLIC_IS_DEV === "true"
     ? "http://localhost:8080"
@@ -22,14 +24,9 @@ export const DATE_FILTERS = [
     separator: false,
   },
   {
-    label: "Last 7 days",
-    value: "last 7 days",
-    separator: true,
-  },
-  {
     label: "This month",
     value: "this month",
-    separator: false,
+    separator: true,
   },
   {
     label: "Last 3 months",
@@ -52,3 +49,14 @@ export const DATE_FILTERS = [
     separator: false,
   },
 ];
+
+export const CHART_CONFIG = {
+  visitors: {
+    label: "Visitors",
+    color: "#0072ff",
+  },
+  views: {
+    label: "Views",
+    color: "#4c9cffd4",
+  },
+} satisfies ChartConfig;

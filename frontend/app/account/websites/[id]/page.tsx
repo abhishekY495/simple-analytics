@@ -66,10 +66,6 @@ export default function WebsitePage() {
         end = startOfTomorrow;
         break;
       }
-      case "last 7 days": {
-        start.setTime(start.getTime() - 7 * 24 * 60 * 60 * 1000);
-        break;
-      }
       case "this month": {
         start.setDate(1);
         start.setHours(0, 0, 0, 0);

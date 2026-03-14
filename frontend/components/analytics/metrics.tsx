@@ -50,7 +50,7 @@ export default function Metrics({
     return (
       <div className="flex justify-center items-center h-[138px] bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-4 px-8 pb-6 rounded">
         <p className="text-red-500 text-center text-sm">
-          Failed to fetch metrics <br /> Reload the page
+          Failed to fetch metrics
         </p>
       </div>
     );

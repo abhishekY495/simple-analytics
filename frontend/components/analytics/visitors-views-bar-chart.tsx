@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { getChartData } from "@/services/analytics-service";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -10,25 +10,10 @@ import {
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
 } from "@/components/ui/chart";
-
-const chartConfig = {
-  visitors: {
-    label: "Visitors",
-    theme: {
-      light: "#5A9FF0",
-      dark: "#5A9FF0",
-    },
-  },
-  views: {
-    label: "Views",
-    theme: {
-      light: "#A9CCF7",
-      dark: "#A9CCF7",
-    },
-  },
-} satisfies ChartConfig;
+import { CHART_CONFIG } from "@/utils/constants";
+import { Skeleton } from "../ui/skeleton";
+import { abbreviateNumber } from "@/utils/abbreviate-number";
 
 export default function VisitorsViewsBarChart({
   websiteId,
@@ -41,10 +26,6 @@ export default function VisitorsViewsBarChart({
   endDate: string;
   accessToken: string;
 }) {
-  console.log("st-Date", startDate);
-  console.log("ed-Date", endDate);
-  console.log("----------");
-
   const {
     data: chartData,
     isLoading,
@@ -76,9 +57,9 @@ export default function VisitorsViewsBarChart({
 
   if (isLoading) {
     return (
-      <Card>
-        <CardContent className="flex h-[250px] items-center justify-center text-muted-foreground">
-          Loading chart...
+      <Card className="rounded py-8">
+        <CardContent className="flex h-[420px] items-center justify-center text-muted-foreground">
+          <Skeleton className="size-full" />
         </CardContent>
       </Card>
     );
@@ -86,43 +67,53 @@ export default function VisitorsViewsBarChart({
 
   if (error) {
     return (
-      <Card>
-        <CardContent className="flex h-[250px] items-center justify-center text-muted-foreground">
-          Failed to load chart data.
+      <Card className="rounded py-8">
+        <CardContent className="flex h-[420px] items-center justify-center text-muted-foreground">
+          <p className="text-red-500 text-center">Failed to load chart data</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="rounded">
-      <CardContent className="rounded">
-        <ChartContainer config={chartConfig} className="h-[420px] w-full">
-          <BarChart accessibilityLayer data={formattedData}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-            />
-            <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-            <ChartLegend content={<ChartLegendContent />} />
-            <Bar
-              dataKey="visitors"
-              stackId="a"
-              fill="var(--color-visitors)"
-              radius={[0, 0, 2, 2]}
-            />
-            <Bar
-              dataKey="views"
-              stackId="a"
-              fill="var(--color-views)"
-              radius={[2, 2, 0, 0]}
-            />
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
+    <Card className="rounded pr-8 py-8">
+      <ChartContainer config={CHART_CONFIG} className="h-[420px] w-full">
+        <BarChart
+          accessibilityLayer
+          data={formattedData}
+          barCategoryGap="10%"
+          barGap={-35}
+        >
+          <CartesianGrid vertical={false} />
+          <XAxis
+            dataKey="date"
+            tickLine={false}
+            tickMargin={10}
+            axisLine={false}
+          />
+          <YAxis
+            tickLine={false}
+            axisLine={false}
+            tickMargin={8}
+            allowDecimals={false}
+            tickFormatter={(value) => abbreviateNumber(value)}
+          />
+          <ChartTooltip content={<ChartTooltipContent />} />
+          <ChartLegend content={<ChartLegendContent />} />
+          <Bar
+            dataKey="views"
+            fill="var(--color-views)"
+            radius={[2, 2, 0, 0]}
+            fillOpacity={0.5}
+          />
+          <Bar
+            dataKey="visitors"
+            fill="var(--color-visitors)"
+            radius={[2, 2, 0, 0]}
+            fillOpacity={0.5}
+          />
+        </BarChart>
+      </ChartContainer>
     </Card>
   );
 }

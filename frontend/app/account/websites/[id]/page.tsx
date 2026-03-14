@@ -24,6 +24,7 @@ import { getWebsiteIcon } from "@/utils/get-website-icon";
 import Metrics from "@/components/analytics/metrics";
 import { ALL_TIME_START_DATE, DATE_FILTERS } from "@/utils/constants";
 import VisitorsViewsBarChart from "@/components/analytics/visitors-views-bar-chart";
+import PageVisitors from "@/components/analytics/page-visitors";
 
 export default function WebsitePage() {
   const { id } = useParams<{ id: string }>();
@@ -139,7 +140,7 @@ export default function WebsitePage() {
   }
 
   return (
-    <>
+    <div className="mb-56">
       {isLoading ? (
         <div className="text-muted-foreground flex justify-center mt-12">
           <Spinner className="size-6" />
@@ -230,6 +231,15 @@ export default function WebsitePage() {
               accessToken={accessToken}
               selectedRange={selectedRange}
             />
+
+            <div className="grid grid-cols-2 gap-4">
+              <PageVisitors
+                websiteId={id}
+                startDate={startDate}
+                endDate={endDate}
+                accessToken={accessToken}
+              />
+            </div>
           </div>
 
           {websiteData && (
@@ -241,6 +251,6 @@ export default function WebsitePage() {
           )}
         </>
       )}
-    </>
+    </div>
   );
 }

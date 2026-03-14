@@ -34,3 +34,21 @@ export type ChartDataPoint = {
 };
 
 export type GetChartDataResponse = ApiResponse<ChartDataPoint[]>;
+
+// Get Page Visitors
+export type GetPageVisitorsRequest = {
+  startDate: string;
+  endDate: string;
+  websiteId: string;
+  accessToken: string;
+  limit: number;
+};
+
+export type PageVisitor = {
+  path: string;
+  visitors: number;
+};
+
+export type GetPageVisitorsResponse = ApiResponse<{
+  page_visitors: PageVisitor[];
+}>;

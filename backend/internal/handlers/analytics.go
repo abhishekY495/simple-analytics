@@ -369,7 +369,7 @@ func GetChartData(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 				return
 			}
 			for _, row := range rows {
-				chartData = append(chartData, helpers.ChartDataPoint{PeriodStart: row.PeriodStart, Visitors: row.Visitors, Views: row.Views})
+				chartData = append(chartData, helpers.ChartDataPoint{PeriodStart: row.PeriodStart.(time.Time).UTC(), Visitors: row.Visitors, Views: row.Views})
 			}
 		}
 		if bucketSize == "day" {
@@ -383,7 +383,7 @@ func GetChartData(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 				return
 			}
 			for _, row := range rows {
-				chartData = append(chartData, helpers.ChartDataPoint{PeriodStart: row.PeriodStart, Visitors: row.Visitors, Views: row.Views})
+				chartData = append(chartData, helpers.ChartDataPoint{PeriodStart: row.PeriodStart.(time.Time).UTC(), Visitors: row.Visitors, Views: row.Views})
 			}
 		}
 		if bucketSize == "month" {
@@ -397,7 +397,7 @@ func GetChartData(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 				return
 			}
 			for _, row := range rows {
-				chartData = append(chartData, helpers.ChartDataPoint{PeriodStart: row.PeriodStart, Visitors: row.Visitors, Views: row.Views})
+				chartData = append(chartData, helpers.ChartDataPoint{PeriodStart: row.PeriodStart.(time.Time).UTC(), Visitors: row.Visitors, Views: row.Views})
 			}
 		}
 

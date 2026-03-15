@@ -84,9 +84,9 @@ type GetMetricsResponse struct {
 
 // Get Chart Data
 type ChartDataPoint struct {
-	PeriodStart any   `json:"period_start"`
-	Visitors    int64 `json:"visitors"`
-	Views       int64 `json:"views"`
+	PeriodStart time.Time `json:"period_start"`
+	Visitors    int64     `json:"visitors"`
+	Views       int64     `json:"views"`
 }
 
 func ValidateGetChartDataRequest(startDate, endDate string) error {

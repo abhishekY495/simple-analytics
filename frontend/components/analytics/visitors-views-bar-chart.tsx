@@ -70,19 +70,27 @@ export default function VisitorsViewsBarChart({
       break;
   }
 
-  const formattedData = rows.map((row) => ({
-    date: isHourly
-      ? new Date(row.period_start).toLocaleTimeString("en-US", {
-          hour: "numeric",
-          hour12: true,
-        })
-      : new Date(row.period_start).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        }),
-    visitors: row.visitors,
-    views: row.views,
-  }));
+  const formattedData = rows.map((row) => {
+    let date: string;
+    if (isHourly) {
+      const d = new Date(row.period_start);
+      const localMinutes = d.getMinutes();
+      if (localMinutes > 0) {
+        d.setMinutes(0, 0, 0);
+        d.setHours(d.getHours() + 1);
+      }
+      date = d.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        hour12: true,
+      });
+    } else {
+      date = new Date(row.period_start).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+    }
+    return { date, visitors: row.visitors, views: row.views };
+  });
 
   if (isLoading) {
     return (

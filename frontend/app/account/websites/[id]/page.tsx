@@ -80,8 +80,8 @@ export default function WebsitePage() {
         thisSunday.setDate(thisSunday.getDate() - day);
         start = new Date(thisSunday);
         start.setDate(start.getDate() + offset * 7);
-        end = offset === 0 ? startOfTomorrow : new Date(start);
-        if (offset !== 0) end.setDate(end.getDate() + 7);
+        end = new Date(start);
+        end.setDate(end.getDate() + 7);
         break;
       }
       case "this month": {

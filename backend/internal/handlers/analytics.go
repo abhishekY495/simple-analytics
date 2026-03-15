@@ -505,11 +505,7 @@ func GetPageVisitors(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 			pageVisitors = append(pageVisitors, helpers.GetPageVisitorsRow{Path: row.Path, Visitors: row.Visitors})
 		}
 
-		res := helpers.GetPageVisitorsResponse{
-			PageVisitors: pageVisitors,
-		}
-
 		// Return response
-		helpers.ApiSuccess(w, http.StatusOK, "Page visitors fetched successfully", res)
+		helpers.ApiSuccess(w, http.StatusOK, "Page visitors fetched successfully", pageVisitors)
 	}
 }

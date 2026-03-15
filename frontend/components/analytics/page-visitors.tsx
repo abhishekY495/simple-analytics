@@ -33,7 +33,7 @@ export default function PageVisitors({
       }),
   });
 
-  const pageVisitorsData = pageVisitors?.data?.page_visitors ?? [];
+  const pageVisitorsData = pageVisitors?.data ?? [];
   const totalVisitors = pageVisitorsData.reduce(
     (sum, p) => sum + p.visitors,
     0,

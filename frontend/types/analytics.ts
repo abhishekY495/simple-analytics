@@ -49,6 +49,4 @@ export type PageVisitor = {
   visitors: number;
 };
 
-export type GetPageVisitorsResponse = ApiResponse<{
-  page_visitors: PageVisitor[];
-}>;
+export type GetPageVisitorsResponse = ApiResponse<PageVisitor[]>;

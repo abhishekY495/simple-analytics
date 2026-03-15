@@ -109,12 +109,6 @@ func ValidateGetChartDataDateRange(startDate, endDate time.Time) error {
 	return nil
 }
 
-type GetChartDataResponse struct {
-	Visitors int64    `json:"visitors"`
-	Views    []int64  `json:"views"`
-	Dates    []string `json:"dates"`
-}
-
 // Get Page Visitors
 func ValidateGetPageVisitorsRequest(startDate, endDate, limit string) error {
 	startDate = strings.TrimSpace(startDate)
@@ -143,8 +137,4 @@ func ValidateGetPageVisitorsDateRange(startDate, endDate time.Time) error {
 type GetPageVisitorsRow struct {
 	Path     string `json:"path"`
 	Visitors int64  `json:"visitors"`
-}
-
-type GetPageVisitorsResponse struct {
-	PageVisitors []GetPageVisitorsRow `json:"page_visitors"`
 }

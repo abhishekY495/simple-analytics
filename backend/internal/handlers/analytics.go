@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/abhishekY495/simple-analytics/backend/internal/config"
 	"github.com/abhishekY495/simple-analytics/backend/internal/helpers"
+	"github.com/abhishekY495/simple-analytics/backend/internal/middleware"
 	"github.com/abhishekY495/simple-analytics/backend/internal/repository"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -187,5 +189,99 @@ func Heartbeat(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		}
 
 		helpers.ApiSuccess(w, http.StatusOK, "Heartbeat received", nil)
+	}
+}
+
+func GetMetrics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Validate request method
+		if r.Method != http.MethodGet {
+			helpers.ApiError(w, http.StatusMethodNotAllowed, "Method not allowed")
+			return
+		}
+
+		startStr := r.URL.Query().Get("start")
+		endStr := r.URL.Query().Get("end")
+
+		// Validate request body fields
+		if err := helpers.ValidateGetMetricsRequest(startStr, endStr); err != nil {
+			helpers.ApiError(w, 200, err.Error())
+			return
+		}
+
+		start, err := time.Parse(time.RFC3339, startStr)
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid start date")
+			return
+		}
+		end, err := time.Parse(time.RFC3339, endStr)
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid end date")
+			return
+		}
+
+		// Validate date range
+		if err := helpers.ValidateGetMetricsDateRange(start, end); err != nil {
+			helpers.ApiError(w, 200, err.Error())
+			return
+		}
+
+		// Get website ID from path
+		websiteID, err := uuid.Parse(r.PathValue("id"))
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid website ID")
+			return
+		}
+
+		// Get user from context
+		userID, ok := r.Context().Value(middleware.ContextUserID).(string)
+		if !ok {
+			helpers.ApiError(w, 200, "Unauthorized")
+			return
+		}
+
+		repo := repository.New(pool)
+
+		// Verify the website exists and belongs to the user
+		website, err := repo.GetWebsiteByID(r.Context(), websiteID)
+		if err != nil {
+			helpers.ApiError(w, 200, "Website not found")
+			return
+		}
+		if website.UserID.String() != userID {
+			helpers.ApiError(w, http.StatusForbidden, "Forbidden")
+			return
+		}
+
+		duration := end.Sub(start)
+		prevStart := start.Add(-duration)
+		prevEnd := end.Add(-duration)
+
+		// Get metrics
+		metrics, err := repo.GetMetrics(r.Context(), repository.GetMetricsParams{
+			WebsiteID:   websiteID,
+			StartedAt:   start,
+			StartedAt_2: end,
+			StartedAt_3: prevStart,
+			StartedAt_4: prevEnd,
+		})
+		if err != nil {
+			helpers.ApiError(w, 200, "Failed to get metrics: "+err.Error())
+			return
+		}
+
+		res := helpers.GetMetricsResponse{
+			TotalVisitors:        metrics.TotalVisitors,
+			TotalVisits:          metrics.TotalVisits,
+			TotalViews:           metrics.TotalViews,
+			AvgVisitDuration:     metrics.AvgVisitDuration,
+			PrevTotalVisitors:    metrics.PrevTotalVisitors,
+			PrevTotalVisits:      metrics.PrevTotalVisits,
+			PrevTotalViews:       metrics.PrevTotalViews,
+			PrevAvgVisitDuration: metrics.PrevAvgVisitDuration,
+		}
+
+		// Return response
+		helpers.ApiSuccess(w, http.StatusOK, "Analytics fetched successfully", res)
 	}
 }

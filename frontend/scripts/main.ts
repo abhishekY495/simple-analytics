@@ -26,7 +26,6 @@ const API_URL = "https://simple-analytics-kz3z.onrender.com";
 
   window.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") {
-      sendHeartbeat(API_URL, sessionVisitId);
       clearInterval(heartbeatIntervalId);
     }
   });

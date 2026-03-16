@@ -5,15 +5,57 @@ import { sendHeartbeat } from "./send-heartbeat";
 
 const API_URL = "https://simple-analytics-kz3z.onrender.com";
 
+let lastPath: string | null = null;
+
+async function trackPageView(apiUrl: string, websiteId: string) {
+  const currentPath = window.location.pathname + window.location.search;
+
+  // Avoid double-sending for the same URL
+  if (currentPath === lastPath) return;
+  lastPath = currentPath;
+
+  await sendAnalytics(apiUrl, websiteId);
+}
+
+function setupSpaTracking(apiUrl: string, websiteId: string) {
+  const handleLocationChange = () => {
+    void trackPageView(apiUrl, websiteId);
+  };
+
+  // Patch history.pushState
+  const originalPushState = history.pushState;
+  history.pushState = function (...args: Parameters<History["pushState"]>) {
+    // Call the original
+    originalPushState.apply(this, args);
+    handleLocationChange();
+  };
+
+  // Patch history.replaceState
+  const originalReplaceState = history.replaceState;
+  history.replaceState = function (
+    ...args: Parameters<History["replaceState"]>
+  ) {
+    originalReplaceState.apply(this, args);
+    handleLocationChange();
+  };
+
+  // Back/forward buttons
+  window.addEventListener("popstate", handleLocationChange);
+}
+
 (async function () {
-  const script = document.currentScript as HTMLScriptElement;
+  const script = document.currentScript as HTMLScriptElement | null;
   const websiteId = script?.getAttribute("data-website-id");
 
   if (!websiteId) {
     return;
   }
 
-  await sendAnalytics(API_URL, websiteId);
+  // Initial page view
+  await trackPageView(API_URL, websiteId);
+
+  // Track further SPA navigations (Next.js, React Router, etc.)
+  setupSpaTracking(API_URL, websiteId);
 
   const sessionVisitId = getSessionVisitId();
   if (!sessionVisitId) {

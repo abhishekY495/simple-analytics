@@ -53,11 +53,6 @@ func NewRouter(pool *pgxpool.Pool, cfg config.Config) *http.ServeMux {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		handlers.Heartbeat(pool, cfg).ServeHTTP(w, r)
 	}))
-	//
-	// Get analytics data
-	mux.Handle("GET /analytics/{id}/metrics", auth(handlers.GetMetrics(pool, cfg)))
-	mux.Handle("GET /analytics/{id}/chart-data", auth(handlers.GetChartData(pool, cfg)))
-	mux.Handle("GET /analytics/{id}/pages", auth(handlers.GetPageVisitors(pool, cfg)))
 
 	return mux
 }

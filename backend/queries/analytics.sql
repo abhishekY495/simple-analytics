@@ -43,3 +43,22 @@ FROM
     current_period_views cvw, 
     prev_period_visits pvs, 
     prev_period_views pvw;
+
+-- name: GetChartDataByHour :many
+SELECT
+  gs.period_start AS time,
+  COUNT(p.id)::bigint AS views,
+  COUNT(DISTINCT p.visitor_id)::bigint AS visitors
+FROM generate_series(
+  date_trunc('hour', $2::timestamptz),
+  date_trunc('hour', $3::timestamptz),
+  interval '1 hour'
+) AS gs(period_start)
+LEFT JOIN pageviews p
+  ON p.website_id = $1
+  AND p.created_at >= gs.period_start
+  AND p.created_at <  gs.period_start + interval '1 hour'
+  AND p.created_at >= $2::timestamptz
+  AND p.created_at <= $3::timestamptz
+GROUP BY gs.period_start
+ORDER BY gs.period_start;

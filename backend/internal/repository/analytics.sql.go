@@ -12,6 +12,58 @@ import (
 	"github.com/google/uuid"
 )
 
+const getChartDataByHour = `-- name: GetChartDataByHour :many
+SELECT
+  gs.period_start AS time,
+  COUNT(p.id)::bigint AS views,
+  COUNT(DISTINCT p.visitor_id)::bigint AS visitors
+FROM generate_series(
+  date_trunc('hour', $2::timestamptz),
+  date_trunc('hour', $3::timestamptz),
+  interval '1 hour'
+) AS gs(period_start)
+LEFT JOIN pageviews p
+  ON p.website_id = $1
+  AND p.created_at >= gs.period_start
+  AND p.created_at <  gs.period_start + interval '1 hour'
+  AND p.created_at >= $2::timestamptz
+  AND p.created_at <= $3::timestamptz
+GROUP BY gs.period_start
+ORDER BY gs.period_start
+`
+
+type GetChartDataByHourParams struct {
+	WebsiteID uuid.UUID
+	Column2   time.Time
+	Column3   time.Time
+}
+
+type GetChartDataByHourRow struct {
+	Time     interface{}
+	Views    int64
+	Visitors int64
+}
+
+func (q *Queries) GetChartDataByHour(ctx context.Context, arg GetChartDataByHourParams) ([]GetChartDataByHourRow, error) {
+	rows, err := q.db.Query(ctx, getChartDataByHour, arg.WebsiteID, arg.Column2, arg.Column3)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetChartDataByHourRow
+	for rows.Next() {
+		var i GetChartDataByHourRow
+		if err := rows.Scan(&i.Time, &i.Views, &i.Visitors); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getMetrics = `-- name: GetMetrics :one
 WITH current_period_visits AS (
     SELECT 

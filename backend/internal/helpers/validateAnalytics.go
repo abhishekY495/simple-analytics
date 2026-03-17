@@ -81,3 +81,30 @@ type GetMetricsResponse struct {
 	PrevTotalViews       int64 `json:"prev_total_views"`
 	PrevAvgVisitDuration int32 `json:"prev_avg_visit_duration"`
 }
+
+// Get Chart Data
+func ValidateGetChartDataRequest(startDate, endDate string) error {
+	startDate = strings.TrimSpace(startDate)
+	endDate = strings.TrimSpace(endDate)
+
+	if startDate == "" {
+		return errors.New("start_date is required")
+	}
+	if endDate == "" {
+		return errors.New("end_date is required")
+	}
+	return nil
+}
+
+func ValidateGetChartDataDateRange(startDate, endDate time.Time) error {
+	if startDate.After(endDate) {
+		return errors.New("invalid date range")
+	}
+	return nil
+}
+
+type GetChartDataResponse struct {
+	Time     time.Time `json:"time"`
+	Views    int64     `json:"views"`
+	Visitors int64     `json:"visitors"`
+}

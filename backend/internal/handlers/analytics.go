@@ -285,3 +285,89 @@ func GetMetrics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		helpers.ApiSuccess(w, http.StatusOK, "Analytics fetched successfully", res)
 	}
 }
+
+func GetChartData(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Validate request method
+		if r.Method != http.MethodGet {
+			helpers.ApiError(w, http.StatusMethodNotAllowed, "Method not allowed")
+			return
+		}
+
+		startStr := r.URL.Query().Get("start")
+		endStr := r.URL.Query().Get("end")
+
+		// Validate request body fields
+		if err := helpers.ValidateGetChartDataRequest(startStr, endStr); err != nil {
+			helpers.ApiError(w, 200, err.Error())
+			return
+		}
+
+		start, err := time.Parse(time.RFC3339, startStr)
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid start date")
+			return
+		}
+		end, err := time.Parse(time.RFC3339, endStr)
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid end date")
+			return
+		}
+
+		// Validate date range
+		if err := helpers.ValidateGetChartDataDateRange(start, end); err != nil {
+			helpers.ApiError(w, 200, err.Error())
+			return
+		}
+
+		// Get website ID from path
+		websiteID, err := uuid.Parse(r.PathValue("id"))
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid website ID")
+			return
+		}
+
+		// Get user from context
+		userID, ok := r.Context().Value(middleware.ContextUserID).(string)
+		if !ok {
+			helpers.ApiError(w, 200, "Unauthorized")
+			return
+		}
+
+		repo := repository.New(pool)
+
+		// Verify the website exists and belongs to the user
+		website, err := repo.GetWebsiteByID(r.Context(), websiteID)
+		if err != nil {
+			helpers.ApiError(w, 200, "Website not found")
+			return
+		}
+		if website.UserID.String() != userID {
+			helpers.ApiError(w, http.StatusForbidden, "Forbidden")
+			return
+		}
+
+		// Get chart data
+		chartData, err := repo.GetChartDataByHour(r.Context(), repository.GetChartDataByHourParams{
+			WebsiteID: websiteID,
+			Column2:   start,
+			Column3:   end,
+		})
+		if err != nil {
+			helpers.ApiError(w, 200, "Failed to get chart data: "+err.Error())
+			return
+		}
+
+		res := []helpers.GetChartDataResponse{}
+		for _, data := range chartData {
+			res = append(res, helpers.GetChartDataResponse{
+				Time:     data.Time.(time.Time),
+				Views:    data.Views,
+				Visitors: data.Visitors,
+			})
+		}
+
+		// Return response
+		helpers.ApiSuccess(w, http.StatusOK, "Chart data fetched successfully", res)
+	}
+}

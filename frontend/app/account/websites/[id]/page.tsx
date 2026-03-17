@@ -130,6 +130,7 @@ export default function WebsitePage() {
           start={start}
           end={end}
           accessToken={accessToken}
+          period={selectedRange}
         />
       </div>
 

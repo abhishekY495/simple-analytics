@@ -26,8 +26,9 @@ export function getDateRange(period: Period): DateRange {
     }
 
     case "last24hours": {
-      const start = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-      const end = now;
+      const end = new Date(now);
+      end.setMinutes(0, 0, 0);
+      const start = new Date(end.getTime() - 24 * 60 * 60 * 1000);
       return { start: start.toISOString(), end: end.toISOString() };
     }
 
@@ -48,30 +49,37 @@ export function getDateRange(period: Period): DateRange {
     }
 
     case "last3Months": {
-      const start = new Date(startOfMonth);
-      start.setMonth(start.getMonth() - 3);
+      const startOfMonthUTC = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
+      );
+      const start = new Date(startOfMonthUTC);
+      start.setUTCMonth(start.getUTCMonth() - 3);
 
-      const end = new Date(startOfMonth);
-      end.setMonth(end.getMonth() + 1, 0);
-      end.setHours(23, 59, 59, 999);
+      const end = new Date(startOfMonthUTC);
+      end.setUTCMonth(end.getUTCMonth() + 1, 0);
+      end.setUTCHours(23, 59, 59, 999);
       return { start: start.toISOString(), end: end.toISOString() };
     }
 
     case "last6Months": {
-      const start = new Date(startOfMonth);
-      start.setMonth(start.getMonth() - 6);
+      const startOfMonthUTC = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
+      );
+      const start = new Date(startOfMonthUTC);
+      start.setUTCMonth(start.getUTCMonth() - 5);
 
-      const end = new Date(startOfMonth);
-      end.setMonth(end.getMonth() + 1, 0);
-      end.setHours(23, 59, 59, 999);
+      const end = new Date(startOfMonthUTC);
+      end.setUTCMonth(end.getUTCMonth() + 1, 0);
+      end.setUTCHours(23, 59, 59, 999);
       return { start: start.toISOString(), end: end.toISOString() };
     }
 
     case "thisYear": {
-      const start = startOfYear;
-      const end = new Date(startOfYear);
-      end.setMonth(11, 31);
-      end.setHours(23, 59, 59, 999);
+      const startOfYearUTC = new Date(Date.UTC(now.getUTCFullYear(), 0, 1));
+      const start = startOfYearUTC;
+      const end = new Date(startOfYearUTC);
+      end.setUTCMonth(11, 31);
+      end.setUTCHours(23, 59, 59, 999);
       return { start: start.toISOString(), end: end.toISOString() };
     }
 

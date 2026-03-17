@@ -25,8 +25,10 @@ export type GetChartDataRequest = {
   accessToken: string;
 };
 
-export type GetChartDataResponse = ApiResponse<{
-  time: string;
-  views: number;
-  visitors: number;
-}>;
+export type GetChartDataResponse = ApiResponse<
+  {
+    time: string;
+    views: number;
+    visitors: number;
+  }[]
+>;

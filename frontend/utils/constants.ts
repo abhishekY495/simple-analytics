@@ -5,6 +5,8 @@ export const API_URL =
 
 export const ICON_BASE_URL = "https://icons.duckduckgo.com/ip3";
 
+export const ALL_TIME_START_DATE = new Date("2025-12-31T18:30:00.000Z");
+
 export const DATE_RANGE_FILTERS = [
   {
     label: "Today",

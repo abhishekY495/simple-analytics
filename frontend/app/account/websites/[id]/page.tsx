@@ -53,80 +53,84 @@ export default function WebsitePage() {
     return redirect("/");
   }
 
+  if (isLoading) {
+    return (
+      <div className="text-muted-foreground flex justify-center mt-12">
+        <Spinner className="size-6" />
+      </div>
+    );
+  }
+
+  if (!websiteData) {
+    return redirect("/account/websites");
+  }
+
   return (
     <div className="mb-56">
-      {isLoading ? (
-        <div className="text-muted-foreground flex justify-center mt-12">
-          <Spinner className="size-6" />
+      <div className="flex justify-between items-end border-b pb-4 mb-4">
+        <div className="flex items-center gap-2">
+          <Image
+            src={getWebsiteIcon(websiteData?.domain ?? "")}
+            alt={websiteData?.name ?? "Website"}
+            width={22}
+            height={22}
+            className="rounded object-cover aspect-square"
+            priority
+          />
+          <h1 className="text-2xl font-bold">{websiteData?.name}</h1>
         </div>
-      ) : (
-        <>
-          <div className="flex justify-between items-end border-b pb-4 mb-4">
-            <div className="flex items-center gap-2">
-              <Image
-                src={getWebsiteIcon(websiteData?.domain ?? "")}
-                alt={websiteData?.name ?? "Website"}
-                width={22}
-                height={22}
-                className="rounded object-cover aspect-square"
-                priority
+        <Button
+          variant="default"
+          className="rounded cursor-pointer flex items-center gap-2 w-26"
+          onClick={() => setEditOpen(true)}
+        >
+          <EditIcon size={18} />
+          Edit
+        </Button>
+      </div>
+
+      <div className="flex flex-col gap-5">
+        <div className="flex items-center justify-between">
+          <p className="text-xl font-semibold">Metrics</p>
+          <Select value={selectedRange} onValueChange={handleRangeChange}>
+            <SelectTrigger className="w-44 rounded text-[15px] font-medium cursor-pointer">
+              <SelectValue
+                placeholder="Last 24 hours"
+                className="font-medium"
               />
-              <h1 className="text-2xl font-bold">{websiteData?.name}</h1>
-            </div>
-            <Button
-              variant="default"
-              className="rounded cursor-pointer flex items-center gap-2 w-26"
-              onClick={() => setEditOpen(true)}
-            >
-              <EditIcon size={18} />
-              Edit
-            </Button>
-          </div>
+            </SelectTrigger>
+            <SelectContent position="popper" className="rounded">
+              <SelectGroup>
+                {DATE_RANGE_FILTERS.map((filter) => (
+                  <div key={filter.value}>
+                    <SelectItem
+                      className="p-1.5 px-3 rounded text-[15px] cursor-pointer"
+                      value={filter.value}
+                    >
+                      {filter.label}
+                    </SelectItem>
+                    {filter.separator && <SelectSeparator />}
+                  </div>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
 
-          <div className="flex flex-col gap-5">
-            <div className="flex items-center justify-between">
-              <p className="text-xl font-semibold">Metrics</p>
-              <Select value={selectedRange} onValueChange={handleRangeChange}>
-                <SelectTrigger className="w-44 rounded text-[15px] font-medium cursor-pointer">
-                  <SelectValue
-                    placeholder="Last 24 hours"
-                    className="font-medium"
-                  />
-                </SelectTrigger>
-                <SelectContent position="popper" className="rounded">
-                  <SelectGroup>
-                    {DATE_RANGE_FILTERS.map((filter) => (
-                      <div key={filter.value}>
-                        <SelectItem
-                          className="p-1.5 px-3 rounded text-[15px] cursor-pointer"
-                          value={filter.value}
-                        >
-                          {filter.label}
-                        </SelectItem>
-                        {filter.separator && <SelectSeparator />}
-                      </div>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+        <Metrics
+          websiteId={id}
+          start={start}
+          end={end}
+          accessToken={accessToken}
+        />
+      </div>
 
-            <Metrics
-              websiteId={id}
-              start={start}
-              end={end}
-              accessToken={accessToken}
-            />
-          </div>
-
-          {websiteData && (
-            <EditWebsiteDialog
-              open={editOpen}
-              onOpenChange={setEditOpen}
-              website={websiteData}
-            />
-          )}
-        </>
+      {websiteData && (
+        <EditWebsiteDialog
+          open={editOpen}
+          onOpenChange={setEditOpen}
+          website={websiteData}
+        />
       )}
     </div>
   );

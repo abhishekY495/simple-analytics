@@ -347,27 +347,65 @@ func GetChartData(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 			return
 		}
 
-		// Get chart data
-		chartData, err := repo.GetChartDataByHour(r.Context(), repository.GetChartDataByHourParams{
-			WebsiteID: websiteID,
-			Column2:   start,
-			Column3:   end,
-		})
-		if err != nil {
-			helpers.ApiError(w, 200, "Failed to get chart data: "+err.Error())
-			return
-		}
+		timePeriod := helpers.GetTimePeriod(start, end)
+		var chartData []helpers.GetChartDataRow
 
-		res := []helpers.GetChartDataResponse{}
-		for _, data := range chartData {
-			res = append(res, helpers.GetChartDataResponse{
-				Time:     data.Time.(time.Time),
-				Views:    data.Views,
-				Visitors: data.Visitors,
+		if timePeriod == "hour" {
+			rows, err := repo.GetChartDataByHour(r.Context(), repository.GetChartDataByHourParams{
+				WebsiteID: websiteID,
+				Column2:   start,
+				Column3:   end,
 			})
+			if err != nil {
+				helpers.ApiError(w, 200, "Failed to get chart data: "+err.Error())
+				return
+			}
+			for _, row := range rows {
+				chartData = append(chartData, helpers.GetChartDataRow{
+					Time:     row.Time.(time.Time).UTC(),
+					Views:    row.Views,
+					Visitors: row.Visitors,
+				})
+			}
+		}
+		if timePeriod == "day" {
+			rows, err := repo.GetChartDataByDay(r.Context(), repository.GetChartDataByDayParams{
+				WebsiteID: websiteID,
+				Column2:   start,
+				Column3:   end,
+			})
+			if err != nil {
+				helpers.ApiError(w, 200, "Failed to get chart data: "+err.Error())
+				return
+			}
+			for _, row := range rows {
+				chartData = append(chartData, helpers.GetChartDataRow{
+					Time:     row.Time.(time.Time).UTC(),
+					Views:    row.Views,
+					Visitors: row.Visitors,
+				})
+			}
+		}
+		if timePeriod == "month" {
+			rows, err := repo.GetChartDataByMonth(r.Context(), repository.GetChartDataByMonthParams{
+				WebsiteID: websiteID,
+				Column2:   start,
+				Column3:   end,
+			})
+			if err != nil {
+				helpers.ApiError(w, 200, "Failed to get chart data: "+err.Error())
+				return
+			}
+			for _, row := range rows {
+				chartData = append(chartData, helpers.GetChartDataRow{
+					Time:     row.Time.(time.Time).UTC(),
+					Views:    row.Views,
+					Visitors: row.Visitors,
+				})
+			}
 		}
 
 		// Return response
-		helpers.ApiSuccess(w, http.StatusOK, "Chart data fetched successfully", res)
+		helpers.ApiSuccess(w, http.StatusOK, "Chart data fetched successfully", chartData)
 	}
 }

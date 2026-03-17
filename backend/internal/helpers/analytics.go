@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/netip"
 	"strings"
+	"time"
 
 	"github.com/abhishekY495/simple-analytics/backend/utils"
 	"github.com/google/uuid"
@@ -97,4 +98,28 @@ func GetIPFromRequest(r *http.Request) string {
 
 	// If nothing valid found, explicitly return "unknown"
 	return "unknown"
+}
+
+func GetTimePeriod(start, end time.Time) string {
+	if end.Before(start) {
+		start, end = end, start
+	}
+	diff := end.Sub(start)
+
+	// If range is <= 48 hours → hourly buckets
+	if diff <= 48*time.Hour {
+		return "hour"
+	}
+
+	// Calculate calendar month difference
+	months := (end.Year()-start.Year())*12 + int(end.Month()-start.Month())
+
+	// If range spans 3 or more calendar months (inclusive) → monthly buckets
+	// Example: Jan 1 → Mar 31 has months=2 but spans 3 calendar months.
+	if months+1 >= 3 {
+		return "month"
+	}
+
+	// Otherwise use daily buckets
+	return "day"
 }

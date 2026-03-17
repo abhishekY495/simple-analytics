@@ -62,3 +62,41 @@ LEFT JOIN pageviews p
   AND p.created_at <= $3::timestamptz
 GROUP BY gs.period_start
 ORDER BY gs.period_start;
+
+-- name: GetChartDataByDay :many
+SELECT
+  gs.period_start AS time,
+  COUNT(p.id)::bigint AS views,
+  COUNT(DISTINCT p.visitor_id)::bigint AS visitors
+FROM generate_series(
+  $2::timestamptz,
+  $3::timestamptz,
+  interval '1 day'
+) AS gs(period_start)
+LEFT JOIN pageviews p
+  ON p.website_id = $1
+  AND p.created_at >= gs.period_start
+  AND p.created_at <  gs.period_start + interval '1 day'
+  AND p.created_at >= $2::timestamptz
+  AND p.created_at <= $3::timestamptz
+GROUP BY gs.period_start
+ORDER BY gs.period_start;
+
+-- name: GetChartDataByMonth :many
+SELECT
+  gs.period_start AS time,
+  COUNT(p.id)::bigint AS views,
+  COUNT(DISTINCT p.visitor_id)::bigint AS visitors
+FROM generate_series(
+  $2::timestamptz,
+  $3::timestamptz,
+  interval '1 month'
+) AS gs(period_start)
+LEFT JOIN pageviews p
+  ON p.website_id = $1
+  AND p.created_at >= gs.period_start
+  AND p.created_at <  gs.period_start + interval '1 month'
+  AND p.created_at >= $2::timestamptz
+  AND p.created_at <= $3::timestamptz
+GROUP BY gs.period_start
+ORDER BY gs.period_start;

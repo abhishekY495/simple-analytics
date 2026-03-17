@@ -12,6 +12,58 @@ import (
 	"github.com/google/uuid"
 )
 
+const getChartDataByDay = `-- name: GetChartDataByDay :many
+SELECT
+  gs.period_start AS time,
+  COUNT(p.id)::bigint AS views,
+  COUNT(DISTINCT p.visitor_id)::bigint AS visitors
+FROM generate_series(
+  $2::timestamptz,
+  $3::timestamptz,
+  interval '1 day'
+) AS gs(period_start)
+LEFT JOIN pageviews p
+  ON p.website_id = $1
+  AND p.created_at >= gs.period_start
+  AND p.created_at <  gs.period_start + interval '1 day'
+  AND p.created_at >= $2::timestamptz
+  AND p.created_at <= $3::timestamptz
+GROUP BY gs.period_start
+ORDER BY gs.period_start
+`
+
+type GetChartDataByDayParams struct {
+	WebsiteID uuid.UUID
+	Column2   time.Time
+	Column3   time.Time
+}
+
+type GetChartDataByDayRow struct {
+	Time     interface{}
+	Views    int64
+	Visitors int64
+}
+
+func (q *Queries) GetChartDataByDay(ctx context.Context, arg GetChartDataByDayParams) ([]GetChartDataByDayRow, error) {
+	rows, err := q.db.Query(ctx, getChartDataByDay, arg.WebsiteID, arg.Column2, arg.Column3)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetChartDataByDayRow
+	for rows.Next() {
+		var i GetChartDataByDayRow
+		if err := rows.Scan(&i.Time, &i.Views, &i.Visitors); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getChartDataByHour = `-- name: GetChartDataByHour :many
 SELECT
   gs.period_start AS time,
@@ -53,6 +105,58 @@ func (q *Queries) GetChartDataByHour(ctx context.Context, arg GetChartDataByHour
 	var items []GetChartDataByHourRow
 	for rows.Next() {
 		var i GetChartDataByHourRow
+		if err := rows.Scan(&i.Time, &i.Views, &i.Visitors); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getChartDataByMonth = `-- name: GetChartDataByMonth :many
+SELECT
+  gs.period_start AS time,
+  COUNT(p.id)::bigint AS views,
+  COUNT(DISTINCT p.visitor_id)::bigint AS visitors
+FROM generate_series(
+  $2::timestamptz,
+  $3::timestamptz,
+  interval '1 month'
+) AS gs(period_start)
+LEFT JOIN pageviews p
+  ON p.website_id = $1
+  AND p.created_at >= gs.period_start
+  AND p.created_at <  gs.period_start + interval '1 month'
+  AND p.created_at >= $2::timestamptz
+  AND p.created_at <= $3::timestamptz
+GROUP BY gs.period_start
+ORDER BY gs.period_start
+`
+
+type GetChartDataByMonthParams struct {
+	WebsiteID uuid.UUID
+	Column2   time.Time
+	Column3   time.Time
+}
+
+type GetChartDataByMonthRow struct {
+	Time     interface{}
+	Views    int64
+	Visitors int64
+}
+
+func (q *Queries) GetChartDataByMonth(ctx context.Context, arg GetChartDataByMonthParams) ([]GetChartDataByMonthRow, error) {
+	rows, err := q.db.Query(ctx, getChartDataByMonth, arg.WebsiteID, arg.Column2, arg.Column3)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetChartDataByMonthRow
+	for rows.Next() {
+		var i GetChartDataByMonthRow
 		if err := rows.Scan(&i.Time, &i.Views, &i.Visitors); err != nil {
 			return nil, err
 		}

@@ -103,7 +103,7 @@ func ValidateGetChartDataDateRange(startDate, endDate time.Time) error {
 	return nil
 }
 
-type GetChartDataResponse struct {
+type GetChartDataRow struct {
 	Time     time.Time `json:"time"`
 	Views    int64     `json:"views"`
 	Visitors int64     `json:"visitors"`

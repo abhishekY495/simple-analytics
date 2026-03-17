@@ -18,8 +18,8 @@ SELECT
   COUNT(p.id)::bigint AS views,
   COUNT(DISTINCT p.visitor_id)::bigint AS visitors
 FROM generate_series(
-  date_trunc('hour', $2::timestamptz),
-  date_trunc('hour', $3::timestamptz),
+  $2::timestamptz,
+  $3::timestamptz,
   interval '1 hour'
 ) AS gs(period_start)
 LEFT JOIN pageviews p

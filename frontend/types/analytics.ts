@@ -17,3 +17,16 @@ export type GetMetricsResponse = ApiResponse<{
   prev_total_views: number;
   prev_avg_visit_duration: number;
 }>;
+
+export type GetChartDataRequest = {
+  websiteId: string;
+  start: string;
+  end: string;
+  accessToken: string;
+};
+
+export type GetChartDataResponse = ApiResponse<{
+  time: string;
+  views: number;
+  visitors: number;
+}>;

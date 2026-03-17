@@ -25,6 +25,7 @@ import {
 import { DATE_RANGE_FILTERS } from "@/utils/constants";
 import { getDateRange } from "@/utils/get-date-range";
 import { Period } from "@/types/date-range";
+import VisitorsViewsBarChart from "@/components/analytics/visitors-views-bar-chart";
 
 export default function WebsitePage() {
   const { id } = useParams<{ id: string }>();
@@ -123,15 +124,20 @@ export default function WebsitePage() {
           end={end}
           accessToken={accessToken}
         />
+
+        <VisitorsViewsBarChart
+          websiteId={id}
+          start={start}
+          end={end}
+          accessToken={accessToken}
+        />
       </div>
 
-      {websiteData && (
-        <EditWebsiteDialog
-          open={editOpen}
-          onOpenChange={setEditOpen}
-          website={websiteData}
-        />
-      )}
+      <EditWebsiteDialog
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        website={websiteData}
+      />
     </div>
   );
 }

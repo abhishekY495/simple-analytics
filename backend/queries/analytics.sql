@@ -112,3 +112,15 @@ WHERE website_id = $1
 GROUP BY path
 ORDER BY visitors DESC
 LIMIT $4;
+
+-- name: GetReferrerVisitors :many
+SELECT
+  referrer,
+  COUNT(DISTINCT visitor_id)::bigint AS visitors
+FROM pageviews
+WHERE website_id = $1 
+  AND created_at >= $2 
+  AND created_at <= $3
+GROUP BY referrer
+ORDER BY visitors DESC
+LIMIT $4;

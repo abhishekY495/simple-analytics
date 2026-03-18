@@ -305,3 +305,53 @@ func (q *Queries) GetPageVisitors(ctx context.Context, arg GetPageVisitorsParams
 	}
 	return items, nil
 }
+
+const getReferrerVisitors = `-- name: GetReferrerVisitors :many
+SELECT
+  referrer,
+  COUNT(DISTINCT visitor_id)::bigint AS visitors
+FROM pageviews
+WHERE website_id = $1 
+  AND created_at >= $2 
+  AND created_at <= $3
+GROUP BY referrer
+ORDER BY visitors DESC
+LIMIT $4
+`
+
+type GetReferrerVisitorsParams struct {
+	WebsiteID   uuid.UUID
+	CreatedAt   time.Time
+	CreatedAt_2 time.Time
+	Limit       int32
+}
+
+type GetReferrerVisitorsRow struct {
+	Referrer string
+	Visitors int64
+}
+
+func (q *Queries) GetReferrerVisitors(ctx context.Context, arg GetReferrerVisitorsParams) ([]GetReferrerVisitorsRow, error) {
+	rows, err := q.db.Query(ctx, getReferrerVisitors,
+		arg.WebsiteID,
+		arg.CreatedAt,
+		arg.CreatedAt_2,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetReferrerVisitorsRow
+	for rows.Next() {
+		var i GetReferrerVisitorsRow
+		if err := rows.Scan(&i.Referrer, &i.Visitors); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

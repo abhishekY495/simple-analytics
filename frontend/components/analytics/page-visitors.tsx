@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { MaximizeIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { getPageVisitors } from "@/services/analytics-service";
 import { Skeleton } from "../ui/skeleton";
 import { abbreviateNumber } from "@/utils/abbreviate-number";
 import { Button } from "../ui/button";
-import { MaximizeIcon } from "lucide-react";
+import MorePageVisitorsDialog from "./more-dialogs/more-page-visitors-dialog";
 
 export default function PageVisitors({
   websiteId,
@@ -17,6 +19,7 @@ export default function PageVisitors({
   end: string;
   accessToken: string;
 }) {
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
   const {
     data: pageVisitors,
     isLoading,
@@ -102,12 +105,25 @@ export default function PageVisitors({
                 </div>
               </div>
             ))}
-            <Button variant="ghost" className="mt-2 rounded cursor-pointer">
+            <Button
+              variant="ghost"
+              className="mt-2 rounded cursor-pointer"
+              onClick={() => setIsMoreOpen(true)}
+            >
               <MaximizeIcon size={16} /> More
             </Button>
           </div>
         )}
       </CardContent>
+
+      <MorePageVisitorsDialog
+        open={isMoreOpen}
+        onOpenChange={setIsMoreOpen}
+        websiteId={websiteId}
+        start={start}
+        end={end}
+        accessToken={accessToken}
+      />
     </Card>
   );
 }

@@ -5,6 +5,8 @@ import {
   GetMetricsResponse,
   GetPageVisitorsRequest,
   GetPageVisitorsResponse,
+  GetReferrerVisitorsRequest,
+  GetReferrerVisitorsResponse,
 } from "@/types/analytics";
 
 export async function getMetrics(
@@ -44,6 +46,22 @@ export async function getPageVisitors(
 ): Promise<GetPageVisitorsResponse> {
   const res = await fetch(
     `/api/analytics/${req.websiteId}/page-visitors?start=${req.start}&end=${req.end}&limit=${req.limit}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${req.accessToken}`,
+      },
+    },
+  );
+  return res.json();
+}
+
+export async function getReferrerVisitors(
+  req: GetReferrerVisitorsRequest,
+): Promise<GetReferrerVisitorsResponse> {
+  const res = await fetch(
+    `/api/analytics/${req.websiteId}/referrer-visitors?start=${req.start}&end=${req.end}&limit=${req.limit}`,
     {
       method: "GET",
       headers: {

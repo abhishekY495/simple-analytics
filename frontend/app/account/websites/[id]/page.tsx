@@ -28,6 +28,7 @@ import { Period } from "@/types/date-range";
 import VisitorsViewsBarChart from "@/components/analytics/visitors-views-bar-chart";
 import { formatDate } from "@/utils/format-date";
 import PageVisitors from "@/components/analytics/page-visitors";
+import ReferrerVisitors from "@/components/analytics/referrer-visitors";
 
 export default function WebsitePage() {
   const { id } = useParams<{ id: string }>();
@@ -181,6 +182,13 @@ export default function WebsitePage() {
 
         <div className="grid grid-cols-2 gap-4">
           <PageVisitors
+            websiteId={id}
+            start={start}
+            end={end}
+            accessToken={accessToken}
+          />
+
+          <ReferrerVisitors
             websiteId={id}
             start={start}
             end={end}

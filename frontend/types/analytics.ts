@@ -50,3 +50,19 @@ export type PageVisitor = {
 };
 
 export type GetPageVisitorsResponse = ApiResponse<PageVisitor[]>;
+
+// Get Referrer Visitors
+export type GetReferrerVisitorsRequest = {
+  start: string;
+  end: string;
+  websiteId: string;
+  accessToken: string;
+  limit: number;
+};
+
+export type ReferrerVisitor = {
+  referrer: string;
+  visitors: number;
+};
+
+export type GetReferrerVisitorsResponse = ApiResponse<ReferrerVisitor[]>;

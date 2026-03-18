@@ -1,5 +1,6 @@
 import { ApiResponse } from "./api-response";
 
+// Get Metrics
 export type GetMetricsRequest = {
   websiteId: string;
   start: string;
@@ -18,6 +19,7 @@ export type GetMetricsResponse = ApiResponse<{
   prev_avg_visit_duration: number;
 }>;
 
+// Get Chart Data
 export type GetChartDataRequest = {
   websiteId: string;
   start: string;
@@ -32,3 +34,19 @@ export type GetChartDataResponse = ApiResponse<
     visitors: number;
   }[]
 >;
+
+// Get Page Visitors
+export type GetPageVisitorsRequest = {
+  start: string;
+  end: string;
+  websiteId: string;
+  accessToken: string;
+  limit: number;
+};
+
+export type PageVisitor = {
+  path: string;
+  visitors: number;
+};
+
+export type GetPageVisitorsResponse = ApiResponse<PageVisitor[]>;

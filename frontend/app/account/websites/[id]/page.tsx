@@ -27,6 +27,7 @@ import { getDateRange } from "@/utils/get-date-range";
 import { Period } from "@/types/date-range";
 import VisitorsViewsBarChart from "@/components/analytics/visitors-views-bar-chart";
 import { formatDate } from "@/utils/format-date";
+import PageVisitors from "@/components/analytics/page-visitors";
 
 export default function WebsitePage() {
   const { id } = useParams<{ id: string }>();
@@ -122,7 +123,7 @@ export default function WebsitePage() {
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
-                className="rounded px-6"
+                className="rounded px-6 cursor-pointer"
                 disabled={isLeftDisabled}
                 onClick={handlePrevious}
               >
@@ -130,7 +131,7 @@ export default function WebsitePage() {
               </Button>
               <Button
                 variant="outline"
-                className="rounded px-6"
+                className="rounded px-6 cursor-pointer"
                 disabled={isRightDisabled}
                 onClick={handleNext}
               >
@@ -177,6 +178,15 @@ export default function WebsitePage() {
           accessToken={accessToken}
           period={selectedRange}
         />
+
+        <div className="grid grid-cols-2 gap-4">
+          <PageVisitors
+            websiteId={id}
+            start={start}
+            end={end}
+            accessToken={accessToken}
+          />
+        </div>
       </div>
 
       <EditWebsiteDialog

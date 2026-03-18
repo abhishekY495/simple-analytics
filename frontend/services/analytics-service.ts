@@ -3,6 +3,8 @@ import {
   GetChartDataResponse,
   GetMetricsRequest,
   GetMetricsResponse,
+  GetPageVisitorsRequest,
+  GetPageVisitorsResponse,
 } from "@/types/analytics";
 
 export async function getMetrics(
@@ -26,6 +28,22 @@ export async function getChartData(
 ): Promise<GetChartDataResponse> {
   const res = await fetch(
     `/api/analytics/${req.websiteId}/chart-data?start=${req.start}&end=${req.end}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${req.accessToken}`,
+      },
+    },
+  );
+  return res.json();
+}
+
+export async function getPageVisitors(
+  req: GetPageVisitorsRequest,
+): Promise<GetPageVisitorsResponse> {
+  const res = await fetch(
+    `/api/analytics/${req.websiteId}/page-visitors?start=${req.start}&end=${req.end}&limit=${req.limit}`,
     {
       method: "GET",
       headers: {

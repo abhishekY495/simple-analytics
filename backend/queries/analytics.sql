@@ -100,3 +100,15 @@ LEFT JOIN pageviews p
   AND p.created_at <= $3::timestamptz
 GROUP BY gs.period_start
 ORDER BY gs.period_start;
+
+-- name: GetPageVisitors :many
+SELECT
+  path,
+  COUNT(DISTINCT visitor_id)::bigint AS visitors
+FROM pageviews
+WHERE website_id = $1 
+  AND created_at >= $2 
+  AND created_at <= $3
+GROUP BY path
+ORDER BY visitors DESC
+LIMIT $4;

@@ -56,10 +56,10 @@ func ValidateGetMetricsRequest(startDate, endDate string) error {
 	endDate = strings.TrimSpace(endDate)
 
 	if startDate == "" {
-		return errors.New("start_date is required")
+		return errors.New("start is required")
 	}
 	if endDate == "" {
-		return errors.New("end_date is required")
+		return errors.New("end is required")
 	}
 	return nil
 }
@@ -88,10 +88,10 @@ func ValidateGetChartDataRequest(startDate, endDate string) error {
 	endDate = strings.TrimSpace(endDate)
 
 	if startDate == "" {
-		return errors.New("start_date is required")
+		return errors.New("start is required")
 	}
 	if endDate == "" {
-		return errors.New("end_date is required")
+		return errors.New("end is required")
 	}
 	return nil
 }
@@ -107,4 +107,34 @@ type GetChartDataRow struct {
 	Time     time.Time `json:"time"`
 	Views    int64     `json:"views"`
 	Visitors int64     `json:"visitors"`
+}
+
+// Get Page Visitors
+func ValidateGetPageVisitorsRequest(startDate, endDate, limit string) error {
+	startDate = strings.TrimSpace(startDate)
+	endDate = strings.TrimSpace(endDate)
+	limit = strings.TrimSpace(limit)
+
+	if startDate == "" {
+		return errors.New("start is required")
+	}
+	if endDate == "" {
+		return errors.New("end is required")
+	}
+	if limit == "" {
+		return errors.New("limit is required")
+	}
+	return nil
+}
+
+func ValidateGetPageVisitorsDateRange(startDate, endDate time.Time) error {
+	if startDate.After(endDate) {
+		return errors.New("invalid date range")
+	}
+	return nil
+}
+
+type GetPageVisitorsRow struct {
+	Path     string `json:"path"`
+	Visitors int64  `json:"visitors"`
 }

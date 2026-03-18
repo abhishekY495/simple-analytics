@@ -255,3 +255,53 @@ func (q *Queries) GetMetrics(ctx context.Context, arg GetMetricsParams) (GetMetr
 	)
 	return i, err
 }
+
+const getPageVisitors = `-- name: GetPageVisitors :many
+SELECT
+  path,
+  COUNT(DISTINCT visitor_id)::bigint AS visitors
+FROM pageviews
+WHERE website_id = $1 
+  AND created_at >= $2 
+  AND created_at <= $3
+GROUP BY path
+ORDER BY visitors DESC
+LIMIT $4
+`
+
+type GetPageVisitorsParams struct {
+	WebsiteID   uuid.UUID
+	CreatedAt   time.Time
+	CreatedAt_2 time.Time
+	Limit       int32
+}
+
+type GetPageVisitorsRow struct {
+	Path     string
+	Visitors int64
+}
+
+func (q *Queries) GetPageVisitors(ctx context.Context, arg GetPageVisitorsParams) ([]GetPageVisitorsRow, error) {
+	rows, err := q.db.Query(ctx, getPageVisitors,
+		arg.WebsiteID,
+		arg.CreatedAt,
+		arg.CreatedAt_2,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPageVisitorsRow
+	for rows.Next() {
+		var i GetPageVisitorsRow
+		if err := rows.Scan(&i.Path, &i.Visitors); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

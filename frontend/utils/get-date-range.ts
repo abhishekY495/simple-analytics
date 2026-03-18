@@ -1,7 +1,7 @@
 import { DateRange, Period } from "@/types/date-range";
 import { ALL_TIME_START_DATE } from "./constants";
 
-export function getDateRange(period: Period): DateRange {
+export function getDateRange(period: Period, offset = 0): DateRange {
   const now = new Date();
 
   const todayStart = new Date(now);
@@ -19,8 +19,11 @@ export function getDateRange(period: Period): DateRange {
 
   switch (period) {
     case "today": {
-      const start = todayStart;
-      const end = new Date(todayStart);
+      const targetDay = new Date(todayStart);
+      targetDay.setDate(targetDay.getDate() + offset);
+
+      const start = targetDay;
+      const end = new Date(targetDay);
       end.setHours(23, 59, 59, 999);
       return { start: start.toISOString(), end: end.toISOString() };
     }
@@ -41,8 +44,11 @@ export function getDateRange(period: Period): DateRange {
     }
 
     case "thisMonth": {
-      const start = startOfMonth;
-      const end = new Date(startOfMonth);
+      const startOfMonthOffset = new Date(startOfMonth);
+      startOfMonthOffset.setMonth(startOfMonthOffset.getMonth() + offset);
+
+      const start = startOfMonthOffset;
+      const end = new Date(startOfMonthOffset);
       end.setMonth(end.getMonth() + 1, 0);
       end.setHours(23, 59, 59, 999);
       return { start: start.toISOString(), end: end.toISOString() };

@@ -9,7 +9,7 @@ import { useParams, useRouter } from "next/navigation";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { EditIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, SettingsIcon } from "lucide-react";
 import { EditWebsiteDialog } from "@/components/website/edit-website-dialog";
 import { getWebsiteIcon } from "@/utils/get-website-icon";
 import Metrics from "@/components/analytics/metrics";
@@ -26,6 +26,7 @@ import { DATE_RANGE_FILTERS } from "@/utils/constants";
 import { getDateRange } from "@/utils/get-date-range";
 import { Period } from "@/types/date-range";
 import VisitorsViewsBarChart from "@/components/analytics/visitors-views-bar-chart";
+import { formatDate } from "@/utils/format-date";
 
 export default function WebsitePage() {
   const { id } = useParams<{ id: string }>();
@@ -33,9 +34,14 @@ export default function WebsitePage() {
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
   const [selectedRange, setSelectedRange] = useState<Period>("today");
+  const [rangeOffset, setRangeOffset] = useState(0);
 
-  const handleRangeChange = (value: Period) => setSelectedRange(value);
-  const { start, end } = getDateRange(selectedRange);
+  const handleRangeChange = (value: Period) => {
+    setSelectedRange(value);
+    setRangeOffset(0);
+  };
+
+  const { start, end } = getDateRange(selectedRange, rangeOffset);
 
   const { data: website, isLoading } = useQuery({
     queryKey: ["website", id],
@@ -66,6 +72,23 @@ export default function WebsitePage() {
     return redirect("/account/websites");
   }
 
+  const isNavigable =
+    selectedRange === "today" || selectedRange === "thisMonth";
+  const isLeftDisabled = !isNavigable;
+  const isRightDisabled = !isNavigable || rangeOffset === 0;
+
+  const handlePrevious = () => {
+    if (!isNavigable) return;
+
+    setRangeOffset((prev) => prev - 1);
+  };
+
+  const handleNext = () => {
+    if (!isNavigable || rangeOffset === 0) return;
+
+    setRangeOffset((prev) => Math.min(prev + 1, 0));
+  };
+
   return (
     <div className="mb-56">
       <div className="flex justify-between items-end border-b pb-4 mb-4">
@@ -85,37 +108,59 @@ export default function WebsitePage() {
           className="rounded cursor-pointer flex items-center gap-2 w-26"
           onClick={() => setEditOpen(true)}
         >
-          <EditIcon size={18} />
-          Edit
+          <SettingsIcon size={18} />
+          Settings
         </Button>
       </div>
 
       <div className="flex flex-col gap-5">
         <div className="flex items-center justify-between">
-          <p className="text-xl font-semibold">Metrics</p>
-          <Select value={selectedRange} onValueChange={handleRangeChange}>
-            <SelectTrigger className="w-44 rounded text-[15px] font-medium cursor-pointer">
-              <SelectValue
-                placeholder="Last 24 hours"
-                className="font-medium"
-              />
-            </SelectTrigger>
-            <SelectContent position="popper" className="rounded">
-              <SelectGroup>
-                {DATE_RANGE_FILTERS.map((filter) => (
-                  <div key={filter.value}>
-                    <SelectItem
-                      className="p-1.5 px-3 rounded text-[15px] cursor-pointer"
-                      value={filter.value}
-                    >
-                      {filter.label}
-                    </SelectItem>
-                    {filter.separator && <SelectSeparator />}
-                  </div>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <p className="text-sm text-muted-foreground">
+            {formatDate(start, end, selectedRange)}
+          </p>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                className="rounded px-6"
+                disabled={isLeftDisabled}
+                onClick={handlePrevious}
+              >
+                <ChevronLeftIcon size={18} />
+              </Button>
+              <Button
+                variant="outline"
+                className="rounded px-6"
+                disabled={isRightDisabled}
+                onClick={handleNext}
+              >
+                <ChevronRightIcon size={18} />
+              </Button>
+            </div>
+            <Select value={selectedRange} onValueChange={handleRangeChange}>
+              <SelectTrigger className="w-44 rounded text-[15px] font-medium cursor-pointer">
+                <SelectValue
+                  placeholder="Last 24 hours"
+                  className="font-medium"
+                />
+              </SelectTrigger>
+              <SelectContent position="popper" className="rounded">
+                <SelectGroup>
+                  {DATE_RANGE_FILTERS.map((filter) => (
+                    <div key={filter.value}>
+                      <SelectItem
+                        className="p-1.5 px-3 rounded text-[15px] cursor-pointer"
+                        value={filter.value}
+                      >
+                        {filter.label}
+                      </SelectItem>
+                      {filter.separator && <SelectSeparator />}
+                    </div>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <Metrics

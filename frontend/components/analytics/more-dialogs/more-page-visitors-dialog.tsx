@@ -5,7 +5,6 @@ import { abbreviateNumber } from "@/utils/abbreviate-number";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "../../ui/dialog";

@@ -591,7 +591,7 @@ func GetAnalytics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 			// Return response
 			helpers.ApiSuccess(w, http.StatusOK, "OS visitors fetched successfully", osVisitors)
 		}
-		if typeStr == "device_type" {
+		if typeStr == "device" {
 			rows, err := repo.GetDeviceTypeVisitors(r.Context(), repository.GetDeviceTypeVisitorsParams{
 				WebsiteID:   websiteID,
 				CreatedAt:   start,
@@ -599,17 +599,17 @@ func GetAnalytics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 				Limit:       int32(limitInt),
 			})
 			if err != nil {
-				helpers.ApiError(w, 200, "Failed to get device type visitors: "+err.Error())
+				helpers.ApiError(w, 200, "Failed to get device visitors: "+err.Error())
 				return
 			}
 
-			var deviceTypeVisitors []helpers.GetDeviceTypeVisitorsRow
+			var deviceVisitors []helpers.GetDeviceTypeVisitorsRow
 			for _, row := range rows {
-				deviceTypeVisitors = append(deviceTypeVisitors, helpers.GetDeviceTypeVisitorsRow{DeviceType: row.DeviceType, Visitors: row.Visitors})
+				deviceVisitors = append(deviceVisitors, helpers.GetDeviceTypeVisitorsRow{Device: row.DeviceType, Visitors: row.Visitors})
 			}
 
 			// Return response
-			helpers.ApiSuccess(w, http.StatusOK, "Device type visitors fetched successfully", deviceTypeVisitors)
+			helpers.ApiSuccess(w, http.StatusOK, "Device visitors fetched successfully", deviceVisitors)
 		}
 	}
 }

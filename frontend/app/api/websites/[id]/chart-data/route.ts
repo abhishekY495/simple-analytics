@@ -45,7 +45,7 @@ export async function GET(
     }
 
     const backendRes = await fetch(
-      `${API_URL}/analytics/${id}/chart-data?start=${startDate}&end=${endDate}`,
+      `${API_URL}/websites/${id}/chart-data?start=${startDate}&end=${endDate}`,
       {
         method: "GET",
         headers: {

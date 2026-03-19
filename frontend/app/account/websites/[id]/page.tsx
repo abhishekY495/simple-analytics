@@ -29,6 +29,7 @@ import VisitorsViewsBarChart from "@/components/analytics/visitors-views-bar-cha
 import { formatDate } from "@/utils/format-date";
 import PageVisitors from "@/components/analytics/page-visitors";
 import ReferrerVisitors from "@/components/analytics/referrer-visitors";
+import CountryVisitors from "@/components/analytics/country-visitors";
 
 export default function WebsitePage() {
   const { id } = useParams<{ id: string }>();
@@ -189,6 +190,15 @@ export default function WebsitePage() {
           />
 
           <ReferrerVisitors
+            websiteId={id}
+            start={start}
+            end={end}
+            accessToken={accessToken}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <CountryVisitors
             websiteId={id}
             start={start}
             end={end}

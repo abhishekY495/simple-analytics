@@ -66,3 +66,19 @@ export type ReferrerVisitor = {
 };
 
 export type GetReferrerVisitorsResponse = ApiResponse<ReferrerVisitor[]>;
+
+// Get Country Visitors
+export type GetCountryVisitorsRequest = {
+  start: string;
+  end: string;
+  websiteId: string;
+  accessToken: string;
+  limit: number;
+};
+
+export type CountryVisitor = {
+  country: string;
+  visitors: number;
+};
+
+export type GetCountryVisitorsResponse = ApiResponse<CountryVisitor[]>;

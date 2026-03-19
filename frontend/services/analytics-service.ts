@@ -1,6 +1,8 @@
 import {
   GetChartDataRequest,
   GetChartDataResponse,
+  GetCountryVisitorsRequest,
+  GetCountryVisitorsResponse,
   GetMetricsRequest,
   GetMetricsResponse,
   GetPageVisitorsRequest,
@@ -62,6 +64,22 @@ export async function getReferrerVisitors(
 ): Promise<GetReferrerVisitorsResponse> {
   const res = await fetch(
     `/api/analytics/${req.websiteId}/referrer-visitors?start=${req.start}&end=${req.end}&limit=${req.limit}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${req.accessToken}`,
+      },
+    },
+  );
+  return res.json();
+}
+
+export async function getCountryVisitors(
+  req: GetCountryVisitorsRequest,
+): Promise<GetCountryVisitorsResponse> {
+  const res = await fetch(
+    `/api/analytics/${req.websiteId}/country-visitors?start=${req.start}&end=${req.end}&limit=${req.limit}`,
     {
       method: "GET",
       headers: {

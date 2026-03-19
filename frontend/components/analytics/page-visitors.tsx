@@ -2,11 +2,11 @@ import { ReactNode, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { MaximizeIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { getPageVisitors } from "@/services/analytics-service";
 import { Skeleton } from "../ui/skeleton";
 import { abbreviateNumber } from "@/utils/abbreviate-number";
 import { Button } from "../ui/button";
 import MorePageVisitorsDialog from "./more-dialogs/more-page-visitors-dialog";
+import { getAnalytics } from "@/services/analytics-service";
 
 export default function PageVisitors({
   websiteId,
@@ -27,12 +27,13 @@ export default function PageVisitors({
   } = useQuery({
     queryKey: ["pageVisitors", websiteId, start, end],
     queryFn: () =>
-      getPageVisitors({
+      getAnalytics({
         websiteId,
         start,
         end,
         accessToken,
         limit: 10,
+        type: "page",
       }),
   });
 

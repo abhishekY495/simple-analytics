@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getCountryVisitors } from "@/services/analytics-service";
 import { Skeleton } from "../../ui/skeleton";
 import { abbreviateNumber } from "@/utils/abbreviate-number";
 import {
@@ -10,6 +9,7 @@ import {
   DialogTitle,
 } from "../../ui/dialog";
 import ReactCountryFlag from "react-country-flag";
+import { getAnalytics } from "@/services/analytics-service";
 
 export default function MoreCountryVisitorsDialog({
   open,
@@ -33,12 +33,13 @@ export default function MoreCountryVisitorsDialog({
   } = useQuery({
     queryKey: ["countryVisitorsMore", websiteId, start, end],
     queryFn: () =>
-      getCountryVisitors({
+      getAnalytics({
         websiteId,
         start,
         end,
         accessToken,
         limit: 500,
+        type: "country",
       }),
     enabled: open,
   });

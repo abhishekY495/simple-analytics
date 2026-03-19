@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getPageVisitors } from "@/services/analytics-service";
 import { Skeleton } from "../../ui/skeleton";
 import { abbreviateNumber } from "@/utils/abbreviate-number";
 import {
@@ -9,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../ui/dialog";
+import { getAnalytics } from "@/services/analytics-service";
 
 export default function MorePageVisitorsDialog({
   open,
@@ -32,12 +32,13 @@ export default function MorePageVisitorsDialog({
   } = useQuery({
     queryKey: ["pageVisitorsMore", websiteId, start, end],
     queryFn: () =>
-      getPageVisitors({
+      getAnalytics({
         websiteId,
         start,
         end,
         accessToken,
         limit: 500,
+        type: "page",
       }),
     enabled: open,
   });

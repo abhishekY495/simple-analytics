@@ -7,7 +7,6 @@ export type GetStatsRequest = {
   end: string;
   accessToken: string;
 };
-
 export type GetStatsResponse = ApiResponse<{
   total_visitors: number;
   total_visits: number;
@@ -26,7 +25,6 @@ export type GetChartDataRequest = {
   end: string;
   accessToken: string;
 };
-
 export type GetChartDataResponse = ApiResponse<
   {
     time: string;
@@ -35,50 +33,63 @@ export type GetChartDataResponse = ApiResponse<
   }[]
 >;
 
-// Get Page Visitors
-export type GetPageVisitorsRequest = {
+// Get Analytics
+export type GetAnalyticsRequest = {
+  websiteId: string;
   start: string;
   end: string;
-  websiteId: string;
   accessToken: string;
   limit: number;
+  type: "page" | "referrer" | "country" | "browser" | "os" | "device";
 };
 
+// Get Page Visitors
 export type PageVisitor = {
   path: string;
   visitors: number;
 };
-
 export type GetPageVisitorsResponse = ApiResponse<PageVisitor[]>;
 
 // Get Referrer Visitors
-export type GetReferrerVisitorsRequest = {
-  start: string;
-  end: string;
-  websiteId: string;
-  accessToken: string;
-  limit: number;
-};
-
 export type ReferrerVisitor = {
   referrer: string;
   visitors: number;
 };
-
 export type GetReferrerVisitorsResponse = ApiResponse<ReferrerVisitor[]>;
 
 // Get Country Visitors
-export type GetCountryVisitorsRequest = {
-  start: string;
-  end: string;
-  websiteId: string;
-  accessToken: string;
-  limit: number;
-};
-
 export type CountryVisitor = {
   country: string;
   visitors: number;
 };
-
 export type GetCountryVisitorsResponse = ApiResponse<CountryVisitor[]>;
+
+// Get Browser Visitors
+export type BrowserVisitor = {
+  browser: string;
+  visitors: number;
+};
+export type GetBrowserVisitorsResponse = ApiResponse<BrowserVisitor[]>;
+
+// Get OS Visitors
+export type OsVisitor = {
+  os: string;
+  visitors: number;
+};
+export type GetOsVisitorsResponse = ApiResponse<OsVisitor[]>;
+
+// Get Device Type Visitors
+export type DeviceTypeVisitor = {
+  device_type: string;
+  visitors: number;
+};
+export type GetDeviceTypeVisitorsResponse = ApiResponse<DeviceTypeVisitor[]>;
+
+export type AnalyticsResponseByType = {
+  page: GetPageVisitorsResponse;
+  referrer: GetReferrerVisitorsResponse;
+  country: GetCountryVisitorsResponse;
+  browser: GetBrowserVisitorsResponse;
+  os: GetOsVisitorsResponse;
+  device: GetDeviceTypeVisitorsResponse;
+};

@@ -1,6 +1,6 @@
-import { GetCountryVisitorsResponse } from "@/types/analytics";
-import { API_URL } from "@/utils/constants";
+import { AnalyticsResponseByType } from "@/types/analytics";
 import { NextRequest, NextResponse } from "next/server";
+import { API_URL } from "@/utils/constants";
 
 export async function GET(
   req: NextRequest,
@@ -11,7 +11,9 @@ export async function GET(
     const { id } = await params;
 
     if (!id) {
-      return NextResponse.json<GetCountryVisitorsResponse>(
+      return NextResponse.json<
+        AnalyticsResponseByType[keyof AnalyticsResponseByType]
+      >(
         { status: "error", status_message: "Invalid website id" },
         { status: 400 },
       );
@@ -20,19 +22,24 @@ export async function GET(
     const start = req.nextUrl.searchParams.get("start");
     const end = req.nextUrl.searchParams.get("end");
     const limit = req.nextUrl.searchParams.get("limit");
+    const type = req.nextUrl.searchParams.get("type");
 
-    if (!start || !end || !limit) {
-      return NextResponse.json<GetCountryVisitorsResponse>(
+    if (!start || !end || !limit || !type) {
+      return NextResponse.json<
+        AnalyticsResponseByType[keyof AnalyticsResponseByType]
+      >(
         {
           status: "error",
-          status_message: "Invalid start or end date or limit",
+          status_message: "Invalid start or end date or limit or type",
         },
         { status: 400 },
       );
     }
 
     if (start > end) {
-      return NextResponse.json<GetCountryVisitorsResponse>(
+      return NextResponse.json<
+        AnalyticsResponseByType[keyof AnalyticsResponseByType]
+      >(
         {
           status: "error",
           status_message: "Start date must be before end date",
@@ -42,14 +49,13 @@ export async function GET(
     }
 
     if (!accessToken) {
-      return NextResponse.json<GetCountryVisitorsResponse>(
-        { status: "error", status_message: "Unauthorized" },
-        { status: 401 },
-      );
+      return NextResponse.json<
+        AnalyticsResponseByType[keyof AnalyticsResponseByType]
+      >({ status: "error", status_message: "Unauthorized" }, { status: 401 });
     }
 
     const backendRes = await fetch(
-      `${API_URL}/analytics/${id}/country-visitors?start=${start}&end=${end}&limit=${limit}`,
+      `${API_URL}/analytics/${id}/analytics?start=${start}&end=${end}&limit=${limit}&type=${type}`,
       {
         method: "GET",
         headers: {
@@ -61,11 +67,15 @@ export async function GET(
 
     const data = await backendRes.json();
 
-    return NextResponse.json<GetCountryVisitorsResponse>(data, {
+    return NextResponse.json<
+      AnalyticsResponseByType[keyof AnalyticsResponseByType]
+    >(data, {
       status: backendRes.status,
     });
   } catch {
-    return NextResponse.json<GetCountryVisitorsResponse>(
+    return NextResponse.json<
+      AnalyticsResponseByType[keyof AnalyticsResponseByType]
+    >(
       { status: "error", status_message: "Failed to reach the server" },
       { status: 503 },
     );

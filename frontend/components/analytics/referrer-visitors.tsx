@@ -1,4 +1,3 @@
-import { getReferrerVisitors } from "@/services/analytics-service";
 import { useQuery } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
 import { Skeleton } from "../ui/skeleton";
@@ -10,6 +9,7 @@ import MoreReferrerVisitorsDialog from "./more-dialogs/more-referrer-visitors-di
 import { getWebsiteIcon } from "@/utils/get-website-icon";
 import ImageWithFallback from "../image-with-fallback";
 import Link from "next/link";
+import { getAnalytics } from "@/services/analytics-service";
 
 export default function ReferrerVisitors({
   websiteId,
@@ -30,12 +30,13 @@ export default function ReferrerVisitors({
   } = useQuery({
     queryKey: ["referrerVisitors", websiteId, start, end],
     queryFn: () =>
-      getReferrerVisitors({
+      getAnalytics({
         websiteId,
         start,
         end,
         accessToken,
         limit: 10,
+        type: "referrer",
       }),
   });
 

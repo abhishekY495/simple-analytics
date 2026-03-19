@@ -2,12 +2,12 @@ import { ReactNode, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { MaximizeIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { getCountryVisitors } from "@/services/analytics-service";
 import { Skeleton } from "../ui/skeleton";
 import { abbreviateNumber } from "@/utils/abbreviate-number";
 import { Button } from "../ui/button";
 import MoreCountryVisitorsDialog from "./more-dialogs/more-country-visitors-dialog";
 import ReactCountryFlag from "react-country-flag";
+import { getAnalytics } from "@/services/analytics-service";
 
 export default function CountryVisitors({
   websiteId,
@@ -28,12 +28,13 @@ export default function CountryVisitors({
   } = useQuery({
     queryKey: ["countryVisitors", websiteId, start, end],
     queryFn: () =>
-      getCountryVisitors({
+      getAnalytics({
         websiteId,
         start,
         end,
         accessToken,
         limit: 10,
+        type: "country",
       }),
   });
 

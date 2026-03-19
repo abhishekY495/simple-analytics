@@ -1,5 +1,3 @@
-import { GetPageVisitorsResponse } from "@/types/analytics";
-import { API_URL } from "@/utils/constants";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(

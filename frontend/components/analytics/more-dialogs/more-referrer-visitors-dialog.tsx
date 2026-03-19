@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getReferrerVisitors } from "@/services/analytics-service";
 import { Skeleton } from "../../ui/skeleton";
 import { abbreviateNumber } from "@/utils/abbreviate-number";
 import {
@@ -13,6 +12,7 @@ import ImageWithFallback from "@/components/image-with-fallback";
 import { getWebsiteIcon } from "@/utils/get-website-icon";
 import Link from "next/link";
 import { ExternalLinkIcon } from "lucide-react";
+import { getAnalytics } from "@/services/analytics-service";
 
 export default function MoreReferrerVisitorsDialog({
   open,
@@ -36,12 +36,13 @@ export default function MoreReferrerVisitorsDialog({
   } = useQuery({
     queryKey: ["referrerVisitorsMore", websiteId, start, end],
     queryFn: () =>
-      getReferrerVisitors({
+      getAnalytics({
         websiteId,
         start,
         end,
         accessToken,
         limit: 500,
+        type: "referrer",
       }),
     enabled: open,
   });

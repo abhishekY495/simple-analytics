@@ -1,14 +1,10 @@
 import {
   GetChartDataRequest,
   GetChartDataResponse,
-  GetCountryVisitorsRequest,
-  GetCountryVisitorsResponse,
   GetStatsRequest,
   GetStatsResponse,
-  GetPageVisitorsRequest,
-  GetPageVisitorsResponse,
-  GetReferrerVisitorsRequest,
-  GetReferrerVisitorsResponse,
+  GetAnalyticsRequest,
+  AnalyticsResponseByType,
 } from "@/types/analytics";
 
 export async function getStats(
@@ -43,43 +39,11 @@ export async function getChartData(
   return res.json();
 }
 
-export async function getPageVisitors(
-  req: GetPageVisitorsRequest,
-): Promise<GetPageVisitorsResponse> {
+export async function getAnalytics<T extends GetAnalyticsRequest["type"]>(
+  req: GetAnalyticsRequest & { type: T },
+): Promise<AnalyticsResponseByType[T]> {
   const res = await fetch(
-    `/api/analytics/${req.websiteId}/page-visitors?start=${req.start}&end=${req.end}&limit=${req.limit}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${req.accessToken}`,
-      },
-    },
-  );
-  return res.json();
-}
-
-export async function getReferrerVisitors(
-  req: GetReferrerVisitorsRequest,
-): Promise<GetReferrerVisitorsResponse> {
-  const res = await fetch(
-    `/api/analytics/${req.websiteId}/referrer-visitors?start=${req.start}&end=${req.end}&limit=${req.limit}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${req.accessToken}`,
-      },
-    },
-  );
-  return res.json();
-}
-
-export async function getCountryVisitors(
-  req: GetCountryVisitorsRequest,
-): Promise<GetCountryVisitorsResponse> {
-  const res = await fetch(
-    `/api/analytics/${req.websiteId}/country-visitors?start=${req.start}&end=${req.end}&limit=${req.limit}`,
+    `/api/analytics/${req.websiteId}/analytics?start=${req.start}&end=${req.end}&limit=${req.limit}&type=${req.type}`,
     {
       method: "GET",
       headers: {

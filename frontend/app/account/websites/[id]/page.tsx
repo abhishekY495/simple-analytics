@@ -30,6 +30,7 @@ import PageVisitors from "@/components/analytics/page-visitors";
 import ReferrerVisitors from "@/components/analytics/referrer-visitors";
 import CountryVisitors from "@/components/analytics/country-visitors";
 import Stats from "@/components/analytics/stats";
+import Environment from "@/components/analytics/environment";
 
 export default function WebsitePage() {
   const { id } = useParams<{ id: string }>();
@@ -188,7 +189,7 @@ export default function WebsitePage() {
             end={end}
             accessToken={accessToken}
           />
-
+          {/*  */}
           <ReferrerVisitors
             websiteId={id}
             start={start}
@@ -198,6 +199,13 @@ export default function WebsitePage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <Environment
+            websiteId={id}
+            start={start}
+            end={end}
+            accessToken={accessToken}
+          />
+          {/*  */}
           <CountryVisitors
             websiteId={id}
             start={start}

@@ -78,12 +78,12 @@ export type OsVisitor = {
 };
 export type GetOsVisitorsResponse = ApiResponse<OsVisitor[]>;
 
-// Get Device Type Visitors
-export type DeviceTypeVisitor = {
-  device_type: string;
+// Get Device Visitors
+export type DeviceVisitor = {
+  device: string;
   visitors: number;
 };
-export type GetDeviceTypeVisitorsResponse = ApiResponse<DeviceTypeVisitor[]>;
+export type GetDeviceVisitorsResponse = ApiResponse<DeviceVisitor[]>;
 
 export type AnalyticsResponseByType = {
   page: GetPageVisitorsResponse;
@@ -91,5 +91,5 @@ export type AnalyticsResponseByType = {
   country: GetCountryVisitorsResponse;
   browser: GetBrowserVisitorsResponse;
   os: GetOsVisitorsResponse;
-  device: GetDeviceTypeVisitorsResponse;
+  device: GetDeviceVisitorsResponse;
 };

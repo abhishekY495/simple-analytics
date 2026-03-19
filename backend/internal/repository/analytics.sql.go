@@ -12,6 +12,56 @@ import (
 	"github.com/google/uuid"
 )
 
+const getBrowserVisitors = `-- name: GetBrowserVisitors :many
+SELECT
+  browser,
+  COUNT(DISTINCT visitor_id)::bigint AS visitors
+FROM pageviews
+WHERE website_id = $1 
+  AND created_at >= $2 
+  AND created_at <= $3
+GROUP BY browser
+ORDER BY visitors DESC
+LIMIT $4
+`
+
+type GetBrowserVisitorsParams struct {
+	WebsiteID   uuid.UUID
+	CreatedAt   time.Time
+	CreatedAt_2 time.Time
+	Limit       int32
+}
+
+type GetBrowserVisitorsRow struct {
+	Browser  string
+	Visitors int64
+}
+
+func (q *Queries) GetBrowserVisitors(ctx context.Context, arg GetBrowserVisitorsParams) ([]GetBrowserVisitorsRow, error) {
+	rows, err := q.db.Query(ctx, getBrowserVisitors,
+		arg.WebsiteID,
+		arg.CreatedAt,
+		arg.CreatedAt_2,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetBrowserVisitorsRow
+	for rows.Next() {
+		var i GetBrowserVisitorsRow
+		if err := rows.Scan(&i.Browser, &i.Visitors); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getChartDataByDay = `-- name: GetChartDataByDay :many
 SELECT
   gs.period_start AS time,
@@ -218,92 +268,104 @@ func (q *Queries) GetCountryVisitors(ctx context.Context, arg GetCountryVisitors
 	return items, nil
 }
 
-const getMetrics = `-- name: GetMetrics :one
-WITH current_period_visits AS (
-    SELECT 
-        COUNT(DISTINCT v.visitor_id)::bigint AS total_visitors,
-        COUNT(v.id)::bigint AS total_visits,
-        COALESCE(AVG(EXTRACT(EPOCH FROM (v.ended_at - v.started_at))), 0)::integer AS avg_visit_duration
-    FROM visits v
-    WHERE v.website_id = $1 
-      AND v.started_at >= $2 AND v.started_at <= $3
-),
-current_period_views AS (
-    SELECT COUNT(p.id)::bigint AS total_views
-    FROM pageviews p
-    WHERE p.website_id = $1 
-      AND p.created_at >= $2 AND p.created_at <= $3
-),
-prev_period_visits AS (
-    SELECT 
-        COUNT(DISTINCT v.visitor_id)::bigint AS total_visitors,
-        COUNT(v.id)::bigint AS total_visits,
-        COALESCE(AVG(EXTRACT(EPOCH FROM (v.ended_at - v.started_at))), 0)::integer AS avg_visit_duration
-    FROM visits v
-    WHERE v.website_id = $1 
-      AND v.started_at >= $4 AND v.started_at <= $5
-),
-prev_period_views AS (
-    SELECT COUNT(p.id)::bigint AS total_views
-    FROM pageviews p
-    WHERE p.website_id = $1 
-      AND p.created_at >= $4 AND p.created_at <= $5
-)
-SELECT 
-    cvs.total_visitors AS "TotalVisitors",
-    cvs.total_visits AS "TotalVisits",
-    cvw.total_views AS "TotalViews",
-    cvs.avg_visit_duration AS "AvgVisitDuration",
-    pvs.total_visitors AS "PrevTotalVisitors",
-    pvs.total_visits AS "PrevTotalVisits",
-    pvw.total_views AS "PrevTotalViews",
-    pvs.avg_visit_duration AS "PrevAvgVisitDuration"
-FROM 
-    current_period_visits cvs, 
-    current_period_views cvw, 
-    prev_period_visits pvs, 
-    prev_period_views pvw
+const getDeviceTypeVisitors = `-- name: GetDeviceTypeVisitors :many
+SELECT
+  device_type,
+  COUNT(DISTINCT visitor_id)::bigint AS visitors
+FROM pageviews
+WHERE website_id = $1 
+  AND created_at >= $2 
+  AND created_at <= $3
+GROUP BY device_type
+ORDER BY visitors DESC
+LIMIT $4
 `
 
-type GetMetricsParams struct {
+type GetDeviceTypeVisitorsParams struct {
 	WebsiteID   uuid.UUID
-	StartedAt   time.Time
-	StartedAt_2 time.Time
-	StartedAt_3 time.Time
-	StartedAt_4 time.Time
+	CreatedAt   time.Time
+	CreatedAt_2 time.Time
+	Limit       int32
 }
 
-type GetMetricsRow struct {
-	TotalVisitors        int64
-	TotalVisits          int64
-	TotalViews           int64
-	AvgVisitDuration     int32
-	PrevTotalVisitors    int64
-	PrevTotalVisits      int64
-	PrevTotalViews       int64
-	PrevAvgVisitDuration int32
+type GetDeviceTypeVisitorsRow struct {
+	DeviceType string
+	Visitors   int64
 }
 
-func (q *Queries) GetMetrics(ctx context.Context, arg GetMetricsParams) (GetMetricsRow, error) {
-	row := q.db.QueryRow(ctx, getMetrics,
+func (q *Queries) GetDeviceTypeVisitors(ctx context.Context, arg GetDeviceTypeVisitorsParams) ([]GetDeviceTypeVisitorsRow, error) {
+	rows, err := q.db.Query(ctx, getDeviceTypeVisitors,
 		arg.WebsiteID,
-		arg.StartedAt,
-		arg.StartedAt_2,
-		arg.StartedAt_3,
-		arg.StartedAt_4,
+		arg.CreatedAt,
+		arg.CreatedAt_2,
+		arg.Limit,
 	)
-	var i GetMetricsRow
-	err := row.Scan(
-		&i.TotalVisitors,
-		&i.TotalVisits,
-		&i.TotalViews,
-		&i.AvgVisitDuration,
-		&i.PrevTotalVisitors,
-		&i.PrevTotalVisits,
-		&i.PrevTotalViews,
-		&i.PrevAvgVisitDuration,
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetDeviceTypeVisitorsRow
+	for rows.Next() {
+		var i GetDeviceTypeVisitorsRow
+		if err := rows.Scan(&i.DeviceType, &i.Visitors); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getOsVisitors = `-- name: GetOsVisitors :many
+SELECT
+  os,
+  COUNT(DISTINCT visitor_id)::bigint AS visitors
+FROM pageviews
+WHERE website_id = $1 
+  AND created_at >= $2 
+  AND created_at <= $3
+GROUP BY os
+ORDER BY visitors DESC
+LIMIT $4
+`
+
+type GetOsVisitorsParams struct {
+	WebsiteID   uuid.UUID
+	CreatedAt   time.Time
+	CreatedAt_2 time.Time
+	Limit       int32
+}
+
+type GetOsVisitorsRow struct {
+	Os       string
+	Visitors int64
+}
+
+func (q *Queries) GetOsVisitors(ctx context.Context, arg GetOsVisitorsParams) ([]GetOsVisitorsRow, error) {
+	rows, err := q.db.Query(ctx, getOsVisitors,
+		arg.WebsiteID,
+		arg.CreatedAt,
+		arg.CreatedAt_2,
+		arg.Limit,
 	)
-	return i, err
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetOsVisitorsRow
+	for rows.Next() {
+		var i GetOsVisitorsRow
+		if err := rows.Scan(&i.Os, &i.Visitors); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getPageVisitors = `-- name: GetPageVisitors :many
@@ -404,4 +466,92 @@ func (q *Queries) GetReferrerVisitors(ctx context.Context, arg GetReferrerVisito
 		return nil, err
 	}
 	return items, nil
+}
+
+const getStats = `-- name: GetStats :one
+WITH current_period_visits AS (
+    SELECT 
+        COUNT(DISTINCT v.visitor_id)::bigint AS total_visitors,
+        COUNT(v.id)::bigint AS total_visits,
+        COALESCE(AVG(EXTRACT(EPOCH FROM (v.ended_at - v.started_at))), 0)::integer AS avg_visit_duration
+    FROM visits v
+    WHERE v.website_id = $1 
+      AND v.started_at >= $2 AND v.started_at <= $3
+),
+current_period_views AS (
+    SELECT COUNT(p.id)::bigint AS total_views
+    FROM pageviews p
+    WHERE p.website_id = $1 
+      AND p.created_at >= $2 AND p.created_at <= $3
+),
+prev_period_visits AS (
+    SELECT 
+        COUNT(DISTINCT v.visitor_id)::bigint AS total_visitors,
+        COUNT(v.id)::bigint AS total_visits,
+        COALESCE(AVG(EXTRACT(EPOCH FROM (v.ended_at - v.started_at))), 0)::integer AS avg_visit_duration
+    FROM visits v
+    WHERE v.website_id = $1 
+      AND v.started_at >= $4 AND v.started_at <= $5
+),
+prev_period_views AS (
+    SELECT COUNT(p.id)::bigint AS total_views
+    FROM pageviews p
+    WHERE p.website_id = $1 
+      AND p.created_at >= $4 AND p.created_at <= $5
+)
+SELECT 
+    cvs.total_visitors AS "TotalVisitors",
+    cvs.total_visits AS "TotalVisits",
+    cvw.total_views AS "TotalViews",
+    cvs.avg_visit_duration AS "AvgVisitDuration",
+    pvs.total_visitors AS "PrevTotalVisitors",
+    pvs.total_visits AS "PrevTotalVisits",
+    pvw.total_views AS "PrevTotalViews",
+    pvs.avg_visit_duration AS "PrevAvgVisitDuration"
+FROM 
+    current_period_visits cvs, 
+    current_period_views cvw, 
+    prev_period_visits pvs, 
+    prev_period_views pvw
+`
+
+type GetStatsParams struct {
+	WebsiteID   uuid.UUID
+	StartedAt   time.Time
+	StartedAt_2 time.Time
+	StartedAt_3 time.Time
+	StartedAt_4 time.Time
+}
+
+type GetStatsRow struct {
+	TotalVisitors        int64
+	TotalVisits          int64
+	TotalViews           int64
+	AvgVisitDuration     int32
+	PrevTotalVisitors    int64
+	PrevTotalVisits      int64
+	PrevTotalViews       int64
+	PrevAvgVisitDuration int32
+}
+
+func (q *Queries) GetStats(ctx context.Context, arg GetStatsParams) (GetStatsRow, error) {
+	row := q.db.QueryRow(ctx, getStats,
+		arg.WebsiteID,
+		arg.StartedAt,
+		arg.StartedAt_2,
+		arg.StartedAt_3,
+		arg.StartedAt_4,
+	)
+	var i GetStatsRow
+	err := row.Scan(
+		&i.TotalVisitors,
+		&i.TotalVisits,
+		&i.TotalViews,
+		&i.AvgVisitDuration,
+		&i.PrevTotalVisitors,
+		&i.PrevTotalVisits,
+		&i.PrevTotalViews,
+		&i.PrevAvgVisitDuration,
+	)
+	return i, err
 }

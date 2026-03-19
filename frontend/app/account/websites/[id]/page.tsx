@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon, SettingsIcon } from "lucide-react";
 import { EditWebsiteDialog } from "@/components/website/edit-website-dialog";
 import { getWebsiteIcon } from "@/utils/get-website-icon";
-import Metrics from "@/components/analytics/metrics";
 import {
   Select,
   SelectContent,
@@ -30,6 +29,7 @@ import { formatDate } from "@/utils/format-date";
 import PageVisitors from "@/components/analytics/page-visitors";
 import ReferrerVisitors from "@/components/analytics/referrer-visitors";
 import CountryVisitors from "@/components/analytics/country-visitors";
+import Stats from "@/components/analytics/stats";
 
 export default function WebsitePage() {
   const { id } = useParams<{ id: string }>();
@@ -166,7 +166,7 @@ export default function WebsitePage() {
           </div>
         </div>
 
-        <Metrics
+        <Stats
           websiteId={id}
           start={start}
           end={end}

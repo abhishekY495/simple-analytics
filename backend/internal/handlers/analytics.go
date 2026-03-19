@@ -193,7 +193,7 @@ func Heartbeat(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 	}
 }
 
-func GetMetrics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
+func GetStats(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Validate request method
 		if r.Method != http.MethodGet {
@@ -205,7 +205,7 @@ func GetMetrics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		endStr := r.URL.Query().Get("end")
 
 		// Validate request body fields
-		if err := helpers.ValidateGetMetricsRequest(startStr, endStr); err != nil {
+		if err := helpers.ValidateGetStatsRequest(startStr, endStr); err != nil {
 			helpers.ApiError(w, 200, err.Error())
 			return
 		}
@@ -222,7 +222,7 @@ func GetMetrics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		}
 
 		// Validate date range
-		if err := helpers.ValidateGetMetricsDateRange(start, end); err != nil {
+		if err := helpers.ValidateGetStatsDateRange(start, end); err != nil {
 			helpers.ApiError(w, 200, err.Error())
 			return
 		}
@@ -258,8 +258,8 @@ func GetMetrics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		prevStart := start.Add(-duration)
 		prevEnd := end.Add(-duration)
 
-		// Get metrics
-		metrics, err := repo.GetMetrics(r.Context(), repository.GetMetricsParams{
+		// Get stats
+		stats, err := repo.GetStats(r.Context(), repository.GetStatsParams{
 			WebsiteID:   websiteID,
 			StartedAt:   start,
 			StartedAt_2: end,
@@ -267,19 +267,19 @@ func GetMetrics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 			StartedAt_4: prevEnd,
 		})
 		if err != nil {
-			helpers.ApiError(w, 200, "Failed to get metrics: "+err.Error())
+			helpers.ApiError(w, 200, "Failed to get stats: "+err.Error())
 			return
 		}
 
-		res := helpers.GetMetricsResponse{
-			TotalVisitors:        metrics.TotalVisitors,
-			TotalVisits:          metrics.TotalVisits,
-			TotalViews:           metrics.TotalViews,
-			AvgVisitDuration:     metrics.AvgVisitDuration,
-			PrevTotalVisitors:    metrics.PrevTotalVisitors,
-			PrevTotalVisits:      metrics.PrevTotalVisits,
-			PrevTotalViews:       metrics.PrevTotalViews,
-			PrevAvgVisitDuration: metrics.PrevAvgVisitDuration,
+		res := helpers.GetStatsResponse{
+			TotalVisitors:        stats.TotalVisitors,
+			TotalVisits:          stats.TotalVisits,
+			TotalViews:           stats.TotalViews,
+			AvgVisitDuration:     stats.AvgVisitDuration,
+			PrevTotalVisitors:    stats.PrevTotalVisitors,
+			PrevTotalVisits:      stats.PrevTotalVisits,
+			PrevTotalViews:       stats.PrevTotalViews,
+			PrevAvgVisitDuration: stats.PrevAvgVisitDuration,
 		}
 
 		// Return response

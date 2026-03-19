@@ -1,14 +1,14 @@
 import { ApiResponse } from "./api-response";
 
-// Get Metrics
-export type GetMetricsRequest = {
+// Get Stats
+export type GetStatsRequest = {
   websiteId: string;
   start: string;
   end: string;
   accessToken: string;
 };
 
-export type GetMetricsResponse = ApiResponse<{
+export type GetStatsResponse = ApiResponse<{
   total_visitors: number;
   total_visits: number;
   total_views: number;

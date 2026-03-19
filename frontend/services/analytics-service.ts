@@ -3,19 +3,19 @@ import {
   GetChartDataResponse,
   GetCountryVisitorsRequest,
   GetCountryVisitorsResponse,
-  GetMetricsRequest,
-  GetMetricsResponse,
+  GetStatsRequest,
+  GetStatsResponse,
   GetPageVisitorsRequest,
   GetPageVisitorsResponse,
   GetReferrerVisitorsRequest,
   GetReferrerVisitorsResponse,
 } from "@/types/analytics";
 
-export async function getMetrics(
-  req: GetMetricsRequest,
-): Promise<GetMetricsResponse> {
+export async function getStats(
+  req: GetStatsRequest,
+): Promise<GetStatsResponse> {
   const res = await fetch(
-    `/api/analytics/${req.websiteId}/metrics?start=${req.start}&end=${req.end}`,
+    `/api/analytics/${req.websiteId}/stats?start=${req.start}&end=${req.end}`,
     {
       method: "GET",
       headers: {

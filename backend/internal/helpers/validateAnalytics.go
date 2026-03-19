@@ -50,8 +50,8 @@ func ValidateHeartbeatRequest(req HeartbeatRequest) error {
 	return nil
 }
 
-// Get Metrics
-func ValidateGetMetricsRequest(startDate, endDate string) error {
+// Get Stats
+func ValidateGetStatsRequest(startDate, endDate string) error {
 	startDate = strings.TrimSpace(startDate)
 	endDate = strings.TrimSpace(endDate)
 
@@ -64,14 +64,14 @@ func ValidateGetMetricsRequest(startDate, endDate string) error {
 	return nil
 }
 
-func ValidateGetMetricsDateRange(startDate, endDate time.Time) error {
+func ValidateGetStatsDateRange(startDate, endDate time.Time) error {
 	if startDate.After(endDate) {
 		return errors.New("invalid date range")
 	}
 	return nil
 }
 
-type GetMetricsResponse struct {
+type GetStatsResponse struct {
 	TotalVisitors        int64 `json:"total_visitors"`
 	TotalVisits          int64 `json:"total_visits"`
 	TotalViews           int64 `json:"total_views"`

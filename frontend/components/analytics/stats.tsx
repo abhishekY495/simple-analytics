@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "../ui/skeleton";
-import { getMetrics } from "@/services/analytics-service";
 import { abbreviateNumber } from "@/utils/abbreviate-number";
 import { ChangePercentage } from "./change-percentage";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { InfoIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { formatTime } from "@/utils/format-time";
+import { getStats } from "@/services/analytics-service";
 
-export default function Metrics({
+export default function Stats({
   websiteId,
   start,
   end,
@@ -20,19 +20,19 @@ export default function Metrics({
   accessToken: string;
 }) {
   const {
-    data: metrics,
+    data: stats,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["metrics", websiteId, start, end],
-    queryFn: () => getMetrics({ websiteId, start, end, accessToken }),
+    queryKey: ["stats", websiteId, start, end],
+    queryFn: () => getStats({ websiteId, start, end, accessToken }),
   });
 
-  const metricsData = metrics?.data;
+  const statsData = stats?.data;
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-4 gap-4 h-[146px]">
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
@@ -49,18 +49,18 @@ export default function Metrics({
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-[138px] bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-4 px-8 pb-6 rounded">
+      <div className="flex justify-center items-center h-[146px] bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-4 px-8 pb-6 rounded">
         <p className="text-red-500 text-center text-sm">
-          Failed to fetch metrics
+          Failed to fetch stats
         </p>
       </div>
     );
   }
 
-  if (!metricsData) {
+  if (!statsData) {
     return (
-      <div className="flex justify-center items-center h-[138px] bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-4 px-8 pb-6 rounded">
-        <p className="text-muted-foreground text-center">No metrics data</p>
+      <div className="flex justify-center items-center h-[146px] bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-4 px-8 pb-6 rounded">
+        <p className="text-muted-foreground text-center">No stats data</p>
       </div>
     );
   }
@@ -73,11 +73,11 @@ export default function Metrics({
         </CardHeader>
         <CardContent className="flex flex-col gap-1">
           <p className="text-4xl font-semibold">
-            {abbreviateNumber(metricsData.total_visitors)}
+            {abbreviateNumber(statsData.total_visitors)}
           </p>
           <ChangePercentage
-            current={metricsData.total_visitors}
-            previous={metricsData.prev_total_visitors}
+            current={statsData.total_visitors}
+            previous={statsData.prev_total_visitors}
           />
         </CardContent>
       </Card>
@@ -88,11 +88,11 @@ export default function Metrics({
         </CardHeader>
         <CardContent className="flex flex-col gap-1">
           <p className="text-4xl font-semibold">
-            {abbreviateNumber(metricsData.total_visits)}
+            {abbreviateNumber(statsData.total_visits)}
           </p>
           <ChangePercentage
-            current={metricsData.total_visits}
-            previous={metricsData.prev_total_visits}
+            current={statsData.total_visits}
+            previous={statsData.prev_total_visits}
           />
         </CardContent>
       </Card>
@@ -103,11 +103,11 @@ export default function Metrics({
         </CardHeader>
         <CardContent className="flex flex-col gap-1">
           <p className="text-4xl font-semibold">
-            {abbreviateNumber(metricsData.total_views)}
+            {abbreviateNumber(statsData.total_views)}
           </p>
           <ChangePercentage
-            current={metricsData.total_views}
-            previous={metricsData.prev_total_views}
+            current={statsData.total_views}
+            previous={statsData.prev_total_views}
           />
         </CardContent>
       </Card>
@@ -128,11 +128,11 @@ export default function Metrics({
         </CardHeader>
         <CardContent className="flex flex-col gap-1">
           <p className="text-4xl font-semibold">
-            {formatTime(metricsData.avg_visit_duration)}
+            {formatTime(statsData.avg_visit_duration)}
           </p>
           <ChangePercentage
-            current={metricsData.avg_visit_duration}
-            previous={metricsData.prev_avg_visit_duration}
+            current={statsData.avg_visit_duration}
+            previous={statsData.prev_avg_visit_duration}
           />
         </CardContent>
       </Card>

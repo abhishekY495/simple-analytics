@@ -1,4 +1,4 @@
--- name: GetMetrics :one
+-- name: GetStats :one
 WITH current_period_visits AS (
     SELECT 
         COUNT(DISTINCT v.visitor_id)::bigint AS total_visitors,
@@ -134,5 +134,41 @@ WHERE website_id = $1
   AND created_at >= $2 
   AND created_at <= $3
 GROUP BY country
+ORDER BY visitors DESC
+LIMIT $4;
+
+-- name: GetBrowserVisitors :many
+SELECT
+  browser,
+  COUNT(DISTINCT visitor_id)::bigint AS visitors
+FROM pageviews
+WHERE website_id = $1 
+  AND created_at >= $2 
+  AND created_at <= $3
+GROUP BY browser
+ORDER BY visitors DESC
+LIMIT $4;
+
+-- name: GetOsVisitors :many
+SELECT
+  os,
+  COUNT(DISTINCT visitor_id)::bigint AS visitors
+FROM pageviews
+WHERE website_id = $1 
+  AND created_at >= $2 
+  AND created_at <= $3
+GROUP BY os
+ORDER BY visitors DESC
+LIMIT $4;
+
+-- name: GetDeviceTypeVisitors :many
+SELECT
+  device_type,
+  COUNT(DISTINCT visitor_id)::bigint AS visitors
+FROM pageviews
+WHERE website_id = $1 
+  AND created_at >= $2 
+  AND created_at <= $3
+GROUP BY device_type
 ORDER BY visitors DESC
 LIMIT $4;

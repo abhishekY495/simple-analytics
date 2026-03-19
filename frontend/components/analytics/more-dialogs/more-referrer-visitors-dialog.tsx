@@ -11,6 +11,8 @@ import {
 } from "../../ui/dialog";
 import ImageWithFallback from "@/components/image-with-fallback";
 import { getWebsiteIcon } from "@/utils/get-website-icon";
+import Link from "next/link";
+import { ExternalLinkIcon } from "lucide-react";
 
 export default function MoreReferrerVisitorsDialog({
   open,
@@ -85,9 +87,11 @@ export default function MoreReferrerVisitorsDialog({
         </div>
         <div className="flex flex-col gap-0.5 max-h-[60vh] overflow-auto pr-2 minimal-scrollbar">
           {filteredReferrerVisitorsMoreData.map((row) => (
-            <div
+            <Link
+              href={`https://${row.referrer}`}
+              target="_blank"
               key={row.referrer}
-              className="flex justify-between items-center px-2 py-1.5 hover:bg-muted/50"
+              className="group flex justify-between items-center px-2 py-1.5 hover:bg-muted/50"
             >
               <div className="flex items-center gap-2">
                 <ImageWithFallback
@@ -98,12 +102,16 @@ export default function MoreReferrerVisitorsDialog({
                   height={16}
                   className="object-cover aspect-square"
                 />
-                <p className="text-sm text-neutral-800 dark:text-neutral-300 truncate flex-1 min-w-0">
+                <p className="text-sm text-neutral-800 dark:text-neutral-300 truncate flex-1 min-w-0 flex items-center gap-1">
                   {row.referrer}
+                  <ExternalLinkIcon
+                    size={12}
+                    className="text-muted-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
                 </p>
               </div>
               <p className="font-semibold">{abbreviateNumber(row.visitors)}</p>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

@@ -4,11 +4,12 @@ import { ReactNode, useState } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { Button } from "../ui/button";
 import { abbreviateNumber } from "@/utils/abbreviate-number";
-import { MaximizeIcon } from "lucide-react";
+import { ExternalLinkIcon, MaximizeIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import MoreReferrerVisitorsDialog from "./more-dialogs/more-referrer-visitors-dialog";
 import { getWebsiteIcon } from "@/utils/get-website-icon";
 import ImageWithFallback from "../image-with-fallback";
+import Link from "next/link";
 
 export default function ReferrerVisitors({
   websiteId,
@@ -80,9 +81,11 @@ export default function ReferrerVisitors({
         </div>
         <div className="flex flex-col gap-0.5">
           {referrerVisitorsDataRows.map((row) => (
-            <div
+            <Link
+              href={`https://${row.referrer}`}
+              target="_blank"
               key={row.referrer}
-              className="flex justify-between items-center px-2 py-1.5 hover:bg-muted/50"
+              className="group flex justify-between items-center px-2 py-1.5 hover:bg-muted/50"
             >
               <div className="flex items-center gap-2">
                 <ImageWithFallback
@@ -93,8 +96,12 @@ export default function ReferrerVisitors({
                   height={16}
                   className="object-cover aspect-square"
                 />
-                <p className="text-sm text-neutral-800 dark:text-neutral-300 truncate flex-1 min-w-0">
+                <p className=" text-sm text-neutral-800 dark:text-neutral-300 truncate flex-1 min-w-0 flex items-center gap-1">
                   {row.referrer}
+                  <ExternalLinkIcon
+                    size={12}
+                    className="text-muted-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
                 </p>
               </div>
               <div className="flex items-center justify-center gap-2 text-sm shrink-0 w-[60px]">
@@ -106,7 +113,7 @@ export default function ReferrerVisitors({
                   {row.percentage}%
                 </span>
               </div>
-            </div>
+            </Link>
           ))}
           <Button
             variant="ghost"

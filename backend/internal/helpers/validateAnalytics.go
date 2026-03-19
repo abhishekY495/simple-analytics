@@ -168,3 +168,33 @@ type GetReferrerVisitorsRow struct {
 	Referrer string `json:"referrer"`
 	Visitors int64  `json:"visitors"`
 }
+
+// Get Country Visitors
+func ValidateGetCountryVisitorsRequest(startDate, endDate, limit string) error {
+	startDate = strings.TrimSpace(startDate)
+	endDate = strings.TrimSpace(endDate)
+	limit = strings.TrimSpace(limit)
+
+	if startDate == "" {
+		return errors.New("start is required")
+	}
+	if endDate == "" {
+		return errors.New("end is required")
+	}
+	if limit == "" {
+		return errors.New("limit is required")
+	}
+	return nil
+}
+
+func ValidateGetCountryVisitorsDateRange(startDate, endDate time.Time) error {
+	if startDate.After(endDate) {
+		return errors.New("invalid date range")
+	}
+	return nil
+}
+
+type GetCountryVisitorsRow struct {
+	Country  string `json:"country"`
+	Visitors int64  `json:"visitors"`
+}

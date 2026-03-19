@@ -168,6 +168,56 @@ func (q *Queries) GetChartDataByMonth(ctx context.Context, arg GetChartDataByMon
 	return items, nil
 }
 
+const getCountryVisitors = `-- name: GetCountryVisitors :many
+SELECT
+  country,
+  COUNT(DISTINCT visitor_id)::bigint AS visitors
+FROM pageviews
+WHERE website_id = $1 
+  AND created_at >= $2 
+  AND created_at <= $3
+GROUP BY country
+ORDER BY visitors DESC
+LIMIT $4
+`
+
+type GetCountryVisitorsParams struct {
+	WebsiteID   uuid.UUID
+	CreatedAt   time.Time
+	CreatedAt_2 time.Time
+	Limit       int32
+}
+
+type GetCountryVisitorsRow struct {
+	Country  string
+	Visitors int64
+}
+
+func (q *Queries) GetCountryVisitors(ctx context.Context, arg GetCountryVisitorsParams) ([]GetCountryVisitorsRow, error) {
+	rows, err := q.db.Query(ctx, getCountryVisitors,
+		arg.WebsiteID,
+		arg.CreatedAt,
+		arg.CreatedAt_2,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetCountryVisitorsRow
+	for rows.Next() {
+		var i GetCountryVisitorsRow
+		if err := rows.Scan(&i.Country, &i.Visitors); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getMetrics = `-- name: GetMetrics :one
 WITH current_period_visits AS (
     SELECT 

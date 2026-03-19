@@ -59,6 +59,7 @@ func NewRouter(pool *pgxpool.Pool, cfg config.Config) *http.ServeMux {
 	mux.Handle("GET /analytics/{id}/chart-data", auth(handlers.GetChartData(pool, cfg)))
 	mux.Handle("GET /analytics/{id}/page-visitors", auth(handlers.GetPageVisitors(pool, cfg)))
 	mux.Handle("GET /analytics/{id}/referrer-visitors", auth(handlers.GetReferrerVisitors(pool, cfg)))
+	mux.Handle("GET /analytics/{id}/country-visitors", auth(handlers.GetCountryVisitors(pool, cfg)))
 
 	return mux
 }

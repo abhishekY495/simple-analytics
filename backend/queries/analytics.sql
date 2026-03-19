@@ -124,3 +124,15 @@ WHERE website_id = $1
 GROUP BY referrer
 ORDER BY visitors DESC
 LIMIT $4;
+
+-- name: GetCountryVisitors :many
+SELECT
+  country,
+  COUNT(DISTINCT visitor_id)::bigint AS visitors
+FROM pageviews
+WHERE website_id = $1 
+  AND created_at >= $2 
+  AND created_at <= $3
+GROUP BY country
+ORDER BY visitors DESC
+LIMIT $4;

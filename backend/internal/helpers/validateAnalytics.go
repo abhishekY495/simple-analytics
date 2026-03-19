@@ -109,11 +109,12 @@ type GetChartDataRow struct {
 	Visitors int64     `json:"visitors"`
 }
 
-// Get Page Visitors
-func ValidateGetPageVisitorsRequest(startDate, endDate, limit string) error {
+// Get Analytics
+func ValidateGetAnalyticsRequest(startDate, endDate, limit, typeStr string) error {
 	startDate = strings.TrimSpace(startDate)
 	endDate = strings.TrimSpace(endDate)
 	limit = strings.TrimSpace(limit)
+	typeStr = strings.TrimSpace(typeStr)
 
 	if startDate == "" {
 		return errors.New("start is required")
@@ -124,76 +125,32 @@ func ValidateGetPageVisitorsRequest(startDate, endDate, limit string) error {
 	if limit == "" {
 		return errors.New("limit is required")
 	}
+	if typeStr == "" {
+		return errors.New("type is required")
+	}
 	return nil
 }
 
-func ValidateGetPageVisitorsDateRange(startDate, endDate time.Time) error {
+func ValidateGetAnalyticsDateRange(startDate, endDate time.Time) error {
 	if startDate.After(endDate) {
 		return errors.New("invalid date range")
 	}
 	return nil
 }
 
+// Get Page Visitors
 type GetPageVisitorsRow struct {
 	Path     string `json:"path"`
 	Visitors int64  `json:"visitors"`
 }
 
 // Get Referrer Visitors
-func ValidateGetReferrerVisitorsRequest(startDate, endDate, limit string) error {
-	startDate = strings.TrimSpace(startDate)
-	endDate = strings.TrimSpace(endDate)
-	limit = strings.TrimSpace(limit)
-
-	if startDate == "" {
-		return errors.New("start is required")
-	}
-	if endDate == "" {
-		return errors.New("end is required")
-	}
-	if limit == "" {
-		return errors.New("limit is required")
-	}
-	return nil
-}
-
-func ValidateGetReferrerVisitorsDateRange(startDate, endDate time.Time) error {
-	if startDate.After(endDate) {
-		return errors.New("invalid date range")
-	}
-	return nil
-}
-
 type GetReferrerVisitorsRow struct {
 	Referrer string `json:"referrer"`
 	Visitors int64  `json:"visitors"`
 }
 
 // Get Country Visitors
-func ValidateGetCountryVisitorsRequest(startDate, endDate, limit string) error {
-	startDate = strings.TrimSpace(startDate)
-	endDate = strings.TrimSpace(endDate)
-	limit = strings.TrimSpace(limit)
-
-	if startDate == "" {
-		return errors.New("start is required")
-	}
-	if endDate == "" {
-		return errors.New("end is required")
-	}
-	if limit == "" {
-		return errors.New("limit is required")
-	}
-	return nil
-}
-
-func ValidateGetCountryVisitorsDateRange(startDate, endDate time.Time) error {
-	if startDate.After(endDate) {
-		return errors.New("invalid date range")
-	}
-	return nil
-}
-
 type GetCountryVisitorsRow struct {
 	Country  string `json:"country"`
 	Visitors int64  `json:"visitors"`

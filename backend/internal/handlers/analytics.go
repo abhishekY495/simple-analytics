@@ -411,7 +411,7 @@ func GetChartData(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 	}
 }
 
-func GetPageVisitors(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
+func GetAnalytics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Validate request method
 		if r.Method != http.MethodGet {
@@ -422,8 +422,9 @@ func GetPageVisitors(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		startStr := r.URL.Query().Get("start")
 		endStr := r.URL.Query().Get("end")
 		limitStr := r.URL.Query().Get("limit")
+		typeStr := r.URL.Query().Get("type")
 
-		if err := helpers.ValidateGetPageVisitorsRequest(startStr, endStr, limitStr); err != nil {
+		if err := helpers.ValidateGetAnalyticsRequest(startStr, endStr, limitStr, typeStr); err != nil {
 			helpers.ApiError(w, 200, err.Error())
 			return
 		}
@@ -441,7 +442,7 @@ func GetPageVisitors(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		}
 
 		// Validate date range
-		if err := helpers.ValidateGetPageVisitorsDateRange(start, end); err != nil {
+		if err := helpers.ValidateGetAnalyticsDateRange(start, end); err != nil {
 			helpers.ApiError(w, 200, err.Error())
 			return
 		}
@@ -489,222 +490,66 @@ func GetPageVisitors(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 			return
 		}
 
-		rows, err := repo.GetPageVisitors(r.Context(), repository.GetPageVisitorsParams{
-			WebsiteID:   websiteID,
-			CreatedAt:   start,
-			CreatedAt_2: end,
-			Limit:       int32(limitInt),
-		})
+		if typeStr == "page" {
+			rows, err := repo.GetPageVisitors(r.Context(), repository.GetPageVisitorsParams{
+				WebsiteID:   websiteID,
+				CreatedAt:   start,
+				CreatedAt_2: end,
+				Limit:       int32(limitInt),
+			})
 
-		if err != nil {
-			helpers.ApiError(w, 200, "Failed to get page visitors: "+err.Error())
-			return
+			if err != nil {
+				helpers.ApiError(w, 200, "Failed to get page visitors: "+err.Error())
+				return
+			}
+
+			var pageVisitors []helpers.GetPageVisitorsRow
+			for _, row := range rows {
+				pageVisitors = append(pageVisitors, helpers.GetPageVisitorsRow{Path: row.Path, Visitors: row.Visitors})
+			}
+
+			// Return response
+			helpers.ApiSuccess(w, http.StatusOK, "Page visitors fetched successfully", pageVisitors)
 		}
+		if typeStr == "referrer" {
+			rows, err := repo.GetReferrerVisitors(r.Context(), repository.GetReferrerVisitorsParams{
+				WebsiteID:   websiteID,
+				CreatedAt:   start,
+				CreatedAt_2: end,
+				Limit:       int32(limitInt),
+			})
+			if err != nil {
+				helpers.ApiError(w, 200, "Failed to get referrer visitors: "+err.Error())
+				return
+			}
 
-		var pageVisitors []helpers.GetPageVisitorsRow
-		for _, row := range rows {
-			pageVisitors = append(pageVisitors, helpers.GetPageVisitorsRow{Path: row.Path, Visitors: row.Visitors})
+			var referrerVisitors []helpers.GetReferrerVisitorsRow
+			for _, row := range rows {
+				referrerVisitors = append(referrerVisitors, helpers.GetReferrerVisitorsRow{Referrer: row.Referrer, Visitors: row.Visitors})
+			}
+
+			// Return response
+			helpers.ApiSuccess(w, http.StatusOK, "Referrer visitors fetched successfully", referrerVisitors)
 		}
+		if typeStr == "country" {
+			rows, err := repo.GetCountryVisitors(r.Context(), repository.GetCountryVisitorsParams{
+				WebsiteID:   websiteID,
+				CreatedAt:   start,
+				CreatedAt_2: end,
+				Limit:       int32(limitInt),
+			})
+			if err != nil {
+				helpers.ApiError(w, 200, "Failed to get country visitors: "+err.Error())
+				return
+			}
 
-		// Return response
-		helpers.ApiSuccess(w, http.StatusOK, "Page visitors fetched successfully", pageVisitors)
-	}
-}
+			var countryVisitors []helpers.GetCountryVisitorsRow
+			for _, row := range rows {
+				countryVisitors = append(countryVisitors, helpers.GetCountryVisitorsRow{Country: row.Country, Visitors: row.Visitors})
+			}
 
-func GetReferrerVisitors(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// Validate request method
-		if r.Method != http.MethodGet {
-			helpers.ApiError(w, http.StatusMethodNotAllowed, "Method not allowed")
-			return
+			// Return response
+			helpers.ApiSuccess(w, http.StatusOK, "Country visitors fetched successfully", countryVisitors)
 		}
-
-		startStr := r.URL.Query().Get("start")
-		endStr := r.URL.Query().Get("end")
-		limitStr := r.URL.Query().Get("limit")
-
-		if err := helpers.ValidateGetReferrerVisitorsRequest(startStr, endStr, limitStr); err != nil {
-			helpers.ApiError(w, 200, err.Error())
-			return
-		}
-
-		// Parse start and end dates
-		start, err := time.Parse(time.RFC3339Nano, startStr)
-		if err != nil {
-			helpers.ApiError(w, 200, "Invalid start format, expected ISO")
-			return
-		}
-		end, err := time.Parse(time.RFC3339Nano, endStr)
-		if err != nil {
-			helpers.ApiError(w, 200, "Invalid end format, expected ISO")
-			return
-		}
-
-		// Validate date range
-		if err := helpers.ValidateGetReferrerVisitorsDateRange(start, end); err != nil {
-			helpers.ApiError(w, 200, err.Error())
-			return
-		}
-		if start.After(end) {
-			helpers.ApiError(w, 200, "Invalid date range")
-			return
-		}
-
-		// Get website ID from path
-		websiteID, err := uuid.Parse(r.PathValue("id"))
-		if err != nil {
-			helpers.ApiError(w, 200, "Invalid website ID")
-			return
-		}
-
-		// Parse limit
-		limitInt, err := strconv.Atoi(limitStr)
-		if err != nil {
-			helpers.ApiError(w, 200, "Invalid limit format, expected integer")
-			return
-		}
-
-		if limitInt <= 0 {
-			helpers.ApiError(w, 200, "Limit must be greater than 0")
-			return
-		}
-
-		// Get user from context
-		userID, ok := r.Context().Value(middleware.ContextUserID).(string)
-		if !ok {
-			helpers.ApiError(w, 200, "Unauthorized")
-			return
-		}
-
-		repo := repository.New(pool)
-
-		// Verify the website exists and belongs to the user
-		website, err := repo.GetWebsiteByID(r.Context(), websiteID)
-		if err != nil {
-			helpers.ApiError(w, 200, "Website not found")
-			return
-		}
-		if website.UserID.String() != userID {
-			helpers.ApiError(w, http.StatusForbidden, "Forbidden")
-			return
-		}
-
-		rows, err := repo.GetReferrerVisitors(r.Context(), repository.GetReferrerVisitorsParams{
-			WebsiteID:   websiteID,
-			CreatedAt:   start,
-			CreatedAt_2: end,
-			Limit:       int32(limitInt),
-		})
-		if err != nil {
-			helpers.ApiError(w, 200, "Failed to get referrer visitors: "+err.Error())
-			return
-		}
-
-		var referrerVisitors []helpers.GetReferrerVisitorsRow
-		for _, row := range rows {
-			referrerVisitors = append(referrerVisitors, helpers.GetReferrerVisitorsRow{Referrer: row.Referrer, Visitors: row.Visitors})
-		}
-
-		// Return response
-		helpers.ApiSuccess(w, http.StatusOK, "Referrer visitors fetched successfully", referrerVisitors)
-	}
-}
-
-func GetCountryVisitors(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// Validate request method
-		if r.Method != http.MethodGet {
-			helpers.ApiError(w, http.StatusMethodNotAllowed, "Method not allowed")
-			return
-		}
-
-		startStr := r.URL.Query().Get("start")
-		endStr := r.URL.Query().Get("end")
-		limitStr := r.URL.Query().Get("limit")
-
-		if err := helpers.ValidateGetCountryVisitorsRequest(startStr, endStr, limitStr); err != nil {
-			helpers.ApiError(w, 200, err.Error())
-			return
-		}
-
-		// Parse start and end dates
-		start, err := time.Parse(time.RFC3339Nano, startStr)
-		if err != nil {
-			helpers.ApiError(w, 200, "Invalid start format, expected ISO")
-			return
-		}
-		end, err := time.Parse(time.RFC3339Nano, endStr)
-		if err != nil {
-			helpers.ApiError(w, 200, "Invalid end format, expected ISO")
-			return
-		}
-
-		// Validate date range
-		if err := helpers.ValidateGetCountryVisitorsDateRange(start, end); err != nil {
-			helpers.ApiError(w, 200, err.Error())
-			return
-		}
-		if start.After(end) {
-			helpers.ApiError(w, 200, "Invalid date range")
-			return
-		}
-
-		// Get website ID from path
-		websiteID, err := uuid.Parse(r.PathValue("id"))
-		if err != nil {
-			helpers.ApiError(w, 200, "Invalid website ID")
-			return
-		}
-
-		// Parse limit
-		limitInt, err := strconv.Atoi(limitStr)
-		if err != nil {
-			helpers.ApiError(w, 200, "Invalid limit format, expected integer")
-			return
-		}
-
-		if limitInt <= 0 {
-			helpers.ApiError(w, 200, "Limit must be greater than 0")
-			return
-		}
-
-		// Get user from context
-		userID, ok := r.Context().Value(middleware.ContextUserID).(string)
-		if !ok {
-			helpers.ApiError(w, 200, "Unauthorized")
-			return
-		}
-
-		repo := repository.New(pool)
-
-		// Verify the website exists and belongs to the user
-		website, err := repo.GetWebsiteByID(r.Context(), websiteID)
-		if err != nil {
-			helpers.ApiError(w, 200, "Website not found")
-			return
-		}
-		if website.UserID.String() != userID {
-			helpers.ApiError(w, http.StatusForbidden, "Forbidden")
-			return
-		}
-
-		rows, err := repo.GetCountryVisitors(r.Context(), repository.GetCountryVisitorsParams{
-			WebsiteID:   websiteID,
-			CreatedAt:   start,
-			CreatedAt_2: end,
-			Limit:       int32(limitInt),
-		})
-		if err != nil {
-			helpers.ApiError(w, 200, "Failed to get country visitors: "+err.Error())
-			return
-		}
-
-		var countryVisitors []helpers.GetCountryVisitorsRow
-		for _, row := range rows {
-			countryVisitors = append(countryVisitors, helpers.GetCountryVisitorsRow{Country: row.Country, Visitors: row.Visitors})
-		}
-
-		// Return response
-		helpers.ApiSuccess(w, http.StatusOK, "Country visitors fetched successfully", countryVisitors)
 	}
 }

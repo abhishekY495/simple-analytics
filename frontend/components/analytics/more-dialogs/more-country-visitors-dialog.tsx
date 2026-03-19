@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../ui/dialog";
+import ReactCountryFlag from "react-country-flag";
 
 export default function MoreCountryVisitorsDialog({
   open,
@@ -72,6 +73,7 @@ export default function MoreCountryVisitorsDialog({
       </div>
     );
   } else {
+    const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
     dialogBody = (
       <div className="flex flex-col gap-3">
         <div className="flex justify-between items-center">
@@ -84,9 +86,16 @@ export default function MoreCountryVisitorsDialog({
               key={row.country}
               className="flex justify-between items-center px-2 py-1.5 hover:bg-muted/50"
             >
-              <p className="text-sm text-neutral-800 dark:text-neutral-300">
-                {row.country}
-              </p>
+              <div className="flex items-center gap-2">
+                <ReactCountryFlag
+                  countryCode={row.country}
+                  className="text-lg"
+                  svg
+                />
+                <p className="text-sm text-neutral-800 dark:text-neutral-300">
+                  {regionNames.of(row.country)}
+                </p>
+              </div>
               <p className="font-semibold">{abbreviateNumber(row.visitors)}</p>
             </div>
           ))}

@@ -180,7 +180,7 @@ export default function WebsitePage() {
           period={selectedRange}
         />
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <PageVisitors
             websiteId={id}
             start={start}

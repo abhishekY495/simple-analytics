@@ -6,6 +6,7 @@ import { ChangePercentage } from "./change-percentage";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { InfoIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { formatTime } from "@/utils/format-time";
 
 export default function Metrics({
   websiteId,
@@ -65,7 +66,7 @@ export default function Metrics({
   }
 
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <div className="grid lg:grid-cols-4 gap-4 grid-cols-2 grid-flow-row">
       <Card className="rounded gap-0 px-1">
         <CardHeader>
           <CardTitle>Visitors</CardTitle>
@@ -127,7 +128,7 @@ export default function Metrics({
         </CardHeader>
         <CardContent className="flex flex-col gap-1">
           <p className="text-4xl font-semibold">
-            {abbreviateNumber(metricsData.avg_visit_duration)}
+            {formatTime(metricsData.avg_visit_duration)}
           </p>
           <ChangePercentage
             current={metricsData.avg_visit_duration}

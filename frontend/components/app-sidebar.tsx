@@ -77,7 +77,10 @@ export function AppSidebar() {
         </SidebarFooter>
       </Sidebar>
 
-      <LogoutDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen} />
+      <LogoutDialog
+        open={logoutDialogOpen}
+        onOpenChange={setLogoutDialogOpen}
+      />
     </>
   );
 }

@@ -11,7 +11,6 @@ import {
 } from "../../ui/dialog";
 import ImageWithFallback from "@/components/image-with-fallback";
 import { getWebsiteIcon } from "@/utils/get-website-icon";
-import { FALLBACK_ICON_URL } from "@/utils/constants";
 
 export default function MoreReferrerVisitorsDialog({
   open,
@@ -93,7 +92,7 @@ export default function MoreReferrerVisitorsDialog({
               <div className="flex items-center gap-2">
                 <ImageWithFallback
                   src={getWebsiteIcon(row.referrer)}
-                  fallbackSrc={`${FALLBACK_ICON_URL}/${row.referrer}`}
+                  fallbackSrc="/fallback-icon.png"
                   alt={row.referrer}
                   width={16}
                   height={16}

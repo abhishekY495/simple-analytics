@@ -68,7 +68,9 @@ export default function PageVisitors({
       <>
         <div className="flex justify-between items-center">
           <p className="text-sm font-semibold">Path</p>
-          <p className="text-sm font-semibold w-[65px] text-center">Visitors</p>
+          <p className="text-sm font-semibold w-[65px] text-center mr-2">
+            Visitors
+          </p>
         </div>
         <div className="flex flex-col gap-0.5">
           {pageVisitorsDataRows.map((row) => (

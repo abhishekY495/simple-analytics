@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import MoreReferrerVisitorsDialog from "./more-dialogs/more-referrer-visitors-dialog";
 import { getWebsiteIcon } from "@/utils/get-website-icon";
 import ImageWithFallback from "../image-with-fallback";
-import { FALLBACK_ICON_URL } from "@/utils/constants";
 
 export default function ReferrerVisitors({
   websiteId,
@@ -71,13 +70,13 @@ export default function ReferrerVisitors({
       </div>
     );
   } else {
-    const iconUrl = `${FALLBACK_ICON_URL}${referrerVisitorsDataRows[0].referrer}`;
-    console.log(iconUrl);
     cardContent = (
       <>
         <div className="flex justify-between items-center">
           <p className="text-sm font-semibold">Referrer</p>
-          <p className="text-sm font-semibold w-[65px] text-center">Visitors</p>
+          <p className="text-sm font-semibold w-[65px] text-center mr-2">
+            Visitors
+          </p>
         </div>
         <div className="flex flex-col gap-0.5">
           {referrerVisitorsDataRows.map((row) => (
@@ -88,7 +87,7 @@ export default function ReferrerVisitors({
               <div className="flex items-center gap-2">
                 <ImageWithFallback
                   src={getWebsiteIcon(row.referrer)}
-                  fallbackSrc={`${FALLBACK_ICON_URL}/${row.referrer}`}
+                  fallbackSrc="/fallback-icon.png"
                   alt={row.referrer}
                   width={16}
                   height={16}
@@ -124,7 +123,7 @@ export default function ReferrerVisitors({
   return (
     <Card className="rounded px-2 gap-3">
       <CardHeader>
-        <CardTitle className="text-xl border-b pb-4">Referrers</CardTitle>
+        <CardTitle className="text-xl border-b pb-4">Sources</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-3 h-[420px]">
         {cardContent}

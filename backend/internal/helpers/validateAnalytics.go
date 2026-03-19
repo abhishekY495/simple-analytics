@@ -128,6 +128,9 @@ func ValidateGetAnalyticsRequest(startDate, endDate, limit, typeStr string) erro
 	if typeStr == "" {
 		return errors.New("type is required")
 	}
+	if typeStr != "page" && typeStr != "referrer" && typeStr != "country" && typeStr != "browser" && typeStr != "os" && typeStr != "device_type" {
+		return errors.New("invalid type")
+	}
 	return nil
 }
 
@@ -154,4 +157,22 @@ type GetReferrerVisitorsRow struct {
 type GetCountryVisitorsRow struct {
 	Country  string `json:"country"`
 	Visitors int64  `json:"visitors"`
+}
+
+// Get Browser Visitors
+type GetBrowserVisitorsRow struct {
+	Browser  string `json:"browser"`
+	Visitors int64  `json:"visitors"`
+}
+
+// Get OS Visitors
+type GetOsVisitorsRow struct {
+	OS       string `json:"os"`
+	Visitors int64  `json:"visitors"`
+}
+
+// Get Device Type Visitors
+type GetDeviceTypeVisitorsRow struct {
+	DeviceType string `json:"device_type"`
+	Visitors   int64  `json:"visitors"`
 }

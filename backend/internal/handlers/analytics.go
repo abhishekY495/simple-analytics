@@ -551,5 +551,65 @@ func GetAnalytics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 			// Return response
 			helpers.ApiSuccess(w, http.StatusOK, "Country visitors fetched successfully", countryVisitors)
 		}
+		if typeStr == "browser" {
+			rows, err := repo.GetBrowserVisitors(r.Context(), repository.GetBrowserVisitorsParams{
+				WebsiteID:   websiteID,
+				CreatedAt:   start,
+				CreatedAt_2: end,
+				Limit:       int32(limitInt),
+			})
+			if err != nil {
+				helpers.ApiError(w, 200, "Failed to get browser visitors: "+err.Error())
+				return
+			}
+
+			var browserVisitors []helpers.GetBrowserVisitorsRow
+			for _, row := range rows {
+				browserVisitors = append(browserVisitors, helpers.GetBrowserVisitorsRow{Browser: row.Browser, Visitors: row.Visitors})
+			}
+
+			// Return response
+			helpers.ApiSuccess(w, http.StatusOK, "Browser visitors fetched successfully", browserVisitors)
+		}
+		if typeStr == "os" {
+			rows, err := repo.GetOsVisitors(r.Context(), repository.GetOsVisitorsParams{
+				WebsiteID:   websiteID,
+				CreatedAt:   start,
+				CreatedAt_2: end,
+				Limit:       int32(limitInt),
+			})
+			if err != nil {
+				helpers.ApiError(w, 200, "Failed to get os visitors: "+err.Error())
+				return
+			}
+
+			var osVisitors []helpers.GetOsVisitorsRow
+			for _, row := range rows {
+				osVisitors = append(osVisitors, helpers.GetOsVisitorsRow{OS: row.Os, Visitors: row.Visitors})
+			}
+
+			// Return response
+			helpers.ApiSuccess(w, http.StatusOK, "OS visitors fetched successfully", osVisitors)
+		}
+		if typeStr == "device_type" {
+			rows, err := repo.GetDeviceTypeVisitors(r.Context(), repository.GetDeviceTypeVisitorsParams{
+				WebsiteID:   websiteID,
+				CreatedAt:   start,
+				CreatedAt_2: end,
+				Limit:       int32(limitInt),
+			})
+			if err != nil {
+				helpers.ApiError(w, 200, "Failed to get device type visitors: "+err.Error())
+				return
+			}
+
+			var deviceTypeVisitors []helpers.GetDeviceTypeVisitorsRow
+			for _, row := range rows {
+				deviceTypeVisitors = append(deviceTypeVisitors, helpers.GetDeviceTypeVisitorsRow{DeviceType: row.DeviceType, Visitors: row.Visitors})
+			}
+
+			// Return response
+			helpers.ApiSuccess(w, http.StatusOK, "Device type visitors fetched successfully", deviceTypeVisitors)
+		}
 	}
 }

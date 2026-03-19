@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import BrowserVisitorDialog from "../more-dialogs/environment/browser-visitor-dialog";
+import ImageWithFallback from "@/components/image-with-fallback";
+import { getBrowserIcon } from "@/utils/get-browser-icon";
 
 export default function BrowserVisitor({
   websiteId,
@@ -83,9 +85,19 @@ export default function BrowserVisitor({
             key={row.browser}
             className="flex justify-between items-center px-2 py-1.5 hover:bg-muted/50"
           >
-            <p className="text-sm text-neutral-800 dark:text-neutral-300 truncate flex-1 min-w-0">
-              {row.browser}
-            </p>
+            <div className="flex items-center gap-2">
+              <ImageWithFallback
+                src={getBrowserIcon(row.browser)}
+                fallbackSrc="/fallback-icon.png"
+                alt={row.browser}
+                width={16}
+                height={16}
+                className="object-cover aspect-square"
+              />
+              <p className="text-sm text-neutral-800 dark:text-neutral-300 truncate flex-1 min-w-0">
+                {row.browser}
+              </p>
+            </div>
             <div className="flex items-center justify-center gap-2 text-sm shrink-0 w-[60px]">
               <span className="font-semibold">
                 {abbreviateNumber(row.visitors)}

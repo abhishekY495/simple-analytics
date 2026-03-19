@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/dialog";
 import { getAnalytics } from "@/services/analytics-service";
 import { Skeleton } from "@/components/ui/skeleton";
+import ImageWithFallback from "@/components/image-with-fallback";
+import { getDeviceIcon } from "@/utils/get-device.icon";
 
 export default function DeviceVisitorDialog({
   open,
@@ -85,9 +87,19 @@ export default function DeviceVisitorDialog({
               key={row.device}
               className="flex justify-between items-center px-2 py-1.5 hover:bg-muted/50"
             >
-              <p className="text-sm text-neutral-800 dark:text-neutral-300">
-                {row.device}
-              </p>
+              <div className="flex items-center gap-2">
+                <ImageWithFallback
+                  src={getDeviceIcon(row.device)}
+                  fallbackSrc="/fallback-icon.png"
+                  alt={row.device}
+                  width={16}
+                  height={16}
+                  className="object-cover aspect-square"
+                />
+                <p className="text-sm text-neutral-800 dark:text-neutral-300 truncate flex-1 min-w-0">
+                  {row.device}
+                </p>
+              </div>
               <p className="font-semibold">{abbreviateNumber(row.visitors)}</p>
             </div>
           ))}

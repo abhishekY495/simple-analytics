@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import DeviceVisitorDialog from "../more-dialogs/environment/device-visitor-dialog";
+import { getDeviceIcon } from "@/utils/get-device.icon";
+import ImageWithFallback from "@/components/image-with-fallback";
 
 export default function DeviceVisitor({
   websiteId,
@@ -49,8 +51,6 @@ export default function DeviceVisitor({
       totalVisitors > 0 ? Math.round((p.visitors / totalVisitors) * 100) : 0,
   }));
 
-  console.log(deviceVisitorsDataRows);
-
   if (isLoading) {
     return <Skeleton className="size-full" />;
   }
@@ -85,9 +85,19 @@ export default function DeviceVisitor({
             key={row.device}
             className="flex justify-between items-center px-2 py-1.5 hover:bg-muted/50"
           >
-            <p className="text-sm text-neutral-800 dark:text-neutral-300 truncate flex-1 min-w-0">
-              {row.device}
-            </p>
+            <div className="flex items-center gap-2">
+              <ImageWithFallback
+                src={getDeviceIcon(row.device)}
+                fallbackSrc="/fallback-icon.png"
+                alt={row.device}
+                width={16}
+                height={16}
+                className="object-cover aspect-square"
+              />
+              <p className="text-sm text-neutral-800 dark:text-neutral-300 truncate flex-1 min-w-0">
+                {row.device}
+              </p>
+            </div>
             <div className="flex items-center justify-center gap-2 text-sm shrink-0 w-[60px]">
               <span className="font-semibold">
                 {abbreviateNumber(row.visitors)}

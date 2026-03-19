@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/dialog";
 import { getAnalytics } from "@/services/analytics-service";
 import { Skeleton } from "@/components/ui/skeleton";
+import ImageWithFallback from "@/components/image-with-fallback";
+import { getOsIcon } from "@/utils/get-os-device";
 
 export default function OsVisitorDialog({
   open,
@@ -81,9 +83,19 @@ export default function OsVisitorDialog({
               key={row.os}
               className="flex justify-between items-center px-2 py-1.5 hover:bg-muted/50"
             >
-              <p className="text-sm text-neutral-800 dark:text-neutral-300">
-                {row.os}
-              </p>
+              <div className="flex items-center gap-2">
+                <ImageWithFallback
+                  src={getOsIcon(row.os)}
+                  fallbackSrc="/fallback-icon.png"
+                  alt={row.os}
+                  width={16}
+                  height={16}
+                  className="object-cover aspect-square"
+                />
+                <p className="text-sm text-neutral-800 dark:text-neutral-300 truncate flex-1 min-w-0">
+                  {row.os}
+                </p>
+              </div>
               <p className="font-semibold">{abbreviateNumber(row.visitors)}</p>
             </div>
           ))}

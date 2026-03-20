@@ -72,6 +72,14 @@ func CollectAnalytics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		if err != nil {
 			if strings.Contains(err.Error(), "unique") {
 				visitorWasCreated = false
+				// Update visitor last seen
+				err = repo.UpdateVisitorLastSeen(r.Context(), visitor.ID)
+				if err != nil {
+					helpers.ApiError(w, 200, "Failed to update visitor: "+err.Error())
+					return
+				}
+
+				// Get visitor by hash
 				visitor, err = repo.GetVisitorByHash(r.Context(), repository.GetVisitorByHashParams{
 					WebsiteID:   websiteID,
 					VisitorHash: visitorHash,

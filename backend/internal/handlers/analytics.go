@@ -613,3 +613,55 @@ func GetAnalytics(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 		}
 	}
 }
+
+func GetLiveVisitors(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Validate request method
+		if r.Method != http.MethodGet {
+			helpers.ApiError(w, http.StatusMethodNotAllowed, "Method not allowed")
+			return
+		}
+
+		// Get website ID from path
+		websiteID, err := uuid.Parse(r.PathValue("id"))
+		if err != nil {
+			helpers.ApiError(w, 200, "Invalid website ID")
+			return
+		}
+
+		// Get user from context
+		userID, ok := r.Context().Value(middleware.ContextUserID).(string)
+		if !ok {
+			helpers.ApiError(w, 200, "Unauthorized")
+			return
+		}
+
+		repo := repository.New(pool)
+
+		// Verify the website exists and belongs to the user
+		website, err := repo.GetWebsiteByID(r.Context(), websiteID)
+		if err != nil {
+			helpers.ApiError(w, 200, "Website not found")
+			return
+		}
+		if website.UserID.String() != userID {
+			helpers.ApiError(w, http.StatusForbidden, "Forbidden")
+			return
+		}
+
+		// Get live visitors
+		liveVisitors, err := repo.GetLiveVisitors(r.Context(), websiteID)
+		if err != nil {
+			helpers.ApiError(w, 200, "Failed to get live visitors: "+err.Error())
+			return
+		}
+
+		var liveVisitorsData []helpers.GetLiveVisitorsRow
+		for _, row := range liveVisitors {
+			liveVisitorsData = append(liveVisitorsData, helpers.GetLiveVisitorsRow{Country: row.Country, Visitors: row.LiveVisitors})
+		}
+
+		// Return response
+		helpers.ApiSuccess(w, http.StatusOK, "Live visitors fetched successfully", liveVisitorsData)
+	}
+}

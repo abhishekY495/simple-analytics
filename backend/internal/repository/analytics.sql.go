@@ -318,6 +318,42 @@ func (q *Queries) GetDeviceTypeVisitors(ctx context.Context, arg GetDeviceTypeVi
 	return items, nil
 }
 
+const getLiveVisitors = `-- name: GetLiveVisitors :many
+SELECT
+  country,
+  COUNT(*)::bigint AS live_visitors
+FROM visitors
+WHERE website_id = $1
+  AND last_seen >= NOW() - interval '45 seconds'
+GROUP BY country
+ORDER BY live_visitors DESC
+`
+
+type GetLiveVisitorsRow struct {
+	Country      string
+	LiveVisitors int64
+}
+
+func (q *Queries) GetLiveVisitors(ctx context.Context, websiteID uuid.UUID) ([]GetLiveVisitorsRow, error) {
+	rows, err := q.db.Query(ctx, getLiveVisitors, websiteID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetLiveVisitorsRow
+	for rows.Next() {
+		var i GetLiveVisitorsRow
+		if err := rows.Scan(&i.Country, &i.LiveVisitors); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getOsVisitors = `-- name: GetOsVisitors :many
 SELECT
   os,

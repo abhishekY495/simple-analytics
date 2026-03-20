@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS visitors (
 );
 -- Prevent duplicate visitor rows for same site
 CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_visitor ON visitors(website_id, visitor_hash);
+CREATE INDEX IF NOT EXISTS idx_visitors_live ON visitors (website_id, last_seen);
 
 
 

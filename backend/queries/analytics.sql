@@ -172,3 +172,13 @@ WHERE website_id = $1
 GROUP BY device_type
 ORDER BY visitors DESC
 LIMIT $4;
+
+-- name: GetLiveVisitors :many
+SELECT
+  country,
+  COUNT(*)::bigint AS live_visitors
+FROM visitors
+WHERE website_id = $1
+  AND last_seen >= NOW() - interval '45 seconds'
+GROUP BY country
+ORDER BY live_visitors DESC;

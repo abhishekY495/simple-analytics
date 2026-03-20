@@ -176,3 +176,9 @@ type GetDeviceTypeVisitorsRow struct {
 	Device   string `json:"device"`
 	Visitors int64  `json:"visitors"`
 }
+
+// Get Live Visitors
+type GetLiveVisitorsRow struct {
+	Country  string `json:"country"`
+	Visitors int64  `json:"visitors"`
+}

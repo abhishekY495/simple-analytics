@@ -13,8 +13,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func GenerateVisitorHash(websiteID uuid.UUID, userAgent string) (string, error) {
-	hash := sha256.Sum256([]byte(websiteID.String() + userAgent))
+func GenerateVisitorHash(websiteID uuid.UUID, userAgent, clientIP string) (string, error) {
+	hash := sha256.Sum256([]byte(websiteID.String() + userAgent + clientIP))
 	return hex.EncodeToString(hash[:]), nil
 }
 

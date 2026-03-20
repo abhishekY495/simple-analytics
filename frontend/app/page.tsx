@@ -17,7 +17,7 @@ export default function Home() {
             website data — so you can focus on <b>growth</b>
           </p>
           <div className="flex items-center gap-4">
-            <Link href="/login">
+            <Link href="/account">
               <Button
                 variant="outline"
                 className="text-md rounded py-5 px-8 dark:bg-white text-black cursor-pointer dark:hover:bg-neutral-300 dark:text-black"

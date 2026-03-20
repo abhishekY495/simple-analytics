@@ -1,4 +1,6 @@
+import { TCountryCode } from "countries-list";
 import { ApiResponse } from "./api-response";
+import { Marker } from "@/components/ui/dotted-map";
 
 // Get Stats
 export type GetStatsRequest = {
@@ -92,4 +94,25 @@ export type AnalyticsResponseByType = {
   browser: GetBrowserVisitorsResponse;
   os: GetOsVisitorsResponse;
   device: GetDeviceVisitorsResponse;
+};
+
+// Get Live Visitors
+export type GetLiveVisitorsRequest = {
+  websiteId: string;
+  accessToken: string;
+};
+export type GetLiveVisitorsResponse = ApiResponse<
+  {
+    country: string;
+    visitors: number;
+  }[]
+>;
+
+// Live Visitor
+type CountryCode = Lowercase<TCountryCode>;
+export type LiveVisitorMarker = Marker & {
+  overlay: {
+    countryCode: CountryCode;
+    label: string;
+  };
 };

@@ -31,6 +31,7 @@ import ReferrerVisitors from "@/components/analytics/referrer-visitors";
 import CountryVisitors from "@/components/analytics/country-visitors";
 import Stats from "@/components/analytics/stats";
 import Environment from "@/components/analytics/environment";
+import LiveVisitors from "@/components/analytics/live-visitors";
 
 export default function WebsitePage() {
   const { id } = useParams<{ id: string }>();
@@ -94,7 +95,7 @@ export default function WebsitePage() {
   };
 
   return (
-    <div className="mb-56">
+    <div className="mb-24">
       <div className="flex justify-between items-end border-b pb-4 mb-4">
         <div className="flex items-center gap-2">
           <Image
@@ -189,7 +190,6 @@ export default function WebsitePage() {
             end={end}
             accessToken={accessToken}
           />
-          {/*  */}
           <ReferrerVisitors
             websiteId={id}
             start={start}
@@ -205,7 +205,6 @@ export default function WebsitePage() {
             end={end}
             accessToken={accessToken}
           />
-          {/*  */}
           <CountryVisitors
             websiteId={id}
             start={start}
@@ -213,6 +212,8 @@ export default function WebsitePage() {
             accessToken={accessToken}
           />
         </div>
+
+        <LiveVisitors websiteId={id} accessToken={accessToken} />
       </div>
 
       <EditWebsiteDialog

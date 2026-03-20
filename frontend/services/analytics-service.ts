@@ -5,6 +5,8 @@ import {
   GetStatsResponse,
   GetAnalyticsRequest,
   AnalyticsResponseByType,
+  GetLiveVisitorsRequest,
+  GetLiveVisitorsResponse,
 } from "@/types/analytics";
 
 export async function getStats(
@@ -52,5 +54,18 @@ export async function getAnalytics<T extends GetAnalyticsRequest["type"]>(
       },
     },
   );
+  return res.json();
+}
+
+export async function getLiveVisitors(
+  req: GetLiveVisitorsRequest,
+): Promise<GetLiveVisitorsResponse> {
+  const res = await fetch(`/api/websites/${req.websiteId}/live-visitors`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${req.accessToken}`,
+    },
+  });
   return res.json();
 }

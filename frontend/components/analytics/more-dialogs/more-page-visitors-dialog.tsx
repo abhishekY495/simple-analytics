@@ -81,7 +81,7 @@ export default function MorePageVisitorsDialog({
           {pageVisitorsMoreData.map((row) => (
             <div
               key={row.path}
-              className="flex justify-between items-center px-2 py-1.5 hover:bg-muted/50"
+              className="flex justify-between gap-5 items-center px-2 py-1.5 hover:bg-muted/50"
             >
               <p className="text-sm text-neutral-800 dark:text-neutral-300">
                 {row.path}

@@ -39,10 +39,18 @@ export default function LiveVisitors({
     ];
   });
 
+  const liveVisitorsCount = liveVisitorsData.reduce(
+    (acc, visitor) => acc + visitor.visitors,
+    0,
+  );
+
   return (
     <Card className="rounded px-2 gap-4">
       <CardHeader>
-        <CardTitle className="text-xl border-b pb-4">Live visitors</CardTitle>
+        <CardTitle className="text-xl border-b pb-4">
+          {liveVisitorsCount} Live{" "}
+          {liveVisitorsCount > 1 ? "visitors" : "visitor"}
+        </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <DottedMap

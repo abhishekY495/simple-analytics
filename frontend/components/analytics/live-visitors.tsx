@@ -6,6 +6,8 @@ import countryInfo from "country-js";
 import { getLiveVisitors } from "@/services/analytics-service";
 import { LiveVisitorMarker } from "@/types/analytics";
 import { LiveVisitorMarkerOverlay } from "./live-visitor-marker-overlay";
+import { LIVE_VISITORS_REFETCH_INTERVAL } from "@/utils/constants";
+import { Skeleton } from "../ui/skeleton";
 
 export default function LiveVisitors({
   websiteId,
@@ -14,9 +16,10 @@ export default function LiveVisitors({
   websiteId: string;
   accessToken: string;
 }) {
-  const { data: liveVisitors } = useQuery({
+  const { data: liveVisitors, isLoading } = useQuery({
     queryKey: ["liveVisitors", websiteId],
     queryFn: () => getLiveVisitors({ websiteId, accessToken }),
+    refetchInterval: LIVE_VISITORS_REFETCH_INTERVAL,
   });
 
   const liveVisitorsData = liveVisitors?.data ?? [];
@@ -48,15 +51,22 @@ export default function LiveVisitors({
     <Card className="rounded px-2 gap-4">
       <CardHeader>
         <CardTitle className="text-xl border-b pb-4">
-          {liveVisitorsCount} Live{" "}
-          {liveVisitorsCount > 1 ? "visitors" : "visitor"}
+          {isLoading ? (
+            <Skeleton className="w-28 h-7 rounded" />
+          ) : (
+            <>
+              {liveVisitorsCount} Live{" "}
+              {liveVisitorsCount > 1 ? "visitors" : "visitor"}
+            </>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <DottedMap
           mapSamples={10000}
           dotRadius={0.3}
-          dotColor="#ccc"
+          dotColor="currentColor"
+          className="text-neutral-300 dark:text-neutral-600"
           markerColor="#3ad673"
           markers={markers}
           pulse={true}

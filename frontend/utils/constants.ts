@@ -9,6 +9,8 @@ export const ICON_BASE_URL = "https://icons.duckduckgo.com/ip3";
 
 export const ALL_TIME_START_DATE = new Date("2026-01-01T00:00:00.000Z");
 
+export const LIVE_VISITORS_REFETCH_INTERVAL = 30000;
+
 export const CHART_CONFIG = {
   visitors: {
     label: "Visitors",

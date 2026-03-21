@@ -133,3 +133,17 @@ func (q *Queries) UpdateWebsiteByID(ctx context.Context, arg UpdateWebsiteByIDPa
 	_, err := q.db.Exec(ctx, updateWebsiteByID, arg.Name, arg.Domain, arg.ID)
 	return err
 }
+
+const updateWebsiteIsPublicByID = `-- name: UpdateWebsiteIsPublicByID :exec
+UPDATE websites SET is_public = $1 WHERE id = $2
+`
+
+type UpdateWebsiteIsPublicByIDParams struct {
+	IsPublic bool
+	ID       uuid.UUID
+}
+
+func (q *Queries) UpdateWebsiteIsPublicByID(ctx context.Context, arg UpdateWebsiteIsPublicByIDParams) error {
+	_, err := q.db.Exec(ctx, updateWebsiteIsPublicByID, arg.IsPublic, arg.ID)
+	return err
+}

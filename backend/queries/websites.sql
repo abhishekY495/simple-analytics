@@ -14,3 +14,6 @@ DELETE FROM websites WHERE id = $1;
 
 -- name: UpdateWebsiteByID :exec
 UPDATE websites SET name = $1, domain = $2 WHERE id = $3;
+
+-- name: UpdateWebsiteIsPublicByID :exec
+UPDATE websites SET is_public = $1 WHERE id = $2;

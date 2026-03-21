@@ -11,6 +11,9 @@ export const ALL_TIME_START_DATE = new Date("2026-01-01T00:00:00.000Z");
 
 export const LIVE_VISITORS_REFETCH_INTERVAL = 30000;
 
+export const MARKER_COLOR_LIGHT = "#d1d1d1";
+export const MARKER_COLOR_DARK = "#525252";
+
 export const CHART_CONFIG = {
   visitors: {
     label: "Visitors",

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useTheme } from "next-themes";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { DottedMap } from "../ui/dotted-map";
 import type { TCountryCode } from "countries-list";
@@ -6,7 +7,11 @@ import countryInfo from "country-js";
 import { getLiveVisitors } from "@/services/analytics-service";
 import { LiveVisitorMarker } from "@/types/analytics";
 import { LiveVisitorMarkerOverlay } from "./live-visitor-marker-overlay";
-import { LIVE_VISITORS_REFETCH_INTERVAL } from "@/utils/constants";
+import {
+  LIVE_VISITORS_REFETCH_INTERVAL,
+  MARKER_COLOR_DARK,
+  MARKER_COLOR_LIGHT,
+} from "@/utils/constants";
 import { Skeleton } from "../ui/skeleton";
 
 export default function LiveVisitors({
@@ -16,6 +21,7 @@ export default function LiveVisitors({
   websiteId: string;
   accessToken: string;
 }) {
+  const { resolvedTheme } = useTheme();
   const { data: liveVisitors, isLoading } = useQuery({
     queryKey: ["liveVisitors", websiteId],
     queryFn: () => getLiveVisitors({ websiteId, accessToken }),
@@ -55,8 +61,9 @@ export default function LiveVisitors({
             <Skeleton className="w-28 h-7 rounded" />
           ) : (
             <>
-              {liveVisitorsCount} Live{" "}
-              {liveVisitorsCount > 1 ? "visitors" : "visitor"}
+              {liveVisitorsCount === 0
+                ? "0 Live visitors"
+                : `${liveVisitorsCount} Live ${liveVisitorsCount > 1 ? "visitors" : "visitor"}`}
             </>
           )}
         </CardTitle>
@@ -67,7 +74,9 @@ export default function LiveVisitors({
           dotRadius={0.3}
           dotColor="currentColor"
           className="text-neutral-300 dark:text-neutral-600"
-          markerColor="#3ad673"
+          markerColor={
+            resolvedTheme === "dark" ? MARKER_COLOR_DARK : MARKER_COLOR_LIGHT
+          }
           markers={markers}
           pulse={true}
           renderMarkerOverlay={({ marker, x, y, r }) => {

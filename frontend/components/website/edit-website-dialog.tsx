@@ -55,12 +55,12 @@ export function EditWebsiteDialog({
           </div>
 
           {/* Public website */}
-          <div className="p-4 px-6 rounded border border-sky-950 bg-sky-950/20">
+          <div className="p-4 px-6 rounded border border-sky-900 bg-sky-950/20">
             <PublicAnalytics website={website} />
           </div>
 
           {/* Delete website */}
-          <div className="p-4 px-6 rounded border border-red-950 bg-red-950/20">
+          <div className="p-4 px-6 rounded border border-red-900 bg-red-950/20">
             <DeleteWebsite
               websiteId={website.id}
               onEditOpenChange={onOpenChange}

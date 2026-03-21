@@ -20,7 +20,7 @@ export function PublicAnalytics({
     mutationFn: () =>
       updateWebsiteIsPublic({
         id: website.id,
-        is_public: isPublic,
+        is_public: !isPublic,
         accessToken: accessToken!,
         type: "is_public",
       }),

@@ -9,6 +9,8 @@ import {
   GetWebsitesResponse,
   UpdateWebsiteDetailsRequest,
   UpdateWebsiteDetailsResponse,
+  UpdateWebsiteIsPublicRequest,
+  UpdateWebsiteIsPublicResponse,
 } from "@/types/website";
 
 export async function addWebsite(
@@ -74,6 +76,20 @@ export async function deleteWebsite(
       "Content-Type": "application/json",
       Authorization: `Bearer ${req.accessToken}`,
     },
+  });
+  return res.json();
+}
+
+export async function updateWebsiteIsPublic(
+  req: UpdateWebsiteIsPublicRequest,
+): Promise<UpdateWebsiteIsPublicResponse> {
+  const res = await fetch(`/api/websites/${req.id}?type=${req.type}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${req.accessToken}`,
+    },
+    body: JSON.stringify(req),
   });
   return res.json();
 }

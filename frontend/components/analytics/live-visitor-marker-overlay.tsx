@@ -14,14 +14,14 @@ export const LiveVisitorMarkerOverlay = ({
 }) => {
   const { countryCode, label } = marker.overlay;
 
-  const flagW = r * 3;
+  const flagW = r * 2.5;
   const flagH = flagW * 0.6;
 
-  const fontSize = r * 1;
+  const fontSize = r * 1.1;
   const pillH = r * 1.65;
   const pillW = label.length * (fontSize * 0.6);
   const pillX = x + flagW / 2 + r * 0.6;
-  const pillY = y - pillH / 2;
+  const pillY = y - pillH / 2.2;
 
   return (
     <g style={{ pointerEvents: "none" }}>

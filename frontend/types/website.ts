@@ -30,12 +30,14 @@ export type GetWebsiteByIdRequest = {
   id: string;
   accessToken: string;
 };
-export type GetWebsiteByIdResponse = ApiResponse<{
+export type GetWebsiteByIdResponseItem = {
   id: string;
   name: string;
   domain: string;
+  is_public: boolean;
   created_at: string;
-}>;
+};
+export type GetWebsiteByIdResponse = ApiResponse<GetWebsiteByIdResponseItem>;
 
 // Delete Website
 export type DeleteWebsiteRequest = {

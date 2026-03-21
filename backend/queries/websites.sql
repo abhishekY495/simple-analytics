@@ -7,7 +7,7 @@ RETURNING id, user_id, name, domain, created_at;
 SELECT id, user_id, name, domain, created_at FROM websites WHERE user_id = $1;
 
 -- name: GetWebsiteByID :one
-SELECT id, user_id, name, domain, created_at FROM websites WHERE id = $1;
+SELECT id, user_id, name, domain, is_public, created_at FROM websites WHERE id = $1;
 
 -- name: DeleteWebsiteByID :exec
 DELETE FROM websites WHERE id = $1;

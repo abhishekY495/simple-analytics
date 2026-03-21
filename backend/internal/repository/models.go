@@ -64,6 +64,7 @@ type Website struct {
 	UserID    uuid.UUID
 	Name      string
 	Domain    string
+	IsPublic  bool
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

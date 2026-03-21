@@ -31,9 +31,13 @@ CREATE TABLE IF NOT EXISTS websites (
   "user_id"    UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   "name"       TEXT        NOT NULL,
   "domain"     TEXT        NOT NULL,
+  "is_public"  BOOLEAN     NOT NULL DEFAULT false,
   "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- add is_public if table was created before
+ALTER TABLE websites ADD COLUMN IF NOT EXISTS "is_public" BOOLEAN NOT NULL DEFAULT false;
 
 
 

@@ -145,6 +145,7 @@ func GetWebsiteByID(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 			Name:      website.Name,
 			Domain:    website.Domain,
 			CreatedAt: website.CreatedAt,
+			IsPublic:  website.IsPublic,
 		}
 
 		// Return response

@@ -47,6 +47,7 @@ type GetWebsiteByIDResponse struct {
 	Name      string    `json:"name"`
 	Domain    string    `json:"domain"`
 	CreatedAt time.Time `json:"created_at"`
+	IsPublic  bool      `json:"is_public"`
 }
 
 type UpdateWebsiteRequest struct {

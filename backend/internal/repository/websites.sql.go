@@ -55,7 +55,7 @@ func (q *Queries) DeleteWebsiteByID(ctx context.Context, id uuid.UUID) error {
 }
 
 const getWebsiteByID = `-- name: GetWebsiteByID :one
-SELECT id, user_id, name, domain, created_at FROM websites WHERE id = $1
+SELECT id, user_id, name, domain, is_public, created_at FROM websites WHERE id = $1
 `
 
 type GetWebsiteByIDRow struct {
@@ -63,6 +63,7 @@ type GetWebsiteByIDRow struct {
 	UserID    uuid.UUID
 	Name      string
 	Domain    string
+	IsPublic  bool
 	CreatedAt time.Time
 }
 
@@ -74,6 +75,7 @@ func (q *Queries) GetWebsiteByID(ctx context.Context, id uuid.UUID) (GetWebsiteB
 		&i.UserID,
 		&i.Name,
 		&i.Domain,
+		&i.IsPublic,
 		&i.CreatedAt,
 	)
 	return i, err

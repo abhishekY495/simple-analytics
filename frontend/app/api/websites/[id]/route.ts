@@ -1,7 +1,7 @@
 import {
   DeleteWebsiteResponse,
   GetWebsiteByIdResponse,
-  UpdateWebsiteResponse,
+  UpdateWebsiteDetailsResponse,
 } from "@/types/website";
 import { API_URL } from "@/utils/constants";
 import { NextRequest, NextResponse } from "next/server";
@@ -60,14 +60,29 @@ export async function PUT(
     const { id } = await params;
 
     if (!id) {
-      return NextResponse.json<UpdateWebsiteResponse>(
+      return NextResponse.json<UpdateWebsiteDetailsResponse>(
         { status: "error", status_message: "Invalid website id" },
         { status: 400 },
       );
     }
 
+    const type = req.nextUrl.searchParams.get("type");
+    if (!type) {
+      return NextResponse.json<UpdateWebsiteDetailsResponse>(
+        { status: "error", status_message: "Type is required" },
+        { status: 400 },
+      );
+    }
+
+    if (type !== "details" && type !== "is_public") {
+      return NextResponse.json<UpdateWebsiteDetailsResponse>(
+        { status: "error", status_message: "Invalid type" },
+        { status: 400 },
+      );
+    }
+
     if (!accessToken) {
-      return NextResponse.json<UpdateWebsiteResponse>(
+      return NextResponse.json<UpdateWebsiteDetailsResponse>(
         { status: "error", status_message: "Unauthorized" },
         { status: 401 },
       );
@@ -75,7 +90,7 @@ export async function PUT(
 
     const body = await req.json();
 
-    const backendRes = await fetch(`${API_URL}/websites/${id}`, {
+    const backendRes = await fetch(`${API_URL}/websites/${id}?type=${type}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -88,7 +103,7 @@ export async function PUT(
 
     return NextResponse.json(data, { status: backendRes.status });
   } catch {
-    return NextResponse.json<UpdateWebsiteResponse>(
+    return NextResponse.json<UpdateWebsiteDetailsResponse>(
       { status: "error", status_message: "Failed to reach the server" },
       { status: 503 },
     );

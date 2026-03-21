@@ -8,11 +8,11 @@ import (
 	"github.com/google/uuid"
 )
 
+// Add Website
 type AddWebsiteRequest struct {
 	Name   string `json:"name"`
 	Domain string `json:"domain"`
 }
-
 type AddWebsiteResponse struct {
 	ID        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
@@ -35,6 +35,7 @@ func ValidateAddWebsiteRequest(req AddWebsiteRequest) error {
 	return nil
 }
 
+// Get Websites
 type GetWebsitesResponse struct {
 	ID        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
@@ -42,6 +43,7 @@ type GetWebsitesResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+// Get Website By ID
 type GetWebsiteByIDResponse struct {
 	ID        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
@@ -50,19 +52,19 @@ type GetWebsiteByIDResponse struct {
 	IsPublic  bool      `json:"is_public"`
 }
 
-type UpdateWebsiteRequest struct {
+// Update Website
+type UpdateWebsiteDetailsRequest struct {
 	Name   string `json:"name"`
 	Domain string `json:"domain"`
 }
-
-type UpdateWebsiteResponse struct {
+type UpdateWebsiteDetailsResponse struct {
 	ID        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
 	Domain    string    `json:"domain"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func ValidateUpdateWebsiteRequest(req UpdateWebsiteRequest) error {
+func ValidateUpdateWebsiteDetailsRequest(req UpdateWebsiteDetailsRequest) error {
 	req.Name = strings.TrimSpace(req.Name)
 	req.Domain = strings.TrimSpace(req.Domain)
 
@@ -72,6 +74,23 @@ func ValidateUpdateWebsiteRequest(req UpdateWebsiteRequest) error {
 
 	if !ValidateDomain(req.Domain) {
 		return errors.New("invalid domain")
+	}
+
+	return nil
+}
+
+// Update Website Is Public
+type UpdateWebsiteIsPublicRequest struct {
+	IsPublic *bool `json:"is_public"`
+}
+
+func ValidateUpdateWebsiteIsPublicRequest(req UpdateWebsiteIsPublicRequest) error {
+	if req.IsPublic == nil {
+		return errors.New("is_public is required and must be a boolean")
+	}
+
+	if *req.IsPublic != true && *req.IsPublic != false {
+		return errors.New("is_public must be a boolean")
 	}
 
 	return nil

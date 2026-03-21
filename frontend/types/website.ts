@@ -47,15 +47,29 @@ export type DeleteWebsiteRequest = {
 export type DeleteWebsiteResponse = ApiResponse<null>;
 
 // Update Website
-export type UpdateWebsiteRequest = {
+export type UpdateWebsiteDetailsRequest = {
   id: string;
   name: string;
   domain: string;
   accessToken: string;
+  type: "details" | "is_public";
 };
-export type UpdateWebsiteResponse = ApiResponse<{
+export type UpdateWebsiteDetailsResponse = ApiResponse<{
   id: string;
   name: string;
   domain: string;
+  created_at: string;
+}>;
+
+// Update Website Is Public
+export type UpdateWebsiteIsPublicRequest = {
+  id: string;
+  is_public: boolean;
+  accessToken: string;
+  type: "is_public";
+};
+export type UpdateWebsiteIsPublicResponse = ApiResponse<{
+  id: string;
+  is_public: boolean;
   created_at: string;
 }>;

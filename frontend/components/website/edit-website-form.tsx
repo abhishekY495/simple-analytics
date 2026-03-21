@@ -1,4 +1,4 @@
-import { updateWebsite } from "@/services/website-service";
+import { updateWebsiteDetails } from "@/services/website-service";
 import { useAuthStore } from "@/store/auth-store";
 import { validateDomain } from "@/utils/validate-domain";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -23,18 +23,19 @@ export function EditWebsiteForm({
 
   const { mutate: submitUpdate, isPending } = useMutation({
     mutationFn: () =>
-      updateWebsite({
+      updateWebsiteDetails({
         id: website.id,
         name: nameValue,
         domain: domainValue,
         accessToken: accessToken!,
+        type: "details",
       }),
     onSuccess: (data) => {
       if (data.status === "error") {
         setValidationError(data.status_message);
         return;
       }
-      //   onOpenChange(false);
+      onOpenChange(false);
       toast.success("Website updated successfully");
       queryClient.invalidateQueries({ queryKey: ["website", website.id] });
       queryClient.invalidateQueries({ queryKey: ["websites"] });

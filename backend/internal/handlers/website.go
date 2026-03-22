@@ -120,24 +120,25 @@ func GetWebsiteByID(pool *pgxpool.Pool, cfg config.Config) http.HandlerFunc {
 			return
 		}
 
-		// Get user from context
-		userID, ok := r.Context().Value(middleware.ContextUserID).(string)
-		if !ok {
-			helpers.ApiError(w, 200, "Unauthorized")
-			return
-		}
-
 		repo := repository.New(pool)
-
-		// Verify the website exists and belongs to the user
 		website, err := repo.GetWebsiteByID(r.Context(), websiteID)
 		if err != nil {
 			helpers.ApiError(w, 200, "Website not found")
 			return
 		}
-		if website.UserID.String() != userID {
-			helpers.ApiError(w, http.StatusForbidden, "Forbidden")
-			return
+
+		if !website.IsPublic {
+			// Get user from context
+			userID, ok := r.Context().Value(middleware.ContextUserID).(string)
+			if !ok {
+				helpers.ApiError(w, 200, "Unauthorized")
+				return
+			}
+			// Verify the website exists and belongs to the user
+			if website.UserID.String() != userID {
+				helpers.ApiError(w, http.StatusForbidden, "Forbidden")
+				return
+			}
 		}
 
 		res := helpers.GetWebsiteByIDResponse{

@@ -10,6 +10,7 @@ import { getWebsiteIcon } from "@/utils/get-website-icon";
 import ImageWithFallback from "../image-with-fallback";
 import Link from "next/link";
 import { getAnalytics } from "@/services/analytics-service";
+import { getPublicAnalytics } from "@/services/public-analytics-service";
 
 export default function ReferrerVisitors({
   websiteId,
@@ -20,7 +21,7 @@ export default function ReferrerVisitors({
   websiteId: string;
   start: string;
   end: string;
-  accessToken: string;
+  accessToken?: string;
 }) {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const {
@@ -30,14 +31,22 @@ export default function ReferrerVisitors({
   } = useQuery({
     queryKey: ["referrerVisitors", websiteId, start, end],
     queryFn: () =>
-      getAnalytics({
-        websiteId,
-        start,
-        end,
-        accessToken,
-        limit: 10,
-        type: "referrer",
-      }),
+      accessToken
+        ? getAnalytics({
+            websiteId,
+            start,
+            end,
+            accessToken,
+            limit: 10,
+            type: "referrer",
+          })
+        : getPublicAnalytics({
+            websiteId,
+            start,
+            end,
+            limit: 10,
+            type: "referrer",
+          }),
   });
 
   const referrerVisitorsData = referrerVisitors?.data ?? [];

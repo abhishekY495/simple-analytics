@@ -17,6 +17,7 @@ import { abbreviateNumber } from "@/utils/abbreviate-number";
 import { Period } from "@/types/date-range";
 import { formatTick } from "@/utils/bar-graph/format-tick";
 import { sortTooltipPayload } from "@/utils/bar-graph/sort-tooltip-payload";
+import { getPublicChartData } from "@/services/public-analytics-service";
 
 export default function VisitorsViewsBarChart({
   websiteId,
@@ -28,7 +29,7 @@ export default function VisitorsViewsBarChart({
   websiteId: string;
   start: string;
   end: string;
-  accessToken: string;
+  accessToken?: string;
   period: Period;
 }) {
   const {
@@ -37,7 +38,10 @@ export default function VisitorsViewsBarChart({
     error,
   } = useQuery({
     queryKey: ["visitorsViews", websiteId, start, end],
-    queryFn: () => getChartData({ websiteId, start, end, accessToken }),
+    queryFn: () =>
+      accessToken
+        ? getChartData({ websiteId, start, end, accessToken })
+        : getPublicChartData({ websiteId, start, end }),
   });
 
   const chartData = visitorsViewsData?.data;

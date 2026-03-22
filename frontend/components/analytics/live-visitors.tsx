@@ -13,18 +13,22 @@ import {
   MARKER_COLOR_LIGHT,
 } from "@/utils/constants";
 import { Skeleton } from "../ui/skeleton";
+import { getPublicLiveVisitors } from "@/services/public-analytics-service";
 
 export default function LiveVisitors({
   websiteId,
   accessToken,
 }: {
   websiteId: string;
-  accessToken: string;
+  accessToken?: string;
 }) {
   const { resolvedTheme } = useTheme();
   const { data: liveVisitors, isLoading } = useQuery({
     queryKey: ["liveVisitors", websiteId],
-    queryFn: () => getLiveVisitors({ websiteId, accessToken }),
+    queryFn: () =>
+      accessToken
+        ? getLiveVisitors({ websiteId, accessToken })
+        : getPublicLiveVisitors({ websiteId }),
     refetchInterval: LIVE_VISITORS_REFETCH_INTERVAL,
   });
 

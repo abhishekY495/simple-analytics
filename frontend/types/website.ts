@@ -28,7 +28,7 @@ export type GetWebsitesResponse = ApiResponse<GetWebsitesResponseItem[]>;
 // Get Website By ID
 export type GetWebsiteByIdRequest = {
   id: string;
-  accessToken: string;
+  accessToken?: string;
 };
 export type GetWebsiteByIdResponseItem = {
   id: string;

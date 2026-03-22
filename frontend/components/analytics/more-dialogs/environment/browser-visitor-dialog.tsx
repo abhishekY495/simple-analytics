@@ -11,6 +11,7 @@ import { getAnalytics } from "@/services/analytics-service";
 import { Skeleton } from "@/components/ui/skeleton";
 import ImageWithFallback from "@/components/image-with-fallback";
 import { getBrowserIcon } from "@/utils/get-browser-icon";
+import { getPublicAnalytics } from "@/services/public-analytics-service";
 
 export default function BrowserVisitorDialog({
   open,
@@ -25,7 +26,7 @@ export default function BrowserVisitorDialog({
   websiteId: string;
   start: string;
   end: string;
-  accessToken: string;
+  accessToken?: string;
 }) {
   const {
     data: browserVisitorsMore,
@@ -34,14 +35,22 @@ export default function BrowserVisitorDialog({
   } = useQuery({
     queryKey: ["browserVisitorsMore", websiteId, start, end],
     queryFn: () =>
-      getAnalytics({
-        websiteId,
-        start,
-        end,
-        accessToken,
-        limit: 500,
-        type: "browser",
-      }),
+      accessToken
+        ? getAnalytics({
+            websiteId,
+            start,
+            end,
+            accessToken,
+            limit: 500,
+            type: "browser",
+          })
+        : getPublicAnalytics({
+            websiteId,
+            start,
+            end,
+            limit: 500,
+            type: "browser",
+          }),
     enabled: open,
   });
 

@@ -7,6 +7,7 @@ import { InfoIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { formatTime } from "@/utils/format-time";
 import { getStats } from "@/services/analytics-service";
+import { getPublicStats } from "@/services/public-analytics-service";
 
 export default function Stats({
   websiteId,
@@ -17,7 +18,7 @@ export default function Stats({
   websiteId: string;
   start: string;
   end: string;
-  accessToken: string;
+  accessToken?: string;
 }) {
   const {
     data: stats,
@@ -25,7 +26,10 @@ export default function Stats({
     error,
   } = useQuery({
     queryKey: ["stats", websiteId, start, end],
-    queryFn: () => getStats({ websiteId, start, end, accessToken }),
+    queryFn: () =>
+      accessToken
+        ? getStats({ websiteId, start, end, accessToken })
+        : getPublicStats({ websiteId, start, end }),
   });
 
   const statsData = stats?.data;

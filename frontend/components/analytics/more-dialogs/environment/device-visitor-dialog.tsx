@@ -11,6 +11,7 @@ import { getAnalytics } from "@/services/analytics-service";
 import { Skeleton } from "@/components/ui/skeleton";
 import ImageWithFallback from "@/components/image-with-fallback";
 import { getDeviceIcon } from "@/utils/get-device.icon";
+import { getPublicAnalytics } from "@/services/public-analytics-service";
 
 export default function DeviceVisitorDialog({
   open,
@@ -25,7 +26,7 @@ export default function DeviceVisitorDialog({
   websiteId: string;
   start: string;
   end: string;
-  accessToken: string;
+  accessToken?: string;
 }) {
   const {
     data: deviceVisitorsMore,
@@ -34,14 +35,22 @@ export default function DeviceVisitorDialog({
   } = useQuery({
     queryKey: ["deviceVisitorsMore", websiteId, start, end],
     queryFn: () =>
-      getAnalytics({
-        websiteId,
-        start,
-        end,
-        accessToken,
-        limit: 500,
-        type: "device",
-      }),
+      accessToken
+        ? getAnalytics({
+            websiteId,
+            start,
+            end,
+            accessToken,
+            limit: 500,
+            type: "device",
+          })
+        : getPublicAnalytics({
+            websiteId,
+            start,
+            end,
+            limit: 500,
+            type: "device",
+          }),
     enabled: open,
   });
 

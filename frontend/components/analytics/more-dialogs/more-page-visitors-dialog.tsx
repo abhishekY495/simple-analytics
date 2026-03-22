@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "../../ui/dialog";
 import { getAnalytics } from "@/services/analytics-service";
+import { getPublicAnalytics } from "@/services/public-analytics-service";
 
 export default function MorePageVisitorsDialog({
   open,
@@ -23,7 +24,7 @@ export default function MorePageVisitorsDialog({
   websiteId: string;
   start: string;
   end: string;
-  accessToken: string;
+  accessToken?: string;
 }) {
   const {
     data: pageVisitorsMore,
@@ -32,14 +33,22 @@ export default function MorePageVisitorsDialog({
   } = useQuery({
     queryKey: ["pageVisitorsMore", websiteId, start, end],
     queryFn: () =>
-      getAnalytics({
-        websiteId,
-        start,
-        end,
-        accessToken,
-        limit: 500,
-        type: "page",
-      }),
+      accessToken
+        ? getAnalytics({
+            websiteId,
+            start,
+            end,
+            accessToken,
+            limit: 500,
+            type: "page",
+          })
+        : getPublicAnalytics({
+            websiteId,
+            start,
+            end,
+            limit: 500,
+            type: "page",
+          }),
     enabled: open,
   });
 

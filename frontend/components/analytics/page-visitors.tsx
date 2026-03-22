@@ -7,6 +7,7 @@ import { abbreviateNumber } from "@/utils/abbreviate-number";
 import { Button } from "../ui/button";
 import MorePageVisitorsDialog from "./more-dialogs/more-page-visitors-dialog";
 import { getAnalytics } from "@/services/analytics-service";
+import { getPublicAnalytics } from "@/services/public-analytics-service";
 
 export default function PageVisitors({
   websiteId,
@@ -17,7 +18,7 @@ export default function PageVisitors({
   websiteId: string;
   start: string;
   end: string;
-  accessToken: string;
+  accessToken?: string;
 }) {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const {
@@ -27,14 +28,22 @@ export default function PageVisitors({
   } = useQuery({
     queryKey: ["pageVisitors", websiteId, start, end],
     queryFn: () =>
-      getAnalytics({
-        websiteId,
-        start,
-        end,
-        accessToken,
-        limit: 10,
-        type: "page",
-      }),
+      accessToken
+        ? getAnalytics({
+            websiteId,
+            start,
+            end,
+            accessToken,
+            limit: 10,
+            type: "page",
+          })
+        : getPublicAnalytics({
+            websiteId,
+            start,
+            end,
+            limit: 10,
+            type: "page",
+          }),
   });
 
   const pageVisitorsData = pageVisitors?.data ?? [];

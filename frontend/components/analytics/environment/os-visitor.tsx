@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import OsVisitorDialog from "../more-dialogs/environment/os-visitor-dialog";
 import ImageWithFallback from "@/components/image-with-fallback";
 import { getOsIcon } from "@/utils/get-os-device";
+import { getPublicAnalytics } from "@/services/public-analytics-service";
 
 export default function OsVisitor({
   websiteId,
@@ -18,7 +19,7 @@ export default function OsVisitor({
   websiteId: string;
   start: string;
   end: string;
-  accessToken: string;
+  accessToken?: string;
 }) {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
 
@@ -29,14 +30,22 @@ export default function OsVisitor({
   } = useQuery({
     queryKey: ["osVisitors", websiteId, start, end],
     queryFn: () =>
-      getAnalytics({
-        websiteId,
-        start,
-        end,
-        accessToken,
-        limit: 10,
-        type: "os",
-      }),
+      accessToken
+        ? getAnalytics({
+            websiteId,
+            start,
+            end,
+            accessToken,
+            limit: 10,
+            type: "os",
+          })
+        : getPublicAnalytics({
+            websiteId,
+            start,
+            end,
+            limit: 10,
+            type: "os",
+          }),
   });
 
   const osVisitorsData = osVisitors?.data ?? [];

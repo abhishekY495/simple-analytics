@@ -7,7 +7,7 @@ export type GetStatsRequest = {
   websiteId: string;
   start: string;
   end: string;
-  accessToken: string;
+  accessToken?: string;
 };
 export type GetStatsResponse = ApiResponse<{
   total_visitors: number;
@@ -25,7 +25,7 @@ export type GetChartDataRequest = {
   websiteId: string;
   start: string;
   end: string;
-  accessToken: string;
+  accessToken?: string;
 };
 export type GetChartDataResponse = ApiResponse<
   {
@@ -40,7 +40,7 @@ export type GetAnalyticsRequest = {
   websiteId: string;
   start: string;
   end: string;
-  accessToken: string;
+  accessToken?: string;
   limit: number;
   type: "page" | "referrer" | "country" | "browser" | "os" | "device";
 };
@@ -99,7 +99,7 @@ export type AnalyticsResponseByType = {
 // Get Live Visitors
 export type GetLiveVisitorsRequest = {
   websiteId: string;
-  accessToken: string;
+  accessToken?: string;
 };
 export type GetLiveVisitorsResponse = ApiResponse<
   {

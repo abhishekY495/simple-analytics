@@ -10,6 +10,7 @@ import {
 } from "../../ui/dialog";
 import ReactCountryFlag from "react-country-flag";
 import { getAnalytics } from "@/services/analytics-service";
+import { getPublicAnalytics } from "@/services/public-analytics-service";
 
 export default function MoreCountryVisitorsDialog({
   open,
@@ -24,7 +25,7 @@ export default function MoreCountryVisitorsDialog({
   websiteId: string;
   start: string;
   end: string;
-  accessToken: string;
+  accessToken?: string;
 }) {
   const {
     data: countryVisitorsMore,
@@ -33,14 +34,22 @@ export default function MoreCountryVisitorsDialog({
   } = useQuery({
     queryKey: ["countryVisitorsMore", websiteId, start, end],
     queryFn: () =>
-      getAnalytics({
-        websiteId,
-        start,
-        end,
-        accessToken,
-        limit: 500,
-        type: "country",
-      }),
+      accessToken
+        ? getAnalytics({
+            websiteId,
+            start,
+            end,
+            accessToken,
+            limit: 500,
+            type: "country",
+          })
+        : getPublicAnalytics({
+            websiteId,
+            start,
+            end,
+            limit: 500,
+            type: "country",
+          }),
     enabled: open,
   });
 

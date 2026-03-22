@@ -11,6 +11,7 @@ import { getAnalytics } from "@/services/analytics-service";
 import { Skeleton } from "@/components/ui/skeleton";
 import ImageWithFallback from "@/components/image-with-fallback";
 import { getOsIcon } from "@/utils/get-os-device";
+import { getPublicAnalytics } from "@/services/public-analytics-service";
 
 export default function OsVisitorDialog({
   open,
@@ -25,7 +26,7 @@ export default function OsVisitorDialog({
   websiteId: string;
   start: string;
   end: string;
-  accessToken: string;
+  accessToken?: string;
 }) {
   const {
     data: osVisitorsMore,
@@ -34,14 +35,22 @@ export default function OsVisitorDialog({
   } = useQuery({
     queryKey: ["osVisitorsMore", websiteId, start, end],
     queryFn: () =>
-      getAnalytics({
-        websiteId,
-        start,
-        end,
-        accessToken,
-        limit: 500,
-        type: "os",
-      }),
+      accessToken
+        ? getAnalytics({
+            websiteId,
+            start,
+            end,
+            accessToken,
+            limit: 500,
+            type: "os",
+          })
+        : getPublicAnalytics({
+            websiteId,
+            start,
+            end,
+            limit: 500,
+            type: "os",
+          }),
     enabled: open,
   });
 

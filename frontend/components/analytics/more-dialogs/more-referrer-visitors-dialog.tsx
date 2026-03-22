@@ -13,6 +13,7 @@ import { getWebsiteIcon } from "@/utils/get-website-icon";
 import Link from "next/link";
 import { ExternalLinkIcon } from "lucide-react";
 import { getAnalytics } from "@/services/analytics-service";
+import { getPublicAnalytics } from "@/services/public-analytics-service";
 
 export default function MoreReferrerVisitorsDialog({
   open,
@@ -27,7 +28,7 @@ export default function MoreReferrerVisitorsDialog({
   websiteId: string;
   start: string;
   end: string;
-  accessToken: string;
+  accessToken?: string;
 }) {
   const {
     data: referrerVisitorsMore,
@@ -36,14 +37,22 @@ export default function MoreReferrerVisitorsDialog({
   } = useQuery({
     queryKey: ["referrerVisitorsMore", websiteId, start, end],
     queryFn: () =>
-      getAnalytics({
-        websiteId,
-        start,
-        end,
-        accessToken,
-        limit: 500,
-        type: "referrer",
-      }),
+      accessToken
+        ? getAnalytics({
+            websiteId,
+            start,
+            end,
+            accessToken,
+            limit: 500,
+            type: "referrer",
+          })
+        : getPublicAnalytics({
+            websiteId,
+            start,
+            end,
+            limit: 500,
+            type: "referrer",
+          }),
     enabled: open,
   });
 

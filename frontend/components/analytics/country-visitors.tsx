@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import MoreCountryVisitorsDialog from "./more-dialogs/more-country-visitors-dialog";
 import ReactCountryFlag from "react-country-flag";
 import { getAnalytics } from "@/services/analytics-service";
+import { getPublicAnalytics } from "@/services/public-analytics-service";
 
 export default function CountryVisitors({
   websiteId,
@@ -18,7 +19,7 @@ export default function CountryVisitors({
   websiteId: string;
   start: string;
   end: string;
-  accessToken: string;
+  accessToken?: string;
 }) {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const {
@@ -28,14 +29,22 @@ export default function CountryVisitors({
   } = useQuery({
     queryKey: ["countryVisitors", websiteId, start, end],
     queryFn: () =>
-      getAnalytics({
-        websiteId,
-        start,
-        end,
-        accessToken,
-        limit: 10,
-        type: "country",
-      }),
+      accessToken
+        ? getAnalytics({
+            websiteId,
+            start,
+            end,
+            accessToken,
+            limit: 10,
+            type: "country",
+          })
+        : getPublicAnalytics({
+            websiteId,
+            start,
+            end,
+            limit: 10,
+            type: "country",
+          }),
   });
 
   const countryVisitorsData = countryVisitors?.data ?? [];

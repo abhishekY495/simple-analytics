@@ -13,7 +13,7 @@ export default function Environment({
   websiteId: string;
   start: string;
   end: string;
-  accessToken: string;
+  accessToken?: string;
 }) {
   return (
     <Card className="rounded px-2">

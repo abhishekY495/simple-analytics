@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import DeviceVisitorDialog from "../more-dialogs/environment/device-visitor-dialog";
 import { getDeviceIcon } from "@/utils/get-device.icon";
 import ImageWithFallback from "@/components/image-with-fallback";
+import { getPublicAnalytics } from "@/services/public-analytics-service";
 
 export default function DeviceVisitor({
   websiteId,
@@ -18,7 +19,7 @@ export default function DeviceVisitor({
   websiteId: string;
   start: string;
   end: string;
-  accessToken: string;
+  accessToken?: string;
 }) {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
 
@@ -29,14 +30,22 @@ export default function DeviceVisitor({
   } = useQuery({
     queryKey: ["deviceVisitors", websiteId, start, end],
     queryFn: () =>
-      getAnalytics({
-        websiteId,
-        start,
-        end,
-        accessToken,
-        limit: 10,
-        type: "device",
-      }),
+      accessToken
+        ? getAnalytics({
+            websiteId,
+            start,
+            end,
+            accessToken,
+            limit: 10,
+            type: "device",
+          })
+        : getPublicAnalytics({
+            websiteId,
+            start,
+            end,
+            limit: 10,
+            type: "device",
+          }),
   });
 
   const deviceVisitorsData = deviceVisitors?.data ?? [];

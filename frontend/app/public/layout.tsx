@@ -9,7 +9,7 @@ export default function AccountLayout({
 }) {
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="flex items-center justify-center p-3 pb-3.5 border-b">
+      <header className="flex items-center justify-center p-3 pb-3.5 border-b bg-neutral-100 dark:bg-neutral-800">
         <Link href="/" className="flex items-center gap-2">
           <Image src="/app-icon.png" alt="logo" width={20} height={20} />
           <p className="font-semibold text-sm truncate">Simple Analytics</p>

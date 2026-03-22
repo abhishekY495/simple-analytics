@@ -74,7 +74,7 @@ export default function LiveVisitors({
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <DottedMap
-          mapSamples={6000}
+          mapSamples={5000}
           dotRadius={0.3}
           dotColor="currentColor"
           className="text-neutral-300 dark:text-neutral-600"

@@ -5,7 +5,7 @@ export function HeroSection() {
   return (
     <div className="flex flex-col items-center gap-8 mt-12">
       <h1 className="text-6xl text-center font-bold leading-16 tracking-[-0.03em]">
-        The modern analytics platform <br /> for effortless insights
+        The modern analytics platform <br /> for simple insights
       </h1>
       <p className="text-neutral-500 text-center dark:text-neutral-400">
         Simple Analytics makes it easy to collect and understand your website

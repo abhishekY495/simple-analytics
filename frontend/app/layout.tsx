@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Simple Analytics",
-  description: "The modern analytics platform for effortless insights",
+  description: "The modern analytics platform for simple insights",
 };
 
 export default function RootLayout({

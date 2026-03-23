@@ -13,14 +13,6 @@ export function Footer() {
           Abhishek
         </Link>
       </p>
-      <span className="text-muted-foreground">•</span>
-      <Link
-        href="https://github.com/abhishekY495/simple-analytics"
-        target="_blank"
-        className="text-muted-foreground underline decoration-neutral-400 dark:decoration-neutral-600 underline-offset-[3px]"
-      >
-        Source Code
-      </Link>
     </footer>
   );
 }

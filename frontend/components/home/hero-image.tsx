@@ -8,7 +8,7 @@ export function HeroImage() {
           <div className="relative w-4xl origin-top transform-[rotateX(22deg)_rotateY(-18deg)_rotateZ(7deg)] drop-shadow-2xl rounded">
             <div className="overflow-hidden rounded mask-[linear-gradient(to_bottom,white_80%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,white_80%,transparent_100%)]">
               <Image
-                src="/hero.png"
+                src="/home-page/hero.png"
                 alt="Simple Analytics dashboard preview"
                 width={2000}
                 height={2000}

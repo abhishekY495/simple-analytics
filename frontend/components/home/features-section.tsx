@@ -13,7 +13,7 @@ export function FeaturesSection() {
     {
       name: "Visitor analysis",
       description:
-        "Identify your top audiences and where your visitors are coming from with detailed country-level insights.",
+        "Identify your top audience and where your visitors are coming from with country-level insights.",
       imagePath: "/home-page/features/visitor-analysis.png",
     },
     {
@@ -32,7 +32,7 @@ export function FeaturesSection() {
     {
       name: "Live visitors",
       description:
-        "Get a realtime view of your current website traffic. See who is currently visiting your website in real-time.",
+        "Get a realtime view of your current website traffic. See where your visitors are coming from in real-time.",
       imagePath: "/home-page/features/live-visitors.png",
     },
   ];

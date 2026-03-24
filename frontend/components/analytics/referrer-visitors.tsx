@@ -37,14 +37,14 @@ export default function ReferrerVisitors({
             start,
             end,
             accessToken,
-            limit: 10,
+            limit: 11,
             type: "referrer",
           })
         : getPublicAnalytics({
             websiteId,
             start,
             end,
-            limit: 10,
+            limit: 11,
             type: "referrer",
           }),
   });
@@ -58,12 +58,14 @@ export default function ReferrerVisitors({
     (sum, p) => sum + p.visitors,
     0,
   );
-  const referrerVisitorsDataRows = filteredReferrerVisitorsData.map((p) => ({
-    referrer: p.referrer,
-    visitors: p.visitors,
-    percentage:
-      totalVisitors > 0 ? Math.round((p.visitors / totalVisitors) * 100) : 0,
-  }));
+  const referrerVisitorsDataRows = filteredReferrerVisitorsData
+    .slice(0, 10)
+    .map((p) => ({
+      referrer: p.referrer,
+      visitors: p.visitors,
+      percentage:
+        totalVisitors > 0 ? Math.round((p.visitors / totalVisitors) * 100) : 0,
+    }));
 
   let cardContent: ReactNode;
   if (isLoading) {

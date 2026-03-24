@@ -35,6 +35,12 @@ export function FeaturesSection() {
         "Get a realtime view of your current website traffic. See where your visitors are coming from in real-time.",
       imagePath: "/home-page/features/live-visitors.png",
     },
+    {
+      name: "📢 Share analytics",
+      description:
+        "Easily share your analytics with others by using a public link. By default your website's metrics are private. When you want to share analytics, you can share a public link with others. The analytics of <a href='https://bugbountydirectory.com' target='_blank' style='color: #007bff; text-decoration: 1px solid underline; font-weight: 500; text-underline-offset: 4px;'>Bug Bounty Directory</a> is public and can be viewed <a href='https://simple-analytics-495.vercel.app/public/b23a0826-6452-4d23-8f59-28718677223a' target='_blank' style='color: #007bff; text-decoration: 1px solid underline; font-weight: 500; text-underline-offset: 4px;'>here</a>",
+      fullWidth: true,
+    },
   ];
 
   return (
@@ -63,14 +69,19 @@ export function FeaturesSection() {
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
-              <p className="text-muted-foreground">{feature.description}</p>
-              <Image
-                src={feature.imagePath}
-                alt={feature.name}
-                width={1000}
-                height={1000}
-                className="w-full h-full object-cover rounded"
+              <p
+                className="text-muted-foreground"
+                dangerouslySetInnerHTML={{ __html: feature.description }}
               />
+              {feature.imagePath && (
+                <Image
+                  src={feature.imagePath}
+                  alt={feature.name}
+                  width={1000}
+                  height={1000}
+                  className="w-full h-full object-cover rounded border"
+                />
+              )}
             </CardContent>
           </Card>
         ))}

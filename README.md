@@ -19,6 +19,7 @@
 - **Traffic analysis** - See your website performance with key metrics like visitors, visits, pageviews, and average visit duration all in one place.
 - **Environment** - See the most popular browsers, operating systems, and devices used by visitors to help you optimize your pages.
 - **Live visitors** - Get a realtime view of your current website traffic. See where your visitors are coming from in real-time.
+- **Share analytics** - Share your analytics with others by using a public link.
 
 <br />
 

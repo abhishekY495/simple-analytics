@@ -14,12 +14,16 @@
 
 ## ✨ Features
 
-- **Traffic sources** - See where your traffic is coming from to better understand where you should be spending your effort.
-- **Visitor analysis** - Identify your top audience and where your visitors are coming from with country-level insights.
-- **Traffic analysis** - See your website performance with key metrics like visitors, visits, pageviews, and average visit duration all in one place.
-- **Environment** - See the most popular browsers, operating systems, and devices used by visitors to help you optimize your pages.
-- **Live visitors** - Get a realtime view of your current website traffic. See where your visitors are coming from in real-time.
-- **Share analytics** - Share your analytics with others by using a public link.
+- **Traffic sources** - Understand where your traffic comes from so you can focus your efforts.
+- **Visitor analysis** - Identify your top audience with country-level insights.
+- **Traffic analysis** - Track key metrics like visitors, visits, pageviews, and average visit duration in one place.
+- **Environment** - Discover the browsers, operating systems, and devices your visitors use.
+- **Live visitors** - Monitor your website traffic in real time and know where visitors are coming from.
+- **Share analytics** - Easily share your analytics with others using a public link.
+
+<br />
+
+> The analytics of [Bug Bounty Directory](https://bugbountydirectory.com) is public and can be viewed [here](https://simple-analytics-495.vercel.app/public/b23a0826-6452-4d23-8f59-28718677223a)
 
 <br />
 
